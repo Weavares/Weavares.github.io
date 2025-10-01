@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weavares - Handloom & Artisan Textiles</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <style>
+        /* Custom styles for the weaving aesthetic */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f7f7;
+        }
+        .hero-section {
+            background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%);
+        }
+        .product-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        .shuttle-text {
+            font-family: 'Playfair Display', serif;
+        }
+        /* Custom scrollbar for product list on mobile */
+        .overflow-x-scroll::-webkit-scrollbar {
+            height: 6px;
+        }
+        .overflow-x-scroll::-webkit-scrollbar-thumb {
+            background: #E5A357;
+            border-radius: 3px;
+        }
+        .overflow-x-scroll::-webkit-scrollbar-track {
+            background: #F3EAD3;
+        }
+    </style>
+
+    <!-- Firebase SDK Imports -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, collection, getDocs, setDoc, query, onSnapshot, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Global variables provided by the Canvas environment
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        let app, db, auth;
+        let userId = null;
+
+        // Make necessary functions and variables globally accessible for our main script
+        window.initializeFirebase = async () => {
+            if (!firebaseConfig) {
+                console.error("Firebase config is missing. Cannot initialize Firebase.");
+                return;
+            }
+
+            try {
+                // setLogLevel('debug'); // Uncomment for Firestore debug logs
+                app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+                
+                // 1. Authentication
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                // 2. Set up Auth State Listener
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        userId = user.uid;
+                        document.getElementById('user-id-display').textContent = `User ID: ${userId.substring(0, 8)}...`;
+                        console.log("Firebase initialized. User authenticated:", userId);
+                        window.loadFeaturedProducts(); // Load products once auth is ready
+                    } else {
+                        userId = crypto.randomUUID(); // Fallback to anonymous ID if auth fails
+                        document.getElementById('user-id-display').textContent = `Anon ID: ${userId.substring(0, 8)}...`;
+                        console.warn("User signed out or failed to authenticate. Using anonymous ID.");
+                        window.loadFeaturedProducts(); // Load products even if anon
+                    }
+                    window.db = db;
+                    window.userId = userId;
+                });
+
+            } catch (error) {
+                console.error("Error during Firebase initialization or sign-in:", error);
+                const statusEl = document.getElementById('user-id-display');
+                statusEl.textContent = 'Auth Failed';
+                statusEl.classList.add('text-red-500');
+            }
+        };
+
+        // 3. Firestore Logic (Demonstration of data fetching)
+        window.loadFeaturedProducts = async () => {
+            if (!window.db || !window.userId) {
+                // Wait for Firebase to be ready
+                return;
+            }
+            
+            const COLLECTION_PATH = `artifacts/${appId}/public/data/weavares_products`;
+            const productsRef = collection(db, COLLECTION_PATH);
+            const productListEl = document.getElementById('product-list');
+
+            // Set up a real-time listener for featured products
+            onSnapshot(productsRef, (snapshot) => {
+                console.log("Real-time products update received.");
+                // We will merge real-time products with mock products in main JS for simplicity
+            }, (error) => {
+                console.error("Error fetching real-time products:", error);
+            });
+
+            // Demo function to add a product if the collection is empty
+            const docs = await getDocs(productsRef);
+            if (docs.empty) {
+                console.log("Product collection empty. Adding mock product for demonstration.");
+                const demoProductRef = doc(productsRef, 'demo-item-1');
+                await setDoc(demoProductRef, {
+                    id: 'fire-1',
+                    name: 'Demo Handwoven Rug',
+                    price: 9900,
+                    description: 'A beautiful rug fetched live from Firestore!',
+                    imageUrl: 'https://placehold.co/400x300/F4B400/FFFFFF?text=Firestore+Rug',
+                    category: 'Rug'
+                });
+            }
+        };
+
+        // Call initialization function
+        window.initializeFirebase();
+    </script>
+</head>
+
+<body class="text-gray-800">
+
+    <!-- Header & Navigation -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center py-4">
+            <!-- Logo -->
+            <a href="#" class="flex items-center space-x-2">
+                <!-- SVG of the final logo concept: Butterfly outline (black), Shuttle body, Colorful stripes -->
+                <svg width="40" height="40" viewBox="0 0 100 100" class="text-black">
+                    <!-- Base Butterfly Outline (Simple/Generic Shape for SVG) -->
+                    <path fill="none" stroke="currentColor" stroke-width="3" d="M50 50C30 50 10 30 10 10S30 0 50 0s40 10 40 30c0 20-20 40-40 40zM50 50C30 50 10 70 10 90S30 100 50 100s40-10 40-30c0-20-20-40-40-40z" transform="scale(0.8) translate(12, 0)"/>
+                    <path fill="none" stroke="currentColor" stroke-width="3" d="M50 50C70 50 90 30 90 10S70 0 50 0s-40 10-40 30c0 20 20 40 40 40zM50 50C70 50 90 70 90 90S70 100 50 100s-40-10-40-30c0-20 20-40 40-40z" transform="scale(0.8) translate(-12, 0)"/>
+                    <!-- Colorful Stripes (simplified diagonal lines) -->
+                    <line x1="15" y1="20" x2="85" y2="80" stroke="#F44336" stroke-width="2"/>
+                    <line x1="10" y1="40" x2="90" y2="60" stroke="#FFC107" stroke-width="2"/>
+                    <line x1="20" y1="70" x2="80" y2="30" stroke="#4CAF50" stroke-width="2"/>
+                    <line x1="5" y1="60" x2="95" y2="40" stroke="#2196F3" stroke-width="2"/>
+                    <!-- Shuttle Body (Black) -->
+                    <path d="M48 30 L52 30 L55 60 L50 70 L45 60 Z" fill="#1f2937" transform="scale(0.8) translate(12, 0)"/>
+                    <path d="M48 30 L52 30 L55 60 L50 70 L45 60 Z" fill="#1f2937" transform="scale(0.8) translate(-12, 0)"/>
+                    <!-- Antennae -->
+                    <path d="M49 35 Q40 20 50 15 M51 35 Q60 20 50 15" stroke="#1f2937" stroke-width="1.5" fill="none" transform="scale(0.8) translate(12, 0)"/>
+                    <path d="M49 35 Q40 20 50 15 M51 35 Q60 20 50 15" stroke="#1f2937" stroke-width="1.5" fill="none" transform="scale(0.8) translate(-12, 0)"/>
+                </svg>
+                <span class="text-2xl font-bold shuttle-text text-gray-800">Weavares</span>
+            </a>
+
+            <!-- Navigation Links (Hidden on Mobile) -->
+            <nav class="hidden md:flex space-x-8 font-medium">
+                <a href="#products" class="text-gray-600 hover:text-indigo-600 transition duration-150">Shop</a>
+                <a href="#about" class="text-gray-600 hover:text-indigo-600 transition duration-150">Our Craft</a>
+                <a href="#contact" class="text-gray-600 hover:text-indigo-600 transition duration-150">Contact</a>
+            </nav>
+
+            <!-- Cart and User -->
+            <div class="flex items-center space-x-4">
+                <p id="user-id-display" class="text-xs text-gray-500 hidden sm:block"></p>
+                <button onclick="window.openCartModal()" class="relative p-2 rounded-full hover:bg-gray-100 transition duration-150">
+                    <!-- Shopping Cart Icon (lucide-react copy) -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6 text-indigo-600">
+                        <circle cx="9" cy="21" r="1"></circle>
+                        <circle cx="20" cy="21" r="1"></circle>
+                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                    </svg>
+                    <span id="cart-count" class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero-section text-center py-16 md:py-24">
+            <div class="max-w-4xl mx-auto px-4">
+                <h1 class="text-5xl md:text-7xl font-extrabold shuttle-text text-gray-900 mb-4">
+                    The Art of Thread
+                </h1>
+                <p class="text-xl text-gray-700 mb-8 max-w-2xl mx-auto">
+                    Discover hand-woven textiles, where tradition meets modern elegance. Every thread tells a story of the artisan.
+                </p>
+                <a href="#products" class="inline-block px-8 py-3 text-lg font-semibold text-white bg-indigo-600 rounded-lg shadow-lg hover:bg-indigo-700 transition duration-300 transform hover:scale-105">
+                    Shop Handlooms
+                </a>
+            </div>
+        </section>
+
+        <!-- Product Grid Section -->
+        <section id="products" class="py-16 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="text-4xl font-bold text-center mb-12 shuttle-text text-gray-900">Featured Collections</h2>
+
+                <!-- Product Filters/Categories (Hidden on desktop, scrollable on mobile) -->
+                <div class="flex space-x-3 mb-8 overflow-x-scroll pb-2">
+                    <button class="filter-btn text-sm px-4 py-2 rounded-full border border-indigo-600 bg-indigo-50 text-indigo-600 font-medium whitespace-nowrap" data-filter="all">All Items</button>
+                    <button class="filter-btn text-sm px-4 py-2 rounded-full border border-gray-300 text-gray-600 hover:border-indigo-400 whitespace-nowrap" data-filter="Saree">Sarees</button>
+                    <button class="filter-btn text-sm px-4 py-2 rounded-full border border-gray-300 text-gray-600 hover:border-indigo-400 whitespace-nowrap" data-filter="Shawl">Shawls</button>
+                    <button class="filter-btn text-sm px-4 py-2 rounded-full border border-gray-300 text-gray-600 hover:border-indigo-400 whitespace-nowrap" data-filter="Fabric">Fabrics</button>
+                    <button class="filter-btn text-sm px-4 py-2 rounded-full border border-gray-300 text-gray-600 hover:border-indigo-400 whitespace-nowrap" data-filter="Rug">Rugs</button>
+                </div>
+
+                <!-- Product List -->
+                <div id="product-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                    <!-- Products will be injected here by JavaScript -->
+                    <p class="col-span-full text-center text-gray-500" id="loading-msg">Loading unique handlooms...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- About The Craft Section -->
+        <section id="about" class="py-16 bg-gray-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row items-center gap-12">
+                <div class="lg:w-1/2">
+                    <img src="https://placehold.co/800x600/E5A357/FFFFFF?text=Loom+Image" alt="Weaver at the loom" class="rounded-lg shadow-2xl object-cover w-full h-auto">
+                </div>
+                <div class="lg:w-1/2">
+                    <h2 class="text-4xl font-bold mb-4 shuttle-text text-gray-900">Our Craft, Our Story</h2>
+                    <p class="text-gray-600 mb-6">
+                        Weavares is dedicated to preserving the ancient art of handloom weaving. We work directly with independent artisans across the country, ensuring fair wages and sustainable practices. Each piece is a labor of love, crafted over days or even weeks using traditional techniques passed down through generations.
+                    </p>
+                    <p class="text-gray-600">
+                        When you purchase from us, you're not just buying a textile; you're investing in a legacy, supporting a community, and owning a piece of wearable art.
+                    </p>
+                    <a href="#contact" class="mt-6 inline-block text-indigo-600 font-semibold hover:text-indigo-800 transition duration-150">Meet the Weavers &rarr;</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer & Contact -->
+    <footer id="contact" class="bg-gray-800 text-white mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div>
+                    <h4 class="font-bold mb-3 shuttle-text text-indigo-400">Weavares</h4>
+                    <p class="text-sm text-gray-400">Hand-woven with passion.</p>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-3">Shop</h4>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><a href="#products" class="hover:text-white transition">Sarees</a></li>
+                        <li><a href="#products" class="hover:text-white transition">Shawls</a></li>
+                        <li><a href="#products" class="hover:text-white transition">Fabrics</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-3">Support</h4>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><a href="#" class="hover:text-white transition">FAQ</a></li>
+                        <li><a href="#" class="hover:text-white transition">Shipping</a></li>
+                        <li><a href="#" class="hover:text-white transition">Returns</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-3">Connect</h4>
+                    <p class="text-sm text-gray-400">Email: info@weavares.com</p>
+                    <p class="text-sm text-gray-400 mt-2">Follow us:</p>
+                    <!-- Social Icons Placeholder -->
+                    <div class="flex space-x-3 mt-1">
+                        <span class="text-indigo-400 hover:text-white cursor-pointer transition">FB</span>
+                        <span class="text-indigo-400 hover:text-white cursor-pointer transition">IG</span>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-10 pt-6 border-t border-gray-700 text-center text-sm text-gray-500">
+                &copy; 2025 Weavares. All rights reserved. | Deployed on GitHub Pages.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Cart Modal -->
+    <div id="cart-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 z-[100] hidden flex justify-end">
+        <div class="bg-white w-full max-w-sm h-full p-6 shadow-2xl overflow-y-auto">
+            <div class="flex justify-between items-center border-b pb-4 mb-4">
+                <h3 class="text-2xl font-semibold">Your Cart</h3>
+                <button onclick="window.closeCartModal()" class="text-gray-500 hover:text-gray-800">
+                    <!-- Close Icon -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Cart Items List -->
+            <div id="cart-items" class="space-y-4">
+                <!-- Cart items will be injected here -->
+            </div>
+
+            <!-- Cart Summary -->
+            <div class="mt-6 pt-4 border-t space-y-2">
+                <div class="flex justify-between font-medium">
+                    <span>Subtotal:</span>
+                    <span id="cart-subtotal">₹0.00</span>
+                </div>
+                <div class="flex justify-between font-bold text-lg">
+                    <span>Total:</span>
+                    <span id="cart-total">₹0.00</span>
+                </div>
+            </div>
+
+            <!-- Checkout Button -->
+            <button onclick="window.checkout()" class="w-full mt-6 py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition duration-300">
+                Proceed to Checkout (Mock)
+            </button>
+
+            <!-- Persistence Warning -->
+            <p class="mt-4 text-xs text-red-500 text-center">
+                *Cart is stored in memory and will clear upon page refresh.
+            </p>
+        </div>
+    </div>
+
+    <!-- Message Modal (for alerts/notifications) -->
+    <div id="message-modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 z-[110] hidden items-center justify-center">
+        <div class="bg-white p-6 rounded-lg shadow-2xl max-w-sm w-full">
+            <h4 id="modal-title" class="text-xl font-bold mb-3 text-indigo-600">Notification</h4>
+            <p id="modal-content" class="text-gray-700 mb-4">Message content.</p>
+            <button onclick="window.closeMessageModal()" class="w-full py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">Close</button>
+        </div>
+    </div>
+
+    <script type="module">
+        // Import the required module once the script loads
+        import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- Core Application State & Logic ---
+        
+        let cart = [];
+        let allProducts = [];
+        
+        // Mock Product Data
+        const MOCK_PRODUCTS = [
+            { id: 1, name: 'Handloom Silk Saree', price: 7500, description: 'Elegantly woven pure silk, perfect for special occasions.', imageUrl: 'https://placehold.co/400x300/F06292/FFFFFF?text=Silk+Saree', category: 'Saree' },
+            { id: 2, name: 'Kashmiri Pashmina Shawl', price: 4200, description: 'Incredibly soft and warm shawl hand-woven in Kashmir.', imageUrl: 'https://placehold.co/400x300/81C784/FFFFFF?text=Pashmina+Shawl', category: 'Shawl' },
+            { id: 3, name: 'Ikat Cotton Fabric (5m)', price: 1800, description: 'Vibrant geometric patterns perfect for custom tailoring.', imageUrl: 'https://placehold.co/400x300/4FC3F7/FFFFFF?text=Ikat+Fabric', category: 'Fabric' },
+            { id: 4, name: 'Banarasi Brocade', price: 3500, description: 'Luxurious brocade fabric for festive wear.', imageUrl: 'https://placehold.co/400x300/FF5722/FFFFFF?text=Brocade+Fabric', category: 'Fabric' },
+            { id: 5, name: 'Tussar Silk Dupatta', price: 2100, description: 'Lightweight dupatta with intricate Tussar silk weave.', imageUrl: 'https://placehold.co/400x300/607D8B/FFFFFF?text=Dupatta', category: 'Shawl' },
+        ];
+
+        // --- Utility Functions ---
+
+        /** Displays a custom modal message instead of using alert() */
+        window.showMessageModal = (title, content) => {
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-content').textContent = content;
+            document.getElementById('message-modal').classList.remove('hidden');
+            document.getElementById('message-modal').classList.add('flex');
+        };
+
+        /** Closes the custom modal message */
+        window.closeMessageModal = () => {
+            document.getElementById('message-modal').classList.add('hidden');
+            document.getElementById('message-modal').classList.remove('flex');
+        };
+        
+        /** Formats currency */
+        const formatCurrency = (amount) => {
+            return `₹${amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
+        };
+
+        // --- Rendering Functions ---
+
+        /** Renders a single product card */
+        const renderProductCard = (product) => {
+            return `
+                <div class="product-card bg-white rounded-lg shadow-xl overflow-hidden" data-category="${product.category}">
+                    <img src="${product.imageUrl}" onerror="this.onerror=null;this.src='https://placehold.co/400x300/C0A98E/333?text=Handloom';" alt="${product.name}" class="w-full h-48 object-cover">
+                    <div class="p-5">
+                        <h3 class="text-xl font-semibold mb-2">${product.name}</h3>
+                        <p class="text-gray-500 text-sm mb-3 h-10 overflow-hidden">${product.description}</p>
+                        <p class="text-2xl font-bold text-indigo-600 mb-4">${formatCurrency(product.price)}</p>
+                        <button onclick="window.addToCart(${product.id})" class="w-full py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition duration-300 flex items-center justify-center space-x-2">
+                             <!-- Cart Icon -->
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M15 11l4.5 -4.5l-4.5 -4.5m-4 13.5l4.5 -4.5l-4.5 -4.5"></path>
+                                <path d="M3 21v-4a4 4 0 0 1 4 -4h13"></path>
+                                <path d="M15 21v-4a4 4 0 0 1 4 -4h1"></path>
+                            </svg>
+                            <span>Add to Shuttle</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+        };
+
+        /** Renders all products */
+        const renderProducts = (products, filter = 'all') => {
+            const listEl = document.getElementById('product-list');
+            listEl.innerHTML = '';
+            
+            const filteredProducts = filter === 'all' 
+                ? products 
+                : products.filter(p => p.category === filter);
+
+            if (filteredProducts.length === 0) {
+                listEl.innerHTML = `<p class="col-span-full text-center text-gray-500 py-10">No products found in the selected category.</p>`;
+            } else {
+                filteredProducts.forEach(product => {
+                    listEl.innerHTML += renderProductCard(product);
+                });
+            }
+
+            document.getElementById('loading-msg').style.display = 'none';
+        };
+
+        // --- Cart Logic ---
+
+        /** Updates the cart UI */
+        const updateCartUI = () => {
+            const itemsEl = document.getElementById('cart-items');
+            itemsEl.innerHTML = '';
+            let subtotal = 0;
+
+            if (cart.length === 0) {
+                itemsEl.innerHTML = '<p class="text-center text-gray-500 py-8">Your shuttle is empty.</p>';
+            } else {
+                cart.forEach(item => {
+                    const product = allProducts.find(p => p.id === item.id);
+                    if (product) {
+                        const itemTotal = product.price * item.quantity;
+                        subtotal += itemTotal;
+                        
+                        itemsEl.innerHTML += `
+                            <div class="flex justify-between items-center p-3 border rounded-lg">
+                                <div class="flex-1">
+                                    <h5 class="font-medium">${product.name}</h5>
+                                    <p class="text-sm text-gray-500">${formatCurrency(product.price)} x ${item.quantity}</p>
+                                </div>
+                                <div class="text-right font-semibold">
+                                    ${formatCurrency(itemTotal)}
+                                </div>
+                                <button onclick="window.removeFromCart(${product.id})" class="ml-4 p-1 text-red-500 hover:bg-red-50 rounded-full">
+                                     <!-- Trash Icon -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                </button>
+                            </div>
+                        `;
+                    }
+                });
+            }
+
+            // Update totals
+            document.getElementById('cart-subtotal').textContent = formatCurrency(subtotal);
+            document.getElementById('cart-total').textContent = formatCurrency(subtotal);
+            document.getElementById('cart-count').textContent = cart.reduce((acc, item) => acc + item.quantity, 0);
+        };
+
+        /** Adds a product to the cart */
+        window.addToCart = (productId) => {
+            const existingItem = cart.find(item => item.id === productId);
+            if (existingItem) {
+                existingItem.quantity++;
+            } else {
+                cart.push({ id: productId, quantity: 1 });
+            }
+            updateCartUI();
+            window.showMessageModal("Item Added!", `${allProducts.find(p => p.id === productId)?.name || 'Product'} has been added to your cart.`);
+        };
+
+        /** Removes all instances of a product from the cart */
+        window.removeFromCart = (productId) => {
+            const index = cart.findIndex(item => item.id === productId);
+            if (index !== -1) {
+                // For simplicity, we remove the whole item
+                cart.splice(index, 1);
+            }
+            updateCartUI();
+        };
+
+        /** Opens the cart sidebar modal */
+        window.openCartModal = () => {
+            updateCartUI();
+            document.getElementById('cart-modal').classList.remove('hidden');
+            document.getElementById('cart-modal').classList.add('flex');
+        };
+
+        /** Closes the cart sidebar modal */
+        window.closeCartModal = () => {
+            document.getElementById('cart-modal').classList.add('hidden');
+            document.getElementById('cart-modal').classList.remove('flex');
+        };
+
+        /** Mocks the checkout process */
+        window.checkout = () => {
+            if (cart.length === 0) {
+                window.showMessageModal("Cart Empty", "Please add items to your cart before checking out.");
+                return;
+            }
+            
+            // Clear cart
+            cart = [];
+            updateCartUI();
+            window.closeCartModal();
+            window.showMessageModal("Order Successful!", "Thank you for supporting our weavers! Your mock order has been placed.");
+        };
+
+        // --- Initialization and Event Listeners ---
+        
+        // This function merges mock data with any Firestore data
+        const loadAllProducts = (firestoreProducts) => {
+            // Ensure no duplicate IDs by prioritizing Firestore data if IDs overlap
+            const firestoreIds = firestoreProducts.map(p => p.id);
+            const mockFiltered = MOCK_PRODUCTS.filter(p => !firestoreIds.includes(p.id));
+            
+            allProducts = [...mockFiltered, ...firestoreProducts].map(p => ({
+                ...p,
+                price: typeof p.price === 'string' ? parseFloat(p.price) : p.price // Ensure price is number
+            }));
+            
+            // Sort by ID to maintain a consistent order (mock first, then firestore)
+            allProducts.sort((a, b) => a.id > b.id ? 1 : -1);
+
+            renderProducts(allProducts);
+        }
+
+        // Overwrite the globally exposed Firebase function to ensure it uses the imported modules
+        window.loadFeaturedProducts = () => {
+            if (!window.db) {
+                // DB is not yet initialized from the module script
+                console.warn("Firestore not ready. Rendering mock products only.");
+                loadAllProducts([]);
+                return;
+            }
+
+            const COLLECTION_PATH = `artifacts/${window.appId}/public/data/weavares_products`;
+            const db = getFirestore(window.app);
+            const productsRef = collection(db, COLLECTION_PATH);
+
+            // Set up a real-time listener
+            onSnapshot(productsRef, (snapshot) => {
+                const firestoreProducts = snapshot.docs.map(doc => ({ 
+                    id: doc.id, 
+                    ...doc.data() 
+                }));
+                console.log(`Fetched ${firestoreProducts.length} products from Firestore.`);
+                loadAllProducts(firestoreProducts);
+            }, (error) => {
+                console.error("Error fetching real-time products:", error);
+                // Fallback to mock products if Firestore fails
+                loadAllProducts([]); 
+            });
+        };
+
+        // Filter functionality
+        document.addEventListener('DOMContentLoaded', () => {
+            // Apply event listeners to filter buttons
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            filterButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const filter = e.target.getAttribute('data-filter');
+                    
+                    // Update button styling
+                    filterButtons.forEach(btn => {
+                        btn.classList.remove('border-indigo-600', 'bg-indigo-50', 'text-indigo-600');
+                        btn.classList.add('border-gray-300', 'text-gray-600', 'hover:border-indigo-400');
+                    });
+                    e.target.classList.add('border-indigo-600', 'bg-indigo-50', 'text-indigo-600');
+                    e.target.classList.remove('border-gray-300', 'text-gray-600', 'hover:border-indigo-400');
+
+                    // Render filtered products
+                    renderProducts(allProducts, filter);
+                });
+            });
+
+            // Initial render call (will be followed by the Firebase callback if successful)
+            loadAllProducts(MOCK_PRODUCTS);
+        });
+    </script>
+</body>
+</html>
