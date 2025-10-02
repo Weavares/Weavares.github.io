@@ -20,25 +20,44 @@
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f8f8f8;
-            display: flex;
-            justify-content: center;
+            /* Allow the body to stretch full width */
+            padding: 0;
+            margin: 0;
+        }
+
+        /* * App Container: Full width on all screens. 
+         * The content area inside will handle max-width on desktop.
+         */
+        .app-container {
+            width: 100%;
+            background-color: white;
+            position: relative;
+            overflow-y: auto;
             min-height: 100vh;
         }
 
-        /* Styling the main container to look like a phone screen */
-        .app-container {
-            width: 100%;
-            max-width: 400px;
-            background-color: white;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            position: relative;
-            overflow-y: auto;
-            border-radius: 1.5rem; /* Rounded screen corners */
-            margin: 1rem 0;
-            padding-bottom: 5rem; /* Space for the fixed bottom bar */
+        /* * Content Area: This div centers and limits the width of the main content 
+         * on desktop, providing the professional "Amazon-like" feel.
+         */
+        .content-area {
+            max-width: 1200px; 
+            margin: 0 auto;
+            padding: 1rem;
         }
-
-        /* Custom scrollbar for horizontal lists */
+        
+        /* Utility class for mobile-only padding where required */
+        .mobile-padding {
+             padding: 1rem;
+        }
+        
+        /* On screens wider than medium (768px), remove specific mobile padding */
+        @media (min-width: 768px) {
+            .mobile-padding {
+                padding: 0; 
+            }
+        }
+        
+        /* Custom scrollbar for horizontal lists (mobile-only) */
         .horizontal-scroll::-webkit-scrollbar {
             display: none;
         }
@@ -98,7 +117,7 @@
         }
     </style>
 </head>
-<body class="p-4 md:p-8">
+<body>
 
 <div id="app-container" class="app-container">
 
@@ -107,25 +126,35 @@
         1. Universal Header (Stays across views)
         ========================================
     -->
-    <header class="sticky top-0 bg-white p-4 border-b border-gray-100 z-20">
-        <div class="flex items-center justify-between">
-            <!-- Menu/Back Button -->
-            <button id="nav-toggle-button" class="text-gray-700 p-2 rounded-full hover:bg-gray-100 transition-colors" onclick="handleHeaderNav()">
-                <i data-lucide="menu" class="h-6 w-6"></i>
-            </button>
-            
-            <!-- Logo/App Name -->
-            <div class="flex flex-col items-center">
-                <h1 class="text-xl font-bold text-gray-900 flex items-center">
-                    Our Weavers <span class="text-2xl ml-1">:)</span>
-                </h1>
-                <p class="text-xs text-gray-500 font-medium">Connect. Grow. Celebrate.</p>
+    <header class="sticky top-0 bg-white border-b border-gray-100 z-20 shadow-sm">
+        <div class="content-area py-4 px-4 md:px-8">
+            <div class="flex items-center justify-between">
+                <!-- Menu/Back Button -->
+                <button id="nav-toggle-button" class="text-gray-700 p-2 rounded-full hover:bg-gray-100 transition-colors" onclick="handleHeaderNav()">
+                    <i data-lucide="menu" class="h-6 w-6"></i>
+                </button>
+                
+                <!-- Logo/App Name -->
+                <div class="flex flex-col items-center">
+                    <h1 class="text-xl md:text-2xl font-bold text-gray-900 flex items-center">
+                        Our Weavers <span class="text-2xl ml-1 text-[#7B3F00]">:D</span>
+                    </h1>
+                    <p class="text-xs text-gray-500 font-medium hidden md:block">Authentic handloom collection</p>
+                </div>
+                
+                <!-- Icons (Cart and Profile) -->
+                <div class="flex items-center space-x-2">
+                    <!-- CART ICON with dynamic badge -->
+                    <button class="text-gray-700 p-2 rounded-full hover:bg-gray-100 transition-colors relative" onclick="toggleView(3)">
+                        <i data-lucide="shopping-cart" class="h-6 w-6"></i>
+                        <span id="cart-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full opacity-0 scale-0 transition-all duration-300 transform">0</span>
+                    </button>
+                    <!-- Profile Icon -->
+                    <button class="text-gray-700 p-2 rounded-full hover:bg-gray-100 transition-colors">
+                        <i data-lucide="user" class="h-6 w-6"></i>
+                    </button>
+                </div>
             </div>
-            
-            <!-- Profile Icon -->
-            <button class="text-gray-700 p-2 rounded-full hover:bg-gray-100 transition-colors">
-                <i data-lucide="user" class="h-6 w-6"></i>
-            </button>
         </div>
     </header>
 
@@ -134,286 +163,304 @@
         2. View Switcher Container 
         ========================================
     -->
-    <main class="p-4 pt-0">
-        
-        <!-- ========================================
-             HOME VIEW (viewIndex: 0)
-             ======================================== -->
-        <section id="home-view" class="view-content">
+    <main class="w-full">
+        <!-- Content Area Wrapper for Desktop Centering -->
+        <div class="content-area pt-0">
             
-            <!-- Search Bar -->
-            <div class="py-4">
-                <div class="flex items-center bg-gray-100 rounded-xl p-3 shadow-inner">
-                    <i data-lucide="search" class="h-5 w-5 text-gray-500 mr-2"></i>
-                    <input type="text" placeholder="Search Here" class="w-full bg-transparent text-gray-800 placeholder-gray-500 focus:outline-none" onclick="toggleView(1)">
-                </div>
-            </div>
-
-            <!-- Category Icons -->
-            <nav class="flex justify-between py-4">
-                <!-- Data for the 5 categories (Icon, Label) -->
-                <div class="category-icon-container text-center flex flex-col items-center cursor-pointer p-2 rounded-xl">
-                    <div class="bg-pink-100 p-3 rounded-xl text-pink-600">
-                        <i data-lucide="gift" class="h-6 w-6"></i>
-                    </div>
-                    <span class="text-xs mt-1 text-gray-700 font-medium">Gifts</span>
-                </div>
-                <div class="category-icon-container text-center flex flex-col items-center cursor-pointer p-2 rounded-xl">
-                    <div class="bg-green-100 p-3 rounded-xl text-green-600">
-                        <i data-lucide="percent" class="h-6 w-6"></i>
-                    </div>
-                    <span class="text-xs mt-1 text-gray-700 font-medium">Offers</span>
-                </div>
-                <!-- CART ICON with dynamic badge -->
-                <div class="category-icon-container text-center flex flex-col items-center cursor-pointer p-2 rounded-xl" onclick="toggleView(3)">
-                    <div class="bg-blue-100 p-3 rounded-xl text-blue-600 relative">
-                        <i data-lucide="shopping-cart" class="h-6 w-6"></i>
-                        <span id="cart-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full opacity-0 scale-0 transition-all duration-300 transform">0</span>
-                    </div>
-                    <span class="text-xs mt-1 text-gray-700 font-medium">Cart</span>
-                </div>
-                <div class="category-icon-container text-center flex flex-col items-center cursor-pointer p-2 rounded-xl">
-                    <div class="bg-yellow-100 p-3 rounded-xl text-yellow-600">
-                        <i data-lucide="store" class="h-6 w-6"></i>
-                    </div>
-                    <span class="text-xs mt-1 text-gray-700 font-medium">Seller</span>
-                </div>
-                <div class="category-icon-container text-center flex flex-col items-center cursor-pointer p-2 rounded-xl">
-                    <div class="bg-red-100 p-3 rounded-xl text-red-600">
-                        <i data-lucide="heart" class="h-6 w-6"></i>
-                    </div>
-                    <span class="text-xs mt-1 text-gray-700 font-medium">Likes</span>
-                </div>
-            </nav>
-
-            <!-- Trends Section (Horizontal Scroll) -->
-            <div class="py-4">
-                <h2 class="text-lg font-semibold text-gray-800 mb-3">Trends</h2>
-                <div class="flex space-x-4 overflow-x-auto horizontal-scroll">
-                    <!-- Saree Card 1 -->
-                    <div class="w-24 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02]" onclick="toggleView(2, {id: 'product-A', name: 'Silk Saree A', image: 'https://placehold.co/96x140/7B3F00/ffffff?text=Saree+A'})">
-                        <img src="https://placehold.co/96x140/7B3F00/ffffff?text=Saree+A" alt="Trending Saree" class="w-full h-36 object-cover">
-                    </div>
-                    <!-- Saree Card 2 -->
-                    <div class="w-24 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02]" onclick="toggleView(2, {id: 'product-B', name: 'Green Dhavani', image: 'https://placehold.co/96x140/38761D/ffffff?text=Saree+B'})">
-                        <img src="https://placehold.co/96x140/38761D/ffffff?text=Saree+B" alt="Trending Saree" class="w-full h-36 object-cover">
-                    </div>
-                    <!-- Saree Card 3 -->
-                    <div class="w-24 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02]" onclick="toggleView(2, {id: 'product-C', name: 'Black Cotton', image: 'https://placehold.co/96x140/000000/ffffff?text=Saree+C'})">
-                        <img src="https://placehold.co/96x140/000000/ffffff?text=Saree+C" alt="Trending Saree" class="w-full h-36 object-cover">
-                    </div>
-                    <!-- Saree Card 4 -->
-                    <div class="w-24 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02]" onclick="toggleView(2, {id: 'product-D', name: 'Ivory White', image: 'https://placehold.co/96x140/FFFFFF/333333?text=Saree+D'})">
-                        <img src="https://placehold.co/96x140/FFFFFF/333333?text=Saree+D" alt="Trending Saree" class="w-full h-36 object-cover border border-gray-100">
-                    </div>
-                    <!-- Add more for scrolling -->
-                    <div class="w-24 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02]" onclick="toggleView(2, {id: 'product-E', name: 'Rose Red Blend', image: 'https://placehold.co/96x140/CD5C5C/ffffff?text=Saree+E'})">
-                        <img src="https://placehold.co/96x140/CD5C5C/ffffff?text=Saree+E" alt="Trending Saree" class="w-full h-36 object-cover">
-                    </div>
-                    <div class="w-24 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02]" onclick="toggleView(2, {id: 'product-F', name: 'Marigold Gold', image: 'https://placehold.co/96x140/DAA520/ffffff?text=Saree+F'})">
-                        <img src="https://placehold.co/96x140/DAA520/ffffff?text=Saree+F" alt="Trending Saree" class="w-full h-36 object-cover">
-                    </div>
-                </div>
-            </div>
-
-            <!-- Follows Section (Grid Layout) -->
-            <div class="py-4">
-                <h2 class="text-lg font-semibold text-gray-800 mb-3">Follows</h2>
-                <div class="grid grid-cols-3 gap-3">
-                    <!-- Follow Item 1 -->
-                    <div class="flex flex-col items-center cursor-pointer" onclick="toggleView(2, {id: 'product-G', name: 'Maroon Weave', image: 'https://placehold.co/120x120/7B3F00/ffffff?text=Follow+1'})">
-                        <img src="https://placehold.co/120x120/7B3F00/ffffff?text=Follow+1" alt="Follow Saree 1" class="w-full h-28 object-cover rounded-lg shadow-md">
-                        <button class="text-sm text-gray-600 mt-2 font-semibold hover:text-gray-900 transition-colors">About this</button>
-                    </div>
-                    <!-- Follow Item 2 -->
-                    <div class="flex flex-col items-center cursor-pointer" onclick="toggleView(2, {id: 'product-H', name: 'Forest Green', image: 'https://placehold.co/120x120/38761D/ffffff?text=Follow+2'})">
-                        <img src="https://placehold.co/120x120/38761D/ffffff?text=Follow+2" alt="Follow Saree 2" class="w-full h-28 object-cover rounded-lg shadow-md">
-                        <button class="text-sm text-gray-600 mt-2 font-semibold hover:text-gray-900 transition-colors">About this</button>
-                    </div>
-                    <!-- Follow Item 3 -->
-                    <div class="flex flex-col items-center cursor-pointer" onclick="toggleView(2, {id: 'product-I', name: 'Jet Black Cotton', image: 'https://placehold.co/120x120/000000/ffffff?text=Follow+3'})">
-                        <img src="https://placehold.co/120x120/000000/ffffff?text=Follow+3" alt="Follow Saree 3" class="w-full h-28 object-cover rounded-lg shadow-md">
-                        <button class="text-sm text-gray-600 mt-2 font-semibold hover:text-gray-900 transition-colors">About this</button>
-                    </div>
-                    <!-- Follow Item 4 -->
-                    <div class="flex flex-col items-center cursor-pointer" onclick="toggleView(2, {id: 'product-J', name: 'Coffee Brown', image: 'https://placehold.co/120x120/5D4037/ffffff?text=Follow+4'})">
-                        <img src="https://placehold.co/120x120/5D4037/ffffff?text=Follow+4" alt="Follow Saree 4" class="w-full h-28 object-cover rounded-lg shadow-md">
-                        <button class="text-sm text-gray-600 mt-2 font-semibold hover:text-gray-900 transition-colors">About this</button>
-                    </div>
-                    <!-- Follow Item 5 -->
-                    <div class="flex flex-col items-center cursor-pointer" onclick="toggleView(2, {id: 'product-K', name: 'Sunny Gold', image: 'https://placehold.co/120x120/FBC02D/ffffff?text=Follow+5'})">
-                        <img src="https://placehold.co/120x120/FBC02D/ffffff?text=Follow+5" alt="Follow Saree 5" class="w-full h-28 object-cover rounded-lg shadow-md">
-                        <button class="text-sm text-gray-600 mt-2 font-semibold hover:text-gray-900 transition-colors">About this</button>
-                    </div>
-                    <!-- Follow Item 6 -->
-                    <div class="flex flex-col items-center cursor-pointer" onclick="toggleView(2, {id: 'product-L', name: 'Linen Saree', image: 'https://placehold.co/120x120/FFFFFF/333333?text=Follow+6'})">
-                        <img src="https://placehold.co/120x120/FFFFFF/333333?text=Follow+6" alt="Follow Saree 6" class="w-full h-28 object-cover rounded-lg shadow-md border border-gray-100">
-                        <button class="text-sm text-gray-600 mt-2 font-semibold hover:text-gray-900 transition-colors">About this</button>
-                    </div>
-                </div>
-            </div>
-
-        </section>
-
-        <!-- ========================================
-             SEARCH RESULTS VIEW (viewIndex: 1)
-             ======================================== -->
-        <section id="results-view" class="view-content hidden">
-            
-            <!-- Search Bar (with "Trending Sarees" placeholder) -->
-            <div class="py-4">
-                <div class="flex items-center justify-between bg-gray-100 rounded-xl p-3 shadow-inner">
-                    <div class="flex items-center w-full">
+            <!-- ========================================
+                 HOME VIEW (viewIndex: 0)
+                 ======================================== -->
+            <section id="home-view" class="view-content">
+                
+                <!-- Search Bar -->
+                <div class="mobile-padding py-4 md:py-8">
+                    <div class="flex items-center bg-gray-100 rounded-xl p-3 shadow-inner max-w-2xl md:max-w-full">
                         <i data-lucide="search" class="h-5 w-5 text-gray-500 mr-2"></i>
-                        <input type="text" value="Trending Sarees" class="w-full bg-transparent text-gray-800 font-medium focus:outline-none">
+                        <input type="text" placeholder="Search for Silk, Cotton, or Handloom..." class="w-full bg-transparent text-gray-800 placeholder-gray-500 focus:outline-none" onclick="toggleView(1)">
                     </div>
-                    <button class="text-sm text-blue-600 font-semibold ml-2 p-1 rounded-md hover:bg-gray-200 transition-colors">
-                        <i data-lucide="sliders" class="h-5 w-5"></i>
-                    </button>
                 </div>
-            </div>
 
-            <!-- Results Header & Filter -->
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-bold text-gray-800">Results</h2>
-                <button class="text-sm text-blue-600 font-medium flex items-center p-2 rounded-lg hover:bg-blue-50 transition-colors">
-                    Filter <i data-lucide="filter" class="h-4 w-4 ml-1"></i>
-                </button>
-            </div>
-            
-            <!-- Product List -->
-            <div class="space-y-4">
-                
-                <!-- Product Item 1: Silk Saree -->
-                <div class="flex items-start bg-white p-3 rounded-xl shadow-md cursor-pointer transform transition-transform duration-200 hover:scale-[1.01]" onclick="toggleView(2, {id: 'product-A', name: 'Silk Saree A', image: 'https://placehold.co/80x120/7B3F00/ffffff?text=Silk'})">
-                    <img src="https://placehold.co/80x120/7B3F00/ffffff?text=Silk" alt="Silk Saree" class="w-20 h-32 object-cover rounded-lg flex-shrink-0">
-                    <div class="ml-4 flex flex-col justify-between h-full">
-                        <h3 class="text-lg font-bold text-gray-900">Silk saree</h3>
-                        <p class="text-sm text-gray-500">10 Meters</p>
-                        <p class="text-sm text-green-600 font-semibold">20+ Offers</p>
-                        <div class="flex items-center mt-1">
-                            <!-- Star Rating (5/5) -->
-                            <i data-lucide="star" class="h-4 w-4 rating-star-filled fill-current mr-1"></i>
-                            <i data-lucide="star" class="h-4 w-4 rating-star-filled fill-current mr-1"></i>
-                            <i data-lucide="star" class="h-4 w-4 rating-star-filled fill-current mr-1"></i>
-                            <i data-lucide="star" class="h-4 w-4 rating-star-filled fill-current mr-1"></i>
-                            <i data-lucide="star" class="h-4 w-4 rating-star-filled fill-current mr-2"></i>
-                            <span class="text-sm text-gray-700 font-medium">(5.0)</span>
+                <!-- Category Icons - More space on desktop -->
+                <nav class="mobile-padding flex justify-between py-4 md:justify-around md:py-8 md:px-12">
+                    <!-- Data for the 5 categories (Icon, Label) -->
+                    <div class="category-icon-container text-center flex flex-col items-center cursor-pointer p-2 rounded-xl">
+                        <div class="bg-pink-100 p-3 rounded-xl text-pink-600">
+                            <i data-lucide="gift" class="h-6 w-6 md:h-8 md:w-8"></i>
+                        </div>
+                        <span class="text-xs mt-1 text-gray-700 font-medium">Gifts</span>
+                    </div>
+                    <div class="category-icon-container text-center flex flex-col items-center cursor-pointer p-2 rounded-xl">
+                        <div class="bg-green-100 p-3 rounded-xl text-green-600">
+                            <i data-lucide="percent" class="h-6 w-6 md:h-8 md:w-8"></i>
+                        </div>
+                        <span class="text-xs mt-1 text-gray-700 font-medium">Offers</span>
+                    </div>
+                    <div class="category-icon-container text-center flex flex-col items-center cursor-pointer p-2 rounded-xl hidden md:flex">
+                        <div class="bg-purple-100 p-3 rounded-xl text-purple-600">
+                            <i data-lucide="award" class="h-6 w-6 md:h-8 md:w-8"></i>
+                        </div>
+                        <span class="text-xs mt-1 text-gray-700 font-medium">New</span>
+                    </div>
+                    <div class="category-icon-container text-center flex flex-col items-center cursor-pointer p-2 rounded-xl">
+                        <div class="bg-yellow-100 p-3 rounded-xl text-yellow-600">
+                            <i data-lucide="store" class="h-6 w-6 md:h-8 md:w-8"></i>
+                        </div>
+                        <span class="text-xs mt-1 text-gray-700 font-medium">Seller</span>
+                    </div>
+                    <div class="category-icon-container text-center flex flex-col items-center cursor-pointer p-2 rounded-xl">
+                        <div class="bg-red-100 p-3 rounded-xl text-red-600">
+                            <i data-lucide="heart" class="h-6 w-6 md:h-8 md:w-8"></i>
+                        </div>
+                        <span class="text-xs mt-1 text-gray-700 font-medium">Likes</span>
+                    </div>
+                </nav>
+
+                <!-- Trends Section (Responsive Grid) -->
+                <div class="mobile-padding py-4 md:py-8">
+                    <h2 class="text-lg md:text-2xl font-bold text-gray-800 mb-3">Today's Trends</h2>
+                    <!-- Mobile: Horizontal Scroll. Desktop (md: and up): 6-Column Grid -->
+                    <div class="flex space-x-4 overflow-x-auto horizontal-scroll md:grid md:grid-cols-6 md:gap-6 md:overflow-visible md:space-x-0">
+                        <!-- Saree Card 1 -->
+                        <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02]" onclick="toggleView(2, {id: 'product-A', name: 'Maroon Silk Saree', image: 'https://placehold.co/96x140/7B3F00/ffffff?text=Saree+A'})">
+                            <img src="https://placehold.co/96x140/7B3F00/ffffff?text=Saree+A" alt="Trending Saree" class="w-full h-40 object-cover">
+                            <p class="p-1 text-xs font-semibold text-center">Maroon Silk</p>
+                        </div>
+                        <!-- Saree Card 2 -->
+                        <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02]" onclick="toggleView(2, {id: 'product-B', name: 'Green Dhavani', image: 'https://placehold.co/96x140/38761D/ffffff?text=Saree+B'})">
+                            <img src="https://placehold.co/96x140/38761D/ffffff?text=Saree+B" alt="Trending Saree" class="w-full h-40 object-cover">
+                            <p class="p-1 text-xs font-semibold text-center">Green Dhavani</p>
+                        </div>
+                        <!-- Saree Card 3 -->
+                        <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02]" onclick="toggleView(2, {id: 'product-C', name: 'Black Cotton', image: 'https://placehold.co/96x140/000000/ffffff?text=Saree+C'})">
+                            <img src="https://placehold.co/96x140/000000/ffffff?text=Saree+C" alt="Trending Saree" class="w-full h-40 object-cover">
+                            <p class="p-1 text-xs font-semibold text-center">Black Cotton</p>
+                        </div>
+                        <!-- Saree Card 4 -->
+                        <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02]" onclick="toggleView(2, {id: 'product-D', name: 'Ivory White', image: 'https://placehold.co/96x140/FFFFFF/333333?text=Saree+D'})">
+                            <img src="https://placehold.co/96x140/FFFFFF/333333?text=Saree+D" alt="Trending Saree" class="w-full h-40 object-cover border border-gray-100">
+                            <p class="p-1 text-xs font-semibold text-center">Ivory White</p>
+                        </div>
+                        <!-- Saree Card 5 (Hidden on tiny mobile, visible on desktop) -->
+                        <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02] hidden sm:block" onclick="toggleView(2, {id: 'product-E', name: 'Rose Red Blend', image: 'https://placehold.co/96x140/CD5C5C/ffffff?text=Saree+E'})">
+                            <img src="https://placehold.co/96x140/CD5C5C/ffffff?text=Saree+E" alt="Trending Saree" class="w-full h-40 object-cover">
+                            <p class="p-1 text-xs font-semibold text-center">Rose Red</p>
+                        </div>
+                        <!-- Saree Card 6 (Hidden on tiny mobile, visible on desktop) -->
+                        <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02] hidden md:block" onclick="toggleView(2, {id: 'product-F', name: 'Marigold Gold', image: 'https://placehold.co/96x140/DAA520/ffffff?text=Saree+F'})">
+                            <img src="https://placehold.co/96x140/DAA520/ffffff?text=Saree+F" alt="Trending Saree" class="w-full h-40 object-cover">
+                            <p class="p-1 text-xs font-semibold text-center">Marigold Gold</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Product Item 2: Shiny Silk Saree -->
-                <div class="flex items-start bg-white p-3 rounded-xl shadow-md cursor-pointer transform transition-transform duration-200 hover:scale-[1.01]" onclick="toggleView(2, {id: 'product-B', name: 'Shiny Silk Saree', image: 'https://placehold.co/80x120/38761D/ffffff?text=Shiny'})">
-                    <img src="https://placehold.co/80x120/38761D/ffffff?text=Shiny" alt="Shiny Silk Saree" class="w-20 h-32 object-cover rounded-lg flex-shrink-0">
-                    <div class="ml-4 flex flex-col justify-between h-full">
-                        <h3 class="text-lg font-bold text-gray-900">Shiny Silk saree</h3>
-                        <p class="text-sm text-gray-500">10 Meters</p>
-                        <p class="text-sm text-green-600 font-semibold">3+ Offers</p>
-                        <div class="flex items-center mt-1">
-                            <!-- Star Rating (4/5) -->
-                            <i data-lucide="star" class="h-4 w-4 rating-star-filled fill-current mr-1"></i>
-                            <i data-lucide="star" class="h-4 w-4 rating-star-filled fill-current mr-1"></i>
-                            <i data-lucide="star" class="h-4 w-4 rating-star-filled fill-current mr-1"></i>
-                            <i data-lucide="star" class="h-4 w-4 rating-star-filled fill-current mr-1"></i>
-                            <i data-lucide="star" class="h-4 w-4 text-gray-300 mr-2"></i>
-                            <span class="text-sm text-gray-700 font-medium">(4.0)</span>
+                <!-- Follows Section (Responsive Grid) -->
+                <div class="mobile-padding py-4 md:py-8">
+                    <h2 class="text-lg md:text-2xl font-bold text-gray-800 mb-3">New Collections</h2>
+                    <!-- Mobile: 3-Column Grid. Desktop (md: and up): 6-Column Grid -->
+                    <div class="grid grid-cols-3 gap-3 md:grid-cols-6 md:gap-6">
+                        <!-- Follow Item 1 -->
+                        <div class="flex flex-col items-center cursor-pointer" onclick="toggleView(2, {id: 'product-G', name: 'Maroon Weave', image: 'https://placehold.co/120x120/7B3F00/ffffff?text=Follow+1'})">
+                            <img src="https://placehold.co/120x120/7B3F00/ffffff?text=Follow+1" alt="Follow Saree 1" class="w-full h-28 object-cover rounded-lg shadow-md md:h-36">
+                            <button class="text-xs text-gray-600 mt-2 font-semibold hover:text-gray-900 transition-colors">Maroon</button>
+                        </div>
+                        <!-- Follow Item 2 -->
+                        <div class="flex flex-col items-center cursor-pointer" onclick="toggleView(2, {id: 'product-H', name: 'Forest Green', image: 'https://placehold.co/120x120/38761D/ffffff?text=Follow+2'})">
+                            <img src="https://placehold.co/120x120/38761D/ffffff?text=Follow+2" alt="Follow Saree 2" class="w-full h-28 object-cover rounded-lg shadow-md md:h-36">
+                            <button class="text-xs text-gray-600 mt-2 font-semibold hover:text-gray-900 transition-colors">Green</button>
+                        </div>
+                        <!-- Follow Item 3 -->
+                        <div class="flex flex-col items-center cursor-pointer" onclick="toggleView(2, {id: 'product-I', name: 'Jet Black Cotton', image: 'https://placehold.co/120x120/000000/ffffff?text=Follow+3'})">
+                            <img src="https://placehold.co/120x120/000000/ffffff?text=Follow+3" alt="Follow Saree 3" class="w-full h-28 object-cover rounded-lg shadow-md md:h-36">
+                            <button class="text-xs text-gray-600 mt-2 font-semibold hover:text-gray-900 transition-colors">Black</button>
+                        </div>
+                        <!-- Follow Item 4 (Visible on Desktop) -->
+                        <div class="flex flex-col items-center cursor-pointer hidden md:flex" onclick="toggleView(2, {id: 'product-J', name: 'Coffee Brown', image: 'https://placehold.co/120x120/5D4037/ffffff?text=Follow+4'})">
+                            <img src="https://placehold.co/120x120/5D4037/ffffff?text=Follow+4" alt="Follow Saree 4" class="w-full h-36 object-cover rounded-lg shadow-md">
+                            <button class="text-xs text-gray-600 mt-2 font-semibold hover:text-gray-900 transition-colors">Coffee</button>
+                        </div>
+                        <!-- Follow Item 5 (Visible on Desktop) -->
+                        <div class="flex flex-col items-center cursor-pointer hidden md:flex" onclick="toggleView(2, {id: 'product-K', name: 'Sunny Gold', image: 'https://placehold.co/120x120/FBC02D/ffffff?text=Follow+5'})">
+                            <img src="https://placehold.co/120x120/FBC02D/ffffff?text=Follow+5" alt="Follow Saree 5" class="w-full h-36 object-cover rounded-lg shadow-md">
+                            <button class="text-xs text-gray-600 mt-2 font-semibold hover:text-gray-900 transition-colors">Sunny Gold</button>
+                        </div>
+                        <!-- Follow Item 6 (Visible on Desktop) -->
+                        <div class="flex flex-col items-center cursor-pointer hidden md:flex" onclick="toggleView(2, {id: 'product-L', name: 'Linen Saree', image: 'https://placehold.co/120x120/FFFFFF/333333?text=Follow+6'})">
+                            <img src="https://placehold.co/120x120/FFFFFF/333333?text=Follow+6" alt="Follow Saree 6" class="w-full h-36 object-cover rounded-lg shadow-md border border-gray-100">
+                            <button class="text-xs text-gray-600 mt-2 font-semibold hover:text-gray-900 transition-colors">Linen</button>
                         </div>
                     </div>
                 </div>
-            </div>
-        </section>
-        
-        <!-- ========================================
-             PRODUCT DETAIL VIEW (viewIndex: 2)
-             ======================================== -->
-        <section id="detail-view" class="view-content hidden">
-            
-            <!-- Product Image Section -->
-            <div class="detail-image-container mb-6 overflow-hidden rounded-xl shadow-lg">
-                <img id="detail-product-image" src="https://placehold.co/400x600/7B3F00/ffffff?text=Silk+Saree+Detail" alt="Product Detail Image" class="object-cover">
-            </div>
 
-            <!-- Product Info -->
-            <div class="p-2">
-                <div class="flex items-center justify-between mb-2">
-                    <h2 id="detail-product-name" class="text-2xl font-bold text-gray-900">Handloom Silk Saree</h2>
-                    <!-- Like Button -->
-                    <button id="detail-like-button" class="text-red-500 p-2 rounded-full bg-red-50 hover:bg-red-100 transition-colors" onclick="toggleLike(currentProduct.id)">
-                        <i data-lucide="heart" class="h-6 w-6"></i>
+            </section>
+
+            <!-- ========================================
+                 SEARCH RESULTS VIEW (viewIndex: 1)
+                 ======================================== -->
+            <section id="results-view" class="view-content hidden">
+                
+                <!-- Search Bar -->
+                <div class="mobile-padding py-4 md:py-8">
+                    <div class="flex items-center justify-between bg-gray-100 rounded-xl p-3 shadow-inner">
+                        <div class="flex items-center w-full">
+                            <i data-lucide="search" class="h-5 w-5 text-gray-500 mr-2"></i>
+                            <input type="text" value="Trending Sarees" class="w-full bg-transparent text-gray-800 font-medium focus:outline-none">
+                        </div>
+                        <button class="text-sm text-blue-600 font-semibold ml-2 p-1 rounded-md hover:bg-gray-200 transition-colors">
+                            <i data-lucide="sliders" class="h-5 w-5"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Results Header & Filter -->
+                <div class="mobile-padding flex justify-between items-center mb-4 md:py-4 md:border-b md:border-gray-100">
+                    <h2 class="text-xl font-bold text-gray-800">Results (12 items)</h2>
+                    <button class="text-sm text-blue-600 font-medium flex items-center p-2 rounded-lg hover:bg-blue-50 transition-colors">
+                        Filter <i data-lucide="filter" class="h-4 w-4 ml-1"></i>
                     </button>
                 </div>
                 
-                <p class="text-3xl font-extrabold text-gray-900 mb-3">$1,250</p>
-                <p class="text-base text-gray-700 mb-4">
-                    A beautiful, authentic silk saree, hand-woven by master artisans. Perfect for special occasions. Length: 10 Meters.
-                </p>
-
-                <!-- Details/Ratings -->
-                <div class="flex items-center mb-6">
-                    <div class="flex items-center mr-6">
-                        <i data-lucide="star" class="h-5 w-5 rating-star-filled fill-current mr-1"></i>
-                        <span class="text-lg font-semibold text-gray-700">4.8</span>
-                        <span class="text-sm text-gray-500 ml-1">(124 reviews)</span>
+                <!-- Product List (Mobile: List, Desktop: 3-column grid) -->
+                <div class="mobile-padding space-y-4 md:grid md:grid-cols-3 md:gap-6 md:space-y-0">
+                    
+                    <!-- Product Item 1: Silk Saree -->
+                    <div class="flex flex-col md:flex-row items-start bg-white p-3 rounded-xl shadow-md cursor-pointer transform transition-transform duration-200 hover:scale-[1.01]" onclick="toggleView(2, {id: 'product-A', name: 'Silk Saree A', image: 'https://placehold.co/80x120/7B3F00/ffffff?text=Silk'})">
+                        <img src="https://placehold.co/80x120/7B3F00/ffffff?text=Silk" alt="Silk Saree" class="w-20 h-32 object-cover rounded-lg flex-shrink-0 mb-3 md:mb-0">
+                        <div class="md:ml-4 flex flex-col justify-between h-full">
+                            <h3 class="text-lg font-bold text-gray-900">Premium Silk</h3>
+                            <p class="text-sm text-gray-500">10 Meters | $1250</p>
+                            <p class="text-sm text-green-600 font-semibold">20+ Offers</p>
+                            <div class="flex items-center mt-1">
+                                <!-- Star Rating (5/5) -->
+                                <i data-lucide="star" class="h-4 w-4 rating-star-filled fill-current mr-1"></i>
+                                <span class="text-sm text-gray-700 font-medium">(5.0)</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="flex items-center">
-                        <i data-lucide="ruler" class="h-5 w-5 text-gray-500 mr-1"></i>
-                        <span class="text-lg font-semibold text-gray-700">10 Meters</span>
+
+                    <!-- Product Item 2: Shiny Silk Saree -->
+                    <div class="flex flex-col md:flex-row items-start bg-white p-3 rounded-xl shadow-md cursor-pointer transform transition-transform duration-200 hover:scale-[1.01]" onclick="toggleView(2, {id: 'product-B', name: 'Shiny Silk Saree', image: 'https://placehold.co/80x120/38761D/ffffff?text=Shiny'})">
+                        <img src="https://placehold.co/80x120/38761D/ffffff?text=Shiny" alt="Shiny Silk Saree" class="w-20 h-32 object-cover rounded-lg flex-shrink-0 mb-3 md:mb-0">
+                        <div class="md:ml-4 flex flex-col justify-between h-full">
+                            <h3 class="text-lg font-bold text-gray-900">Shiny Silk</h3>
+                            <p class="text-sm text-gray-500">10 Meters | $990</p>
+                            <p class="text-sm text-green-600 font-semibold">3+ Offers</p>
+                            <div class="flex items-center mt-1">
+                                <!-- Star Rating (4/5) -->
+                                <i data-lucide="star" class="h-4 w-4 rating-star-filled fill-current mr-1"></i>
+                                <span class="text-sm text-gray-700 font-medium">(4.0)</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
-
-                <!-- Call to action/Options Placeholder -->
-                <div class="border-t border-gray-100 pt-4 mt-4">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-3">Color Options</h3>
-                    <div class="flex space-x-3">
-                        <div class="h-8 w-8 rounded-full border-2 border-red-500 bg-red-700 cursor-pointer"></div>
-                        <div class="h-8 w-8 rounded-full border border-gray-300 bg-green-700 cursor-pointer"></div>
-                        <div class="h-8 w-8 rounded-full border border-gray-300 bg-blue-700 cursor-pointer"></div>
+            </section>
+            
+            <!-- ========================================
+                 PRODUCT DETAIL VIEW (viewIndex: 2)
+                 ======================================== -->
+            <section id="detail-view" class="view-content hidden">
+                
+                <!-- Desktop: 2-Column Grid | Mobile: Stacked -->
+                <div class="md:grid md:grid-cols-2 md:gap-10 md:py-8">
+                    
+                    <!-- LEFT COLUMN: Product Image -->
+                    <div class="mobile-padding md:p-0">
+                        <div class="detail-image-container mb-6 overflow-hidden rounded-xl shadow-lg md:mb-0">
+                            <img id="detail-product-image" src="https://placehold.co/400x600/7B3F00/ffffff?text=Silk+Saree+Detail" alt="Product Detail Image" class="object-cover">
+                        </div>
                     </div>
+
+                    <!-- RIGHT COLUMN: Product Info and Actions -->
+                    <div class="mobile-padding md:p-0">
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 id="detail-product-name" class="text-2xl md:text-3xl font-bold text-gray-900">Handloom Silk Saree</h2>
+                            <!-- Like Button -->
+                            <button id="detail-like-button" class="text-red-500 p-2 rounded-full bg-red-50 hover:bg-red-100 transition-colors" onclick="toggleLike(currentProduct?.id)">
+                                <i data-lucide="heart" class="h-6 w-6"></i>
+                            </button>
+                        </div>
+                        
+                        <p class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-3">$1,250</p>
+                        <p class="text-base text-gray-700 mb-4">
+                            A beautiful, authentic silk saree, hand-woven by master artisans. Certified ethical sourcing from Karnataka. Perfect for weddings and festive occasions.
+                        </p>
+
+                        <!-- Details/Ratings -->
+                        <div class="flex items-center mb-6 border-b border-gray-100 pb-4">
+                            <div class="flex items-center mr-6">
+                                <i data-lucide="star" class="h-5 w-5 rating-star-filled fill-current mr-1"></i>
+                                <span class="text-lg font-semibold text-gray-700">4.8</span>
+                                <span class="text-sm text-gray-500 ml-1">(124 reviews)</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i data-lucide="ruler" class="h-5 w-5 text-gray-500 mr-1"></i>
+                                <span class="text-lg font-semibold text-gray-700">10 Meters</span>
+                            </div>
+                        </div>
+
+                        <!-- Call to action/Options Placeholder -->
+                        <div class="pt-4">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-3">Color Options</h3>
+                            <div class="flex space-x-3">
+                                <div class="h-8 w-8 rounded-full border-2 border-red-500 bg-red-700 cursor-pointer shadow-md"></div>
+                                <div class="h-8 w-8 rounded-full border border-gray-300 bg-green-700 cursor-pointer hover:border-black transition-all"></div>
+                                <div class="h-8 w-8 rounded-full border border-gray-300 bg-blue-700 cursor-pointer hover:border-black transition-all"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- DESKTOP ADD TO CART BUTTON (Visible on md: and up) -->
+                        <div id="desktop-add-to-cart" class="hidden md:block border-t border-gray-100 pt-6 mt-6">
+                            <button onclick="addToCart()" class="w-full bg-[#7B3F00] text-white font-bold py-3 rounded-xl shadow-lg shadow-[#7B3F00]/30 transition-all duration-200 hover:bg-[#5e3000]">
+                                Add to Cart
+                            </button>
+                            <button class="w-full mt-3 bg-gray-100 text-gray-800 font-bold py-3 rounded-xl transition-all duration-200 hover:bg-gray-200">
+                                Buy Now
+                            </button>
+                        </div>
+                        
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========================================
+                 CART VIEW (viewIndex: 3)
+                 ======================================== -->
+            <section id="cart-view" class="view-content hidden mobile-padding md:py-8">
+                <h2 class="text-3xl font-bold text-gray-900 mt-2 mb-6">Your Cart (<span id="cart-total-count">0</span> items)</h2>
+                <div id="cart-list" class="space-y-4">
+                    <!-- Cart items will be rendered here -->
                 </div>
                 
-            </div>
-        </section>
-
-        <!-- ========================================
-             CART VIEW (viewIndex: 3)
-             ======================================== -->
-        <section id="cart-view" class="view-content hidden">
-            <h2 class="text-3xl font-bold text-gray-900 mt-2 mb-6">Your Cart (<span id="cart-total-count">0</span> items)</h2>
-            <div id="cart-list" class="space-y-4">
-                <!-- Cart items will be rendered here -->
-            </div>
-            
-            <div id="cart-empty-state" class="text-center p-8 mt-12 bg-gray-50 rounded-xl hidden">
-                <i data-lucide="shopping-bag" class="h-12 w-12 text-gray-400 mx-auto mb-3"></i>
-                <p class="text-lg font-medium text-gray-600">Your cart is empty.</p>
-                <button class="text-sm text-blue-600 mt-4 font-semibold" onclick="toggleView(0)">Continue Shopping</button>
-            </div>
-            
-            <div id="cart-summary" class="mt-8 pt-4 border-t border-gray-200 hidden">
-                <div class="flex justify-between text-lg font-medium text-gray-700 mb-2">
-                    <span>Subtotal:</span>
-                    <span>$1,250.00</span>
+                <div id="cart-empty-state" class="text-center p-8 mt-12 bg-gray-50 rounded-xl hidden">
+                    <i data-lucide="shopping-bag" class="h-12 w-12 text-gray-400 mx-auto mb-3"></i>
+                    <p class="text-lg font-medium text-gray-600">Your cart is empty.</p>
+                    <button class="text-sm text-blue-600 mt-4 font-semibold" onclick="toggleView(0)">Continue Shopping</button>
                 </div>
-                <div class="flex justify-between text-lg font-medium text-green-600 mb-4">
-                    <span>Shipping:</span>
-                    <span>FREE</span>
+                
+                <div id="cart-summary" class="mt-8 pt-4 border-t border-gray-200 hidden">
+                    <div class="flex justify-between text-lg font-medium text-gray-700 mb-2">
+                        <span>Subtotal:</span>
+                        <span>$1,250.00</span>
+                    </div>
+                    <div class="flex justify-between text-lg font-medium text-green-600 mb-4">
+                        <span>Shipping:</span>
+                        <span>FREE</span>
+                    </div>
+                    <button class="w-full bg-green-600 text-white font-bold py-3 rounded-xl shadow-lg shadow-green-300/50 transition-all duration-200 hover:bg-green-700">
+                        Proceed to Checkout
+                    </button>
                 </div>
-                <button class="w-full bg-green-600 text-white font-bold py-3 rounded-xl shadow-lg shadow-green-300/50 transition-all duration-200 hover:bg-green-700">
-                    Proceed to Checkout
-                </button>
-            </div>
-        </section>
+            </section>
 
-
+        </div>
     </main>
     
     <!-- 
         ========================================
         4. Floating Bottom Bar (For Detail View)
         ========================================
+        This is ONLY for the MOBILE view when in Detail page. Hidden on desktop (md:hidden).
     -->
-    <div id="detail-actions-bar" class="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-400px p-4 bg-white border-t border-gray-100 shadow-2xl z-30 hidden" style="max-width: 400px; border-radius: 1.5rem 1.5rem 0 0;">
+    <div id="detail-actions-bar" class="fixed bottom-0 left-0 w-full p-4 bg-white border-t border-gray-100 shadow-2xl z-30 hidden md:hidden" style="border-radius: 0;">
         <div class="flex space-x-3">
             <button class="flex items-center justify-center p-3 rounded-xl border border-gray-300 text-gray-700 transition-colors hover:bg-gray-50 w-1/4">
                 <i data-lucide="message-square" class="h-6 w-6"></i>
@@ -525,6 +572,7 @@
      * @param {string} productId 
      */
     function toggleLike(productId) {
+        if (!productId) return;
         let isLiked = likedProducts.has(productId);
         
         if (isLiked) {
@@ -548,7 +596,7 @@
         
         // Update product details on the page
         document.getElementById('detail-product-name').textContent = productData.name;
-        document.getElementById('detail-product-image').src = productData.image.replace('96x140', '400x600').replace('80x120', '400x600'); 
+        document.getElementById('detail-product-image').src = productData.image.replace('96x140', '600x900').replace('80x120', '600x900'); 
         
         // Update Like button state and Add to Cart button listener
         updateDetailButtons(productData);
@@ -571,7 +619,7 @@
         detailLikeButton.innerHTML = iconHtml;
         lucide.createIcons(); // Re-render icon
 
-        // Re-attach Add to Cart listener
+        // Re-attach Add to Cart listener for the MOBILE floating bar
         addToCartButton.onclick = addToCart;
     }
 
@@ -651,7 +699,8 @@
             newIcon = 'arrow-left';
         } else if (viewIndex === 2) {
             detailView.classList.remove('hidden');
-            detailActionBar.classList.remove('hidden');
+            // Detail action bar is only visible on mobile (handled by CSS class 'md:hidden' on the bar element)
+            detailActionBar.classList.remove('hidden'); 
             newIcon = 'arrow-left';
             if (productData) {
                 renderDetailView(productData);
