@@ -3,590 +3,701 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weavares - Handloom & Artisan Textiles</title>
-    <!-- Load Tailwind CSS -->
+    <title>Our Weavers :) E-commerce</title>
+    <!-- Load Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <!-- Load Lucide Icons for aesthetic vectors -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Configure Tailwind CSS -->
     <style>
-        /* Custom styles for the weaving aesthetic */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        
+        :root {
+            --primary-color: #7B3F00; /* Dark Brown/Saree tone */
+            --secondary-color: #B8860B; /* Gold accent */
+        }
+
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f7f7f7;
+            background-color: #f8f8f8;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
         }
-        .hero-section {
-            background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%);
+
+        /* Styling the main container to look like a phone screen */
+        .app-container {
+            width: 100%;
+            max-width: 400px;
+            background-color: white;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow-y: auto;
+            border-radius: 1.5rem; /* Rounded screen corners */
+            margin: 1rem 0;
+            padding-bottom: 5rem; /* Space for the fixed bottom bar */
         }
-        .product-card {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            cursor: pointer;
+
+        /* Custom scrollbar for horizontal lists */
+        .horizontal-scroll::-webkit-scrollbar {
+            display: none;
         }
-        .product-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        .horizontal-scroll {
+            -ms-overflow-style: none; /* IE and Edge */
+            scrollbar-width: none; /* Firefox */
         }
-        .shuttle-text {
-            font-family: 'Playfair Display', serif;
+
+        /* Custom rating star color */
+        .rating-star-filled {
+            color: var(--primary-color);
         }
-        /* Custom scrollbar for product list on mobile */
-        .overflow-x-scroll::-webkit-scrollbar {
-            height: 6px;
+
+        .category-icon-container {
+            transition: all 0.15s ease-in-out;
         }
-        .overflow-x-scroll::-webkit-scrollbar-thumb {
-            background: #E5A357;
-            border-radius: 3px;
+        .category-icon-container:hover {
+            transform: scale(1.05);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
-        .overflow-x-scroll::-webkit-scrollbar-track {
-            background: #F3EAD3;
+
+        /* Ensure detail view image container has a fixed aspect ratio for clean look */
+        .detail-image-container {
+            width: 100%;
+            padding-top: 150%; /* 2:3 Aspect Ratio */
+            position: relative;
+        }
+        .detail-image-container img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        /* Toast Notification Styling */
+        #toast-container {
+            position: fixed;
+            bottom: 6rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 50;
+            max-width: 90%;
+            pointer-events: none;
+        }
+        .toast {
+            background-color: #333;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+        .toast.show {
+            opacity: 1;
         }
     </style>
-
-    <!-- Firebase SDK Imports -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, collection, getDocs, setDoc, query, onSnapshot, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        // Global variables provided by the Canvas environment
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-
-        let app, db, auth;
-        let userId = null;
-
-        // Make necessary functions and variables globally accessible for our main script
-        window.initializeFirebase = async () => {
-            if (!firebaseConfig) {
-                console.error("Firebase config is missing. Cannot initialize Firebase.");
-                return;
-            }
-
-            try {
-                // setLogLevel('debug'); // Uncomment for Firestore debug logs
-                app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
-                auth = getAuth(app);
-                
-                // 1. Authentication
-                if (initialAuthToken) {
-                    await signInWithCustomToken(auth, initialAuthToken);
-                } else {
-                    await signInAnonymously(auth);
-                }
-
-                // 2. Set up Auth State Listener
-                onAuthStateChanged(auth, (user) => {
-                    if (user) {
-                        userId = user.uid;
-                        document.getElementById('user-id-display').textContent = `User ID: ${userId.substring(0, 8)}...`;
-                        console.log("Firebase initialized. User authenticated:", userId);
-                        window.loadFeaturedProducts(); // Load products once auth is ready
-                    } else {
-                        userId = crypto.randomUUID(); // Fallback to anonymous ID if auth fails
-                        document.getElementById('user-id-display').textContent = `Anon ID: ${userId.substring(0, 8)}...`;
-                        console.warn("User signed out or failed to authenticate. Using anonymous ID.");
-                        window.loadFeaturedProducts(); // Load products even if anon
-                    }
-                    window.db = db;
-                    window.userId = userId;
-                });
-
-            } catch (error) {
-                console.error("Error during Firebase initialization or sign-in:", error);
-                const statusEl = document.getElementById('user-id-display');
-                statusEl.textContent = 'Auth Failed';
-                statusEl.classList.add('text-red-500');
-            }
-        };
-
-        // 3. Firestore Logic (Demonstration of data fetching)
-        window.loadFeaturedProducts = async () => {
-            if (!window.db || !window.userId) {
-                // Wait for Firebase to be ready
-                return;
-            }
-            
-            const COLLECTION_PATH = `artifacts/${appId}/public/data/weavares_products`;
-            const productsRef = collection(db, COLLECTION_PATH);
-            const productListEl = document.getElementById('product-list');
-
-            // Set up a real-time listener for featured products
-            onSnapshot(productsRef, (snapshot) => {
-                console.log("Real-time products update received.");
-                // We will merge real-time products with mock products in main JS for simplicity
-            }, (error) => {
-                console.error("Error fetching real-time products:", error);
-            });
-
-            // Demo function to add a product if the collection is empty
-            const docs = await getDocs(productsRef);
-            if (docs.empty) {
-                console.log("Product collection empty. Adding mock product for demonstration.");
-                const demoProductRef = doc(productsRef, 'demo-item-1');
-                await setDoc(demoProductRef, {
-                    id: 'fire-1',
-                    name: 'Demo Handwoven Rug',
-                    price: 9900,
-                    description: 'A beautiful rug fetched live from Firestore!',
-                    imageUrl: 'https://placehold.co/400x300/F4B400/FFFFFF?text=Firestore+Rug',
-                    category: 'Rug'
-                });
-            }
-        };
-
-        // Call initialization function
-        window.initializeFirebase();
-    </script>
 </head>
+<body class="p-4 md:p-8">
 
-<body class="text-gray-800">
+<div id="app-container" class="app-container">
 
-    <!-- Header & Navigation -->
-    <header class="bg-white shadow-md sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center py-4">
-            <!-- Logo -->
-            <a href="#" class="flex items-center space-x-2">
-                <!-- SVG of the final logo concept: Butterfly outline (black), Shuttle body, Colorful stripes -->
-                <svg width="40" height="40" viewBox="0 0 100 100" class="text-black">
-                    <!-- Base Butterfly Outline (Simple/Generic Shape for SVG) -->
-                    <path fill="none" stroke="currentColor" stroke-width="3" d="M50 50C30 50 10 30 10 10S30 0 50 0s40 10 40 30c0 20-20 40-40 40zM50 50C30 50 10 70 10 90S30 100 50 100s40-10 40-30c0-20-20-40-40-40z" transform="scale(0.8) translate(12, 0)"/>
-                    <path fill="none" stroke="currentColor" stroke-width="3" d="M50 50C70 50 90 30 90 10S70 0 50 0s-40 10-40 30c0 20 20 40 40 40zM50 50C70 50 90 70 90 90S70 100 50 100s-40-10-40-30c0-20 20-40 40-40z" transform="scale(0.8) translate(-12, 0)"/>
-                    <!-- Colorful Stripes (simplified diagonal lines) -->
-                    <line x1="15" y1="20" x2="85" y2="80" stroke="#F44336" stroke-width="2"/>
-                    <line x1="10" y1="40" x2="90" y2="60" stroke="#FFC107" stroke-width="2"/>
-                    <line x1="20" y1="70" x2="80" y2="30" stroke="#4CAF50" stroke-width="2"/>
-                    <line x1="5" y1="60" x2="95" y2="40" stroke="#2196F3" stroke-width="2"/>
-                    <!-- Shuttle Body (Black) -->
-                    <path d="M48 30 L52 30 L55 60 L50 70 L45 60 Z" fill="#1f2937" transform="scale(0.8) translate(12, 0)"/>
-                    <path d="M48 30 L52 30 L55 60 L50 70 L45 60 Z" fill="#1f2937" transform="scale(0.8) translate(-12, 0)"/>
-                    <!-- Antennae -->
-                    <path d="M49 35 Q40 20 50 15 M51 35 Q60 20 50 15" stroke="#1f2937" stroke-width="1.5" fill="none" transform="scale(0.8) translate(12, 0)"/>
-                    <path d="M49 35 Q40 20 50 15 M51 35 Q60 20 50 15" stroke="#1f2937" stroke-width="1.5" fill="none" transform="scale(0.8) translate(-12, 0)"/>
-                </svg>
-                <span class="text-2xl font-bold shuttle-text text-gray-800">Weavares</span>
-            </a>
-
-            <!-- Navigation Links (Hidden on Mobile) -->
-            <nav class="hidden md:flex space-x-8 font-medium">
-                <a href="#products" class="text-gray-600 hover:text-indigo-600 transition duration-150">Shop</a>
-                <a href="#about" class="text-gray-600 hover:text-indigo-600 transition duration-150">Our Craft</a>
-                <a href="#contact" class="text-gray-600 hover:text-indigo-600 transition duration-150">Contact</a>
-            </nav>
-
-            <!-- Cart and User -->
-            <div class="flex items-center space-x-4">
-                <p id="user-id-display" class="text-xs text-gray-500 hidden sm:block"></p>
-                <button onclick="window.openCartModal()" class="relative p-2 rounded-full hover:bg-gray-100 transition duration-150">
-                    <!-- Shopping Cart Icon (lucide-react copy) -->
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6 text-indigo-600">
-                        <circle cx="9" cy="21" r="1"></circle>
-                        <circle cx="20" cy="21" r="1"></circle>
-                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                    </svg>
-                    <span id="cart-count" class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">0</span>
-                </button>
+    <!-- 
+        ========================================
+        1. Universal Header (Stays across views)
+        ========================================
+    -->
+    <header class="sticky top-0 bg-white p-4 border-b border-gray-100 z-20">
+        <div class="flex items-center justify-between">
+            <!-- Menu/Back Button -->
+            <button id="nav-toggle-button" class="text-gray-700 p-2 rounded-full hover:bg-gray-100 transition-colors" onclick="handleHeaderNav()">
+                <i data-lucide="menu" class="h-6 w-6"></i>
+            </button>
+            
+            <!-- Logo/App Name -->
+            <div class="flex flex-col items-center">
+                <h1 class="text-xl font-bold text-gray-900 flex items-center">
+                    Our Weavers <span class="text-2xl ml-1">:)</span>
+                </h1>
+                <p class="text-xs text-gray-500 font-medium">Connect. Grow. Celebrate.</p>
             </div>
+            
+            <!-- Profile Icon -->
+            <button class="text-gray-700 p-2 rounded-full hover:bg-gray-100 transition-colors">
+                <i data-lucide="user" class="h-6 w-6"></i>
+            </button>
         </div>
     </header>
 
-    <main>
-        <!-- Hero Section -->
-        <section class="hero-section text-center py-16 md:py-24">
-            <div class="max-w-4xl mx-auto px-4">
-                <h1 class="text-5xl md:text-7xl font-extrabold shuttle-text text-gray-900 mb-4">
-                    The Art of Thread
-                </h1>
-                <p class="text-xl text-gray-700 mb-8 max-w-2xl mx-auto">
-                    Discover hand-woven textiles, where tradition meets modern elegance. Every thread tells a story of the artisan.
-                </p>
-                <a href="#products" class="inline-block px-8 py-3 text-lg font-semibold text-white bg-indigo-600 rounded-lg shadow-lg hover:bg-indigo-700 transition duration-300 transform hover:scale-105">
-                    Shop Handlooms
-                </a>
-            </div>
-        </section>
-
-        <!-- Product Grid Section -->
-        <section id="products" class="py-16 bg-white">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <h2 class="text-4xl font-bold text-center mb-12 shuttle-text text-gray-900">Featured Collections</h2>
-
-                <!-- Product Filters/Categories (Hidden on desktop, scrollable on mobile) -->
-                <div class="flex space-x-3 mb-8 overflow-x-scroll pb-2">
-                    <button class="filter-btn text-sm px-4 py-2 rounded-full border border-indigo-600 bg-indigo-50 text-indigo-600 font-medium whitespace-nowrap" data-filter="all">All Items</button>
-                    <button class="filter-btn text-sm px-4 py-2 rounded-full border border-gray-300 text-gray-600 hover:border-indigo-400 whitespace-nowrap" data-filter="Saree">Sarees</button>
-                    <button class="filter-btn text-sm px-4 py-2 rounded-full border border-gray-300 text-gray-600 hover:border-indigo-400 whitespace-nowrap" data-filter="Shawl">Shawls</button>
-                    <button class="filter-btn text-sm px-4 py-2 rounded-full border border-gray-300 text-gray-600 hover:border-indigo-400 whitespace-nowrap" data-filter="Fabric">Fabrics</button>
-                    <button class="filter-btn text-sm px-4 py-2 rounded-full border border-gray-300 text-gray-600 hover:border-indigo-400 whitespace-nowrap" data-filter="Rug">Rugs</button>
-                </div>
-
-                <!-- Product List -->
-                <div id="product-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                    <!-- Products will be injected here by JavaScript -->
-                    <p class="col-span-full text-center text-gray-500" id="loading-msg">Loading unique handlooms...</p>
+    <!-- 
+        ========================================
+        2. View Switcher Container 
+        ========================================
+    -->
+    <main class="p-4 pt-0">
+        
+        <!-- ========================================
+             HOME VIEW (viewIndex: 0)
+             ======================================== -->
+        <section id="home-view" class="view-content">
+            
+            <!-- Search Bar -->
+            <div class="py-4">
+                <div class="flex items-center bg-gray-100 rounded-xl p-3 shadow-inner">
+                    <i data-lucide="search" class="h-5 w-5 text-gray-500 mr-2"></i>
+                    <input type="text" placeholder="Search Here" class="w-full bg-transparent text-gray-800 placeholder-gray-500 focus:outline-none" onclick="toggleView(1)">
                 </div>
             </div>
-        </section>
 
-        <!-- About The Craft Section -->
-        <section id="about" class="py-16 bg-gray-50">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row items-center gap-12">
-                <div class="lg:w-1/2">
-                    <img src="https://placehold.co/800x600/E5A357/FFFFFF?text=Loom+Image" alt="Weaver at the loom" class="rounded-lg shadow-2xl object-cover w-full h-auto">
+            <!-- Category Icons -->
+            <nav class="flex justify-between py-4">
+                <!-- Data for the 5 categories (Icon, Label) -->
+                <div class="category-icon-container text-center flex flex-col items-center cursor-pointer p-2 rounded-xl">
+                    <div class="bg-pink-100 p-3 rounded-xl text-pink-600">
+                        <i data-lucide="gift" class="h-6 w-6"></i>
+                    </div>
+                    <span class="text-xs mt-1 text-gray-700 font-medium">Gifts</span>
                 </div>
-                <div class="lg:w-1/2">
-                    <h2 class="text-4xl font-bold mb-4 shuttle-text text-gray-900">Our Craft, Our Story</h2>
-                    <p class="text-gray-600 mb-6">
-                        Weavares is dedicated to preserving the ancient art of handloom weaving. We work directly with independent artisans across the country, ensuring fair wages and sustainable practices. Each piece is a labor of love, crafted over days or even weeks using traditional techniques passed down through generations.
-                    </p>
-                    <p class="text-gray-600">
-                        When you purchase from us, you're not just buying a textile; you're investing in a legacy, supporting a community, and owning a piece of wearable art.
-                    </p>
-                    <a href="#contact" class="mt-6 inline-block text-indigo-600 font-semibold hover:text-indigo-800 transition duration-150">Meet the Weavers &rarr;</a>
+                <div class="category-icon-container text-center flex flex-col items-center cursor-pointer p-2 rounded-xl">
+                    <div class="bg-green-100 p-3 rounded-xl text-green-600">
+                        <i data-lucide="percent" class="h-6 w-6"></i>
+                    </div>
+                    <span class="text-xs mt-1 text-gray-700 font-medium">Offers</span>
                 </div>
-            </div>
-        </section>
-    </main>
+                <!-- CART ICON with dynamic badge -->
+                <div class="category-icon-container text-center flex flex-col items-center cursor-pointer p-2 rounded-xl" onclick="toggleView(3)">
+                    <div class="bg-blue-100 p-3 rounded-xl text-blue-600 relative">
+                        <i data-lucide="shopping-cart" class="h-6 w-6"></i>
+                        <span id="cart-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full opacity-0 scale-0 transition-all duration-300 transform">0</span>
+                    </div>
+                    <span class="text-xs mt-1 text-gray-700 font-medium">Cart</span>
+                </div>
+                <div class="category-icon-container text-center flex flex-col items-center cursor-pointer p-2 rounded-xl">
+                    <div class="bg-yellow-100 p-3 rounded-xl text-yellow-600">
+                        <i data-lucide="store" class="h-6 w-6"></i>
+                    </div>
+                    <span class="text-xs mt-1 text-gray-700 font-medium">Seller</span>
+                </div>
+                <div class="category-icon-container text-center flex flex-col items-center cursor-pointer p-2 rounded-xl">
+                    <div class="bg-red-100 p-3 rounded-xl text-red-600">
+                        <i data-lucide="heart" class="h-6 w-6"></i>
+                    </div>
+                    <span class="text-xs mt-1 text-gray-700 font-medium">Likes</span>
+                </div>
+            </nav>
 
-    <!-- Footer & Contact -->
-    <footer id="contact" class="bg-gray-800 text-white mt-12">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
-                <div>
-                    <h4 class="font-bold mb-3 shuttle-text text-indigo-400">Weavares</h4>
-                    <p class="text-sm text-gray-400">Hand-woven with passion.</p>
-                </div>
-                <div>
-                    <h4 class="font-bold mb-3">Shop</h4>
-                    <ul class="space-y-2 text-sm text-gray-400">
-                        <li><a href="#products" class="hover:text-white transition">Sarees</a></li>
-                        <li><a href="#products" class="hover:text-white transition">Shawls</a></li>
-                        <li><a href="#products" class="hover:text-white transition">Fabrics</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-bold mb-3">Support</h4>
-                    <ul class="space-y-2 text-sm text-gray-400">
-                        <li><a href="#" class="hover:text-white transition">FAQ</a></li>
-                        <li><a href="#" class="hover:text-white transition">Shipping</a></li>
-                        <li><a href="#" class="hover:text-white transition">Returns</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-bold mb-3">Connect</h4>
-                    <p class="text-sm text-gray-400">Email: info@weavares.com</p>
-                    <p class="text-sm text-gray-400 mt-2">Follow us:</p>
-                    <!-- Social Icons Placeholder -->
-                    <div class="flex space-x-3 mt-1">
-                        <span class="text-indigo-400 hover:text-white cursor-pointer transition">FB</span>
-                        <span class="text-indigo-400 hover:text-white cursor-pointer transition">IG</span>
+            <!-- Trends Section (Horizontal Scroll) -->
+            <div class="py-4">
+                <h2 class="text-lg font-semibold text-gray-800 mb-3">Trends</h2>
+                <div class="flex space-x-4 overflow-x-auto horizontal-scroll">
+                    <!-- Saree Card 1 -->
+                    <div class="w-24 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02]" onclick="toggleView(2, {id: 'product-A', name: 'Silk Saree A', image: 'https://placehold.co/96x140/7B3F00/ffffff?text=Saree+A'})">
+                        <img src="https://placehold.co/96x140/7B3F00/ffffff?text=Saree+A" alt="Trending Saree" class="w-full h-36 object-cover">
+                    </div>
+                    <!-- Saree Card 2 -->
+                    <div class="w-24 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02]" onclick="toggleView(2, {id: 'product-B', name: 'Green Dhavani', image: 'https://placehold.co/96x140/38761D/ffffff?text=Saree+B'})">
+                        <img src="https://placehold.co/96x140/38761D/ffffff?text=Saree+B" alt="Trending Saree" class="w-full h-36 object-cover">
+                    </div>
+                    <!-- Saree Card 3 -->
+                    <div class="w-24 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02]" onclick="toggleView(2, {id: 'product-C', name: 'Black Cotton', image: 'https://placehold.co/96x140/000000/ffffff?text=Saree+C'})">
+                        <img src="https://placehold.co/96x140/000000/ffffff?text=Saree+C" alt="Trending Saree" class="w-full h-36 object-cover">
+                    </div>
+                    <!-- Saree Card 4 -->
+                    <div class="w-24 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02]" onclick="toggleView(2, {id: 'product-D', name: 'Ivory White', image: 'https://placehold.co/96x140/FFFFFF/333333?text=Saree+D'})">
+                        <img src="https://placehold.co/96x140/FFFFFF/333333?text=Saree+D" alt="Trending Saree" class="w-full h-36 object-cover border border-gray-100">
+                    </div>
+                    <!-- Add more for scrolling -->
+                    <div class="w-24 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02]" onclick="toggleView(2, {id: 'product-E', name: 'Rose Red Blend', image: 'https://placehold.co/96x140/CD5C5C/ffffff?text=Saree+E'})">
+                        <img src="https://placehold.co/96x140/CD5C5C/ffffff?text=Saree+E" alt="Trending Saree" class="w-full h-36 object-cover">
+                    </div>
+                    <div class="w-24 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02]" onclick="toggleView(2, {id: 'product-F', name: 'Marigold Gold', image: 'https://placehold.co/96x140/DAA520/ffffff?text=Saree+F'})">
+                        <img src="https://placehold.co/96x140/DAA520/ffffff?text=Saree+F" alt="Trending Saree" class="w-full h-36 object-cover">
                     </div>
                 </div>
             </div>
-            <div class="mt-10 pt-6 border-t border-gray-700 text-center text-sm text-gray-500">
-                &copy; 2025 Weavares. All rights reserved. | Deployed on GitHub Pages.
-            </div>
-        </div>
-    </footer>
 
-    <!-- Cart Modal -->
-    <div id="cart-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 z-[100] hidden flex justify-end">
-        <div class="bg-white w-full max-w-sm h-full p-6 shadow-2xl overflow-y-auto">
-            <div class="flex justify-between items-center border-b pb-4 mb-4">
-                <h3 class="text-2xl font-semibold">Your Cart</h3>
-                <button onclick="window.closeCartModal()" class="text-gray-500 hover:text-gray-800">
-                    <!-- Close Icon -->
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6">
-                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                    </svg>
+            <!-- Follows Section (Grid Layout) -->
+            <div class="py-4">
+                <h2 class="text-lg font-semibold text-gray-800 mb-3">Follows</h2>
+                <div class="grid grid-cols-3 gap-3">
+                    <!-- Follow Item 1 -->
+                    <div class="flex flex-col items-center cursor-pointer" onclick="toggleView(2, {id: 'product-G', name: 'Maroon Weave', image: 'https://placehold.co/120x120/7B3F00/ffffff?text=Follow+1'})">
+                        <img src="https://placehold.co/120x120/7B3F00/ffffff?text=Follow+1" alt="Follow Saree 1" class="w-full h-28 object-cover rounded-lg shadow-md">
+                        <button class="text-sm text-gray-600 mt-2 font-semibold hover:text-gray-900 transition-colors">About this</button>
+                    </div>
+                    <!-- Follow Item 2 -->
+                    <div class="flex flex-col items-center cursor-pointer" onclick="toggleView(2, {id: 'product-H', name: 'Forest Green', image: 'https://placehold.co/120x120/38761D/ffffff?text=Follow+2'})">
+                        <img src="https://placehold.co/120x120/38761D/ffffff?text=Follow+2" alt="Follow Saree 2" class="w-full h-28 object-cover rounded-lg shadow-md">
+                        <button class="text-sm text-gray-600 mt-2 font-semibold hover:text-gray-900 transition-colors">About this</button>
+                    </div>
+                    <!-- Follow Item 3 -->
+                    <div class="flex flex-col items-center cursor-pointer" onclick="toggleView(2, {id: 'product-I', name: 'Jet Black Cotton', image: 'https://placehold.co/120x120/000000/ffffff?text=Follow+3'})">
+                        <img src="https://placehold.co/120x120/000000/ffffff?text=Follow+3" alt="Follow Saree 3" class="w-full h-28 object-cover rounded-lg shadow-md">
+                        <button class="text-sm text-gray-600 mt-2 font-semibold hover:text-gray-900 transition-colors">About this</button>
+                    </div>
+                    <!-- Follow Item 4 -->
+                    <div class="flex flex-col items-center cursor-pointer" onclick="toggleView(2, {id: 'product-J', name: 'Coffee Brown', image: 'https://placehold.co/120x120/5D4037/ffffff?text=Follow+4'})">
+                        <img src="https://placehold.co/120x120/5D4037/ffffff?text=Follow+4" alt="Follow Saree 4" class="w-full h-28 object-cover rounded-lg shadow-md">
+                        <button class="text-sm text-gray-600 mt-2 font-semibold hover:text-gray-900 transition-colors">About this</button>
+                    </div>
+                    <!-- Follow Item 5 -->
+                    <div class="flex flex-col items-center cursor-pointer" onclick="toggleView(2, {id: 'product-K', name: 'Sunny Gold', image: 'https://placehold.co/120x120/FBC02D/ffffff?text=Follow+5'})">
+                        <img src="https://placehold.co/120x120/FBC02D/ffffff?text=Follow+5" alt="Follow Saree 5" class="w-full h-28 object-cover rounded-lg shadow-md">
+                        <button class="text-sm text-gray-600 mt-2 font-semibold hover:text-gray-900 transition-colors">About this</button>
+                    </div>
+                    <!-- Follow Item 6 -->
+                    <div class="flex flex-col items-center cursor-pointer" onclick="toggleView(2, {id: 'product-L', name: 'Linen Saree', image: 'https://placehold.co/120x120/FFFFFF/333333?text=Follow+6'})">
+                        <img src="https://placehold.co/120x120/FFFFFF/333333?text=Follow+6" alt="Follow Saree 6" class="w-full h-28 object-cover rounded-lg shadow-md border border-gray-100">
+                        <button class="text-sm text-gray-600 mt-2 font-semibold hover:text-gray-900 transition-colors">About this</button>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ========================================
+             SEARCH RESULTS VIEW (viewIndex: 1)
+             ======================================== -->
+        <section id="results-view" class="view-content hidden">
+            
+            <!-- Search Bar (with "Trending Sarees" placeholder) -->
+            <div class="py-4">
+                <div class="flex items-center justify-between bg-gray-100 rounded-xl p-3 shadow-inner">
+                    <div class="flex items-center w-full">
+                        <i data-lucide="search" class="h-5 w-5 text-gray-500 mr-2"></i>
+                        <input type="text" value="Trending Sarees" class="w-full bg-transparent text-gray-800 font-medium focus:outline-none">
+                    </div>
+                    <button class="text-sm text-blue-600 font-semibold ml-2 p-1 rounded-md hover:bg-gray-200 transition-colors">
+                        <i data-lucide="sliders" class="h-5 w-5"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Results Header & Filter -->
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold text-gray-800">Results</h2>
+                <button class="text-sm text-blue-600 font-medium flex items-center p-2 rounded-lg hover:bg-blue-50 transition-colors">
+                    Filter <i data-lucide="filter" class="h-4 w-4 ml-1"></i>
                 </button>
             </div>
+            
+            <!-- Product List -->
+            <div class="space-y-4">
+                
+                <!-- Product Item 1: Silk Saree -->
+                <div class="flex items-start bg-white p-3 rounded-xl shadow-md cursor-pointer transform transition-transform duration-200 hover:scale-[1.01]" onclick="toggleView(2, {id: 'product-A', name: 'Silk Saree A', image: 'https://placehold.co/80x120/7B3F00/ffffff?text=Silk'})">
+                    <img src="https://placehold.co/80x120/7B3F00/ffffff?text=Silk" alt="Silk Saree" class="w-20 h-32 object-cover rounded-lg flex-shrink-0">
+                    <div class="ml-4 flex flex-col justify-between h-full">
+                        <h3 class="text-lg font-bold text-gray-900">Silk saree</h3>
+                        <p class="text-sm text-gray-500">10 Meters</p>
+                        <p class="text-sm text-green-600 font-semibold">20+ Offers</p>
+                        <div class="flex items-center mt-1">
+                            <!-- Star Rating (5/5) -->
+                            <i data-lucide="star" class="h-4 w-4 rating-star-filled fill-current mr-1"></i>
+                            <i data-lucide="star" class="h-4 w-4 rating-star-filled fill-current mr-1"></i>
+                            <i data-lucide="star" class="h-4 w-4 rating-star-filled fill-current mr-1"></i>
+                            <i data-lucide="star" class="h-4 w-4 rating-star-filled fill-current mr-1"></i>
+                            <i data-lucide="star" class="h-4 w-4 rating-star-filled fill-current mr-2"></i>
+                            <span class="text-sm text-gray-700 font-medium">(5.0)</span>
+                        </div>
+                    </div>
+                </div>
 
-            <!-- Cart Items List -->
-            <div id="cart-items" class="space-y-4">
-                <!-- Cart items will be injected here -->
+                <!-- Product Item 2: Shiny Silk Saree -->
+                <div class="flex items-start bg-white p-3 rounded-xl shadow-md cursor-pointer transform transition-transform duration-200 hover:scale-[1.01]" onclick="toggleView(2, {id: 'product-B', name: 'Shiny Silk Saree', image: 'https://placehold.co/80x120/38761D/ffffff?text=Shiny'})">
+                    <img src="https://placehold.co/80x120/38761D/ffffff?text=Shiny" alt="Shiny Silk Saree" class="w-20 h-32 object-cover rounded-lg flex-shrink-0">
+                    <div class="ml-4 flex flex-col justify-between h-full">
+                        <h3 class="text-lg font-bold text-gray-900">Shiny Silk saree</h3>
+                        <p class="text-sm text-gray-500">10 Meters</p>
+                        <p class="text-sm text-green-600 font-semibold">3+ Offers</p>
+                        <div class="flex items-center mt-1">
+                            <!-- Star Rating (4/5) -->
+                            <i data-lucide="star" class="h-4 w-4 rating-star-filled fill-current mr-1"></i>
+                            <i data-lucide="star" class="h-4 w-4 rating-star-filled fill-current mr-1"></i>
+                            <i data-lucide="star" class="h-4 w-4 rating-star-filled fill-current mr-1"></i>
+                            <i data-lucide="star" class="h-4 w-4 rating-star-filled fill-current mr-1"></i>
+                            <i data-lucide="star" class="h-4 w-4 text-gray-300 mr-2"></i>
+                            <span class="text-sm text-gray-700 font-medium">(4.0)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- ========================================
+             PRODUCT DETAIL VIEW (viewIndex: 2)
+             ======================================== -->
+        <section id="detail-view" class="view-content hidden">
+            
+            <!-- Product Image Section -->
+            <div class="detail-image-container mb-6 overflow-hidden rounded-xl shadow-lg">
+                <img id="detail-product-image" src="https://placehold.co/400x600/7B3F00/ffffff?text=Silk+Saree+Detail" alt="Product Detail Image" class="object-cover">
             </div>
 
-            <!-- Cart Summary -->
-            <div class="mt-6 pt-4 border-t space-y-2">
-                <div class="flex justify-between font-medium">
+            <!-- Product Info -->
+            <div class="p-2">
+                <div class="flex items-center justify-between mb-2">
+                    <h2 id="detail-product-name" class="text-2xl font-bold text-gray-900">Handloom Silk Saree</h2>
+                    <!-- Like Button -->
+                    <button id="detail-like-button" class="text-red-500 p-2 rounded-full bg-red-50 hover:bg-red-100 transition-colors" onclick="toggleLike(currentProduct.id)">
+                        <i data-lucide="heart" class="h-6 w-6"></i>
+                    </button>
+                </div>
+                
+                <p class="text-3xl font-extrabold text-gray-900 mb-3">$1,250</p>
+                <p class="text-base text-gray-700 mb-4">
+                    A beautiful, authentic silk saree, hand-woven by master artisans. Perfect for special occasions. Length: 10 Meters.
+                </p>
+
+                <!-- Details/Ratings -->
+                <div class="flex items-center mb-6">
+                    <div class="flex items-center mr-6">
+                        <i data-lucide="star" class="h-5 w-5 rating-star-filled fill-current mr-1"></i>
+                        <span class="text-lg font-semibold text-gray-700">4.8</span>
+                        <span class="text-sm text-gray-500 ml-1">(124 reviews)</span>
+                    </div>
+                    <div class="flex items-center">
+                        <i data-lucide="ruler" class="h-5 w-5 text-gray-500 mr-1"></i>
+                        <span class="text-lg font-semibold text-gray-700">10 Meters</span>
+                    </div>
+                </div>
+
+                <!-- Call to action/Options Placeholder -->
+                <div class="border-t border-gray-100 pt-4 mt-4">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-3">Color Options</h3>
+                    <div class="flex space-x-3">
+                        <div class="h-8 w-8 rounded-full border-2 border-red-500 bg-red-700 cursor-pointer"></div>
+                        <div class="h-8 w-8 rounded-full border border-gray-300 bg-green-700 cursor-pointer"></div>
+                        <div class="h-8 w-8 rounded-full border border-gray-300 bg-blue-700 cursor-pointer"></div>
+                    </div>
+                </div>
+                
+            </div>
+        </section>
+
+        <!-- ========================================
+             CART VIEW (viewIndex: 3)
+             ======================================== -->
+        <section id="cart-view" class="view-content hidden">
+            <h2 class="text-3xl font-bold text-gray-900 mt-2 mb-6">Your Cart (<span id="cart-total-count">0</span> items)</h2>
+            <div id="cart-list" class="space-y-4">
+                <!-- Cart items will be rendered here -->
+            </div>
+            
+            <div id="cart-empty-state" class="text-center p-8 mt-12 bg-gray-50 rounded-xl hidden">
+                <i data-lucide="shopping-bag" class="h-12 w-12 text-gray-400 mx-auto mb-3"></i>
+                <p class="text-lg font-medium text-gray-600">Your cart is empty.</p>
+                <button class="text-sm text-blue-600 mt-4 font-semibold" onclick="toggleView(0)">Continue Shopping</button>
+            </div>
+            
+            <div id="cart-summary" class="mt-8 pt-4 border-t border-gray-200 hidden">
+                <div class="flex justify-between text-lg font-medium text-gray-700 mb-2">
                     <span>Subtotal:</span>
-                    <span id="cart-subtotal">₹0.00</span>
+                    <span>$1,250.00</span>
                 </div>
-                <div class="flex justify-between font-bold text-lg">
-                    <span>Total:</span>
-                    <span id="cart-total">₹0.00</span>
+                <div class="flex justify-between text-lg font-medium text-green-600 mb-4">
+                    <span>Shipping:</span>
+                    <span>FREE</span>
                 </div>
+                <button class="w-full bg-green-600 text-white font-bold py-3 rounded-xl shadow-lg shadow-green-300/50 transition-all duration-200 hover:bg-green-700">
+                    Proceed to Checkout
+                </button>
             </div>
+        </section>
 
-            <!-- Checkout Button -->
-            <button onclick="window.checkout()" class="w-full mt-6 py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition duration-300">
-                Proceed to Checkout (Mock)
+
+    </main>
+    
+    <!-- 
+        ========================================
+        4. Floating Bottom Bar (For Detail View)
+        ========================================
+    -->
+    <div id="detail-actions-bar" class="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-400px p-4 bg-white border-t border-gray-100 shadow-2xl z-30 hidden" style="max-width: 400px; border-radius: 1.5rem 1.5rem 0 0;">
+        <div class="flex space-x-3">
+            <button class="flex items-center justify-center p-3 rounded-xl border border-gray-300 text-gray-700 transition-colors hover:bg-gray-50 w-1/4">
+                <i data-lucide="message-square" class="h-6 w-6"></i>
             </button>
-
-            <!-- Persistence Warning -->
-            <p class="mt-4 text-xs text-red-500 text-center">
-                *Cart is stored in memory and will clear upon page refresh.
-            </p>
+            <!-- Add to Cart Button -->
+            <button id="add-to-cart-button" class="w-3/4 bg-[#B8860B] text-white font-bold py-3 rounded-xl shadow-lg shadow-yellow-300/50 transition-all duration-200 hover:bg-[#a0770a]">
+                Add to Cart
+            </button>
         </div>
     </div>
+    
+    <!-- Toast Message Container -->
+    <div id="toast-container"></div>
 
-    <!-- Message Modal (for alerts/notifications) -->
-    <div id="message-modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 z-[110] hidden items-center justify-center">
-        <div class="bg-white p-6 rounded-lg shadow-2xl max-w-sm w-full">
-            <h4 id="modal-title" class="text-xl font-bold mb-3 text-indigo-600">Notification</h4>
-            <p id="modal-content" class="text-gray-700 mb-4">Message content.</p>
-            <button onclick="window.closeMessageModal()" class="w-full py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">Close</button>
-        </div>
-    </div>
+</div>
 
-    <script type="module">
-        // Import the required module once the script loads
-        import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+<!-- 
+    ========================================
+    5. JavaScript for State and View Switching 
+    ========================================
+-->
+<script>
+    // --- State Initialization ---
+    let cartItems = []; // [{id: 'product-A', name: 'Silk Saree A', quantity: 1, price: 1250}]
+    let likedProducts = new Set(); // Stores product IDs of liked items
+    let currentProduct = null; // Stores details of the product currently viewed in detail-view
+    let previousView = 0; // To track where to go back to
 
-        // --- Core Application State & Logic ---
+    // --- DOM Elements ---
+    const homeView = document.getElementById('home-view');
+    const resultsView = document.getElementById('results-view');
+    const detailView = document.getElementById('detail-view');
+    const cartView = document.getElementById('cart-view');
+    const detailActionBar = document.getElementById('detail-actions-bar');
+    const navButton = document.getElementById('nav-toggle-button');
+    const cartBadge = document.getElementById('cart-badge');
+    const detailLikeButton = document.getElementById('detail-like-button');
+    const addToCartButton = document.getElementById('add-to-cart-button');
+    const cartList = document.getElementById('cart-list');
+    const cartEmptyState = document.getElementById('cart-empty-state');
+    const cartSummary = document.getElementById('cart-summary');
+    const cartTotalCount = document.getElementById('cart-total-count');
+
+
+    // State Tracking: 0: Home, 1: Results, 2: Detail, 3: Cart
+    let currentView = 0;
+
+    // --- Utility Functions ---
+
+    /**
+     * Shows a temporary toast notification for user feedback.
+     * @param {string} message - The message to display.
+     */
+    function showToast(message) {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = 'toast show';
+        toast.textContent = message;
         
-        let cart = [];
-        let allProducts = [];
+        container.appendChild(toast);
+
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => {
+                container.removeChild(toast);
+            }, 300); // Wait for fade-out transition
+        }, 2000); // Display time
+    }
+
+    /**
+     * Updates the cart count badge on the Home screen.
+     */
+    function updateCartBadge() {
+        const count = cartItems.length;
+        cartBadge.textContent = count;
+        if (count > 0) {
+            cartBadge.classList.remove('opacity-0', 'scale-0');
+            cartBadge.classList.add('opacity-100', 'scale-100');
+        } else {
+            cartBadge.classList.remove('opacity-100', 'scale-100');
+            cartBadge.classList.add('opacity-0', 'scale-0');
+        }
+    }
+
+    // --- Core Logic Functions ---
+
+    /**
+     * Adds the current product to the cart.
+     */
+    function addToCart() {
+        if (!currentProduct) return;
+
+        // Check if the item is already in the cart (for simplicity, we just add a new entry)
+        const newItem = {
+            id: currentProduct.id,
+            name: currentProduct.name,
+            image: currentProduct.image,
+            price: 1250, // Hardcoded price for demo
+            quantity: 1
+        };
         
-        // Mock Product Data
-        const MOCK_PRODUCTS = [
-            { id: 1, name: 'Handloom Silk Saree', price: 7500, description: 'Elegantly woven pure silk, perfect for special occasions.', imageUrl: 'https://placehold.co/400x300/F06292/FFFFFF?text=Silk+Saree', category: 'Saree' },
-            { id: 2, name: 'Kashmiri Pashmina Shawl', price: 4200, description: 'Incredibly soft and warm shawl hand-woven in Kashmir.', imageUrl: 'https://placehold.co/400x300/81C784/FFFFFF?text=Pashmina+Shawl', category: 'Shawl' },
-            { id: 3, name: 'Ikat Cotton Fabric (5m)', price: 1800, description: 'Vibrant geometric patterns perfect for custom tailoring.', imageUrl: 'https://placehold.co/400x300/4FC3F7/FFFFFF?text=Ikat+Fabric', category: 'Fabric' },
-            { id: 4, name: 'Banarasi Brocade', price: 3500, description: 'Luxurious brocade fabric for festive wear.', imageUrl: 'https://placehold.co/400x300/FF5722/FFFFFF?text=Brocade+Fabric', category: 'Fabric' },
-            { id: 5, name: 'Tussar Silk Dupatta', price: 2100, description: 'Lightweight dupatta with intricate Tussar silk weave.', imageUrl: 'https://placehold.co/400x300/607D8B/FFFFFF?text=Dupatta', category: 'Shawl' },
-        ];
-
-        // --- Utility Functions ---
-
-        /** Displays a custom modal message instead of using alert() */
-        window.showMessageModal = (title, content) => {
-            document.getElementById('modal-title').textContent = title;
-            document.getElementById('modal-content').textContent = content;
-            document.getElementById('message-modal').classList.remove('hidden');
-            document.getElementById('message-modal').classList.add('flex');
-        };
-
-        /** Closes the custom modal message */
-        window.closeMessageModal = () => {
-            document.getElementById('message-modal').classList.add('hidden');
-            document.getElementById('message-modal').classList.remove('flex');
-        };
+        cartItems.push(newItem);
+        updateCartBadge();
+        showToast(`'${currentProduct.name}' added to cart!`);
+    }
+    
+    /**
+     * Toggles the like status for a given product ID.
+     * @param {string} productId 
+     */
+    function toggleLike(productId) {
+        let isLiked = likedProducts.has(productId);
         
-        /** Formats currency */
-        const formatCurrency = (amount) => {
-            return `₹${amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
-        };
+        if (isLiked) {
+            likedProducts.delete(productId);
+            showToast(`'${currentProduct.name}' removed from Wishlist.`);
+        } else {
+            likedProducts.add(productId);
+            showToast(`'${currentProduct.name}' added to Wishlist!`);
+        }
+        
+        // Update the button icon immediately
+        updateDetailButtons(currentProduct);
+    }
 
-        // --- Rendering Functions ---
+    /**
+     * Renders the Product Detail View content based on the selected product data.
+     * @param {object} productData - {id, name, image}
+     */
+    function renderDetailView(productData) {
+        currentProduct = productData;
+        
+        // Update product details on the page
+        document.getElementById('detail-product-name').textContent = productData.name;
+        document.getElementById('detail-product-image').src = productData.image.replace('96x140', '400x600').replace('80x120', '400x600'); 
+        
+        // Update Like button state and Add to Cart button listener
+        updateDetailButtons(productData);
+    }
+    
+    /**
+     * Updates the Like button icon based on the current product's liked status.
+     * @param {object} productData - {id, name, image}
+     */
+    function updateDetailButtons(productData) {
+        const isLiked = likedProducts.has(productData.id);
+        
+        // Update Like Button Icon
+        let iconHtml = '';
+        if (isLiked) {
+            iconHtml = `<i data-lucide="heart" class="h-6 w-6 fill-red-500"></i>`;
+        } else {
+            iconHtml = `<i data-lucide="heart" class="h-6 w-6"></i>`;
+        }
+        detailLikeButton.innerHTML = iconHtml;
+        lucide.createIcons(); // Re-render icon
 
-        /** Renders a single product card */
-        const renderProductCard = (product) => {
-            return `
-                <div class="product-card bg-white rounded-lg shadow-xl overflow-hidden" data-category="${product.category}">
-                    <img src="${product.imageUrl}" onerror="this.onerror=null;this.src='https://placehold.co/400x300/C0A98E/333?text=Handloom';" alt="${product.name}" class="w-full h-48 object-cover">
-                    <div class="p-5">
-                        <h3 class="text-xl font-semibold mb-2">${product.name}</h3>
-                        <p class="text-gray-500 text-sm mb-3 h-10 overflow-hidden">${product.description}</p>
-                        <p class="text-2xl font-bold text-indigo-600 mb-4">${formatCurrency(product.price)}</p>
-                        <button onclick="window.addToCart(${product.id})" class="w-full py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition duration-300 flex items-center justify-center space-x-2">
-                             <!-- Cart Icon -->
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M15 11l4.5 -4.5l-4.5 -4.5m-4 13.5l4.5 -4.5l-4.5 -4.5"></path>
-                                <path d="M3 21v-4a4 4 0 0 1 4 -4h13"></path>
-                                <path d="M15 21v-4a4 4 0 0 1 4 -4h1"></path>
-                            </svg>
-                            <span>Add to Shuttle</span>
+        // Re-attach Add to Cart listener
+        addToCartButton.onclick = addToCart;
+    }
+
+    /**
+     * Renders the Cart View content.
+     */
+    function renderCartView() {
+        cartTotalCount.textContent = cartItems.length;
+        cartList.innerHTML = ''; // Clear previous items
+
+        if (cartItems.length === 0) {
+            cartEmptyState.classList.remove('hidden');
+            cartSummary.classList.add('hidden');
+            return;
+        }
+        
+        cartEmptyState.classList.add('hidden');
+        cartSummary.classList.remove('hidden');
+        
+        cartItems.forEach((item, index) => {
+            const itemElement = document.createElement('div');
+            itemElement.className = 'flex items-start bg-white p-3 rounded-xl shadow-md';
+            itemElement.innerHTML = `
+                <img src="${item.image.replace('96x140', '80x120')}" alt="${item.name}" class="w-20 h-32 object-cover rounded-lg flex-shrink-0">
+                <div class="ml-4 flex flex-col justify-between h-full w-full">
+                    <h3 class="text-lg font-bold text-gray-900">${item.name}</h3>
+                    <p class="text-sm text-gray-500">Qty: ${item.quantity}</p>
+                    <div class="flex justify-between items-center mt-2">
+                        <p class="text-xl font-extrabold text-gray-900">$${item.price.toFixed(2)}</p>
+                        <button class="text-red-500 p-1 rounded-full hover:bg-red-50 transition-colors" onclick="removeItemFromCart(${index})">
+                            <i data-lucide="trash-2" class="h-5 w-5"></i>
                         </button>
                     </div>
                 </div>
             `;
-        };
+            cartList.appendChild(itemElement);
+        });
+        lucide.createIcons();
+    }
+    
+    /**
+     * Removes an item from the cart by its index. (Used in Cart View)
+     * @param {number} index - Index of the item in the cartItems array.
+     */
+    function removeItemFromCart(index) {
+        const removedItem = cartItems.splice(index, 1)[0];
+        showToast(`Removed '${removedItem.name}' from cart.`);
+        updateCartBadge();
+        renderCartView(); // Re-render the cart list
+    }
 
-        /** Renders all products */
-        const renderProducts = (products, filter = 'all') => {
-            const listEl = document.getElementById('product-list');
-            listEl.innerHTML = '';
-            
-            const filteredProducts = filter === 'all' 
-                ? products 
-                : products.filter(p => p.category === filter);
-
-            if (filteredProducts.length === 0) {
-                listEl.innerHTML = `<p class="col-span-full text-center text-gray-500 py-10">No products found in the selected category.</p>`;
-            } else {
-                filteredProducts.forEach(product => {
-                    listEl.innerHTML += renderProductCard(product);
-                });
-            }
-
-            document.getElementById('loading-msg').style.display = 'none';
-        };
-
-        // --- Cart Logic ---
-
-        /** Updates the cart UI */
-        const updateCartUI = () => {
-            const itemsEl = document.getElementById('cart-items');
-            itemsEl.innerHTML = '';
-            let subtotal = 0;
-
-            if (cart.length === 0) {
-                itemsEl.innerHTML = '<p class="text-center text-gray-500 py-8">Your shuttle is empty.</p>';
-            } else {
-                cart.forEach(item => {
-                    const product = allProducts.find(p => p.id === item.id);
-                    if (product) {
-                        const itemTotal = product.price * item.quantity;
-                        subtotal += itemTotal;
-                        
-                        itemsEl.innerHTML += `
-                            <div class="flex justify-between items-center p-3 border rounded-lg">
-                                <div class="flex-1">
-                                    <h5 class="font-medium">${product.name}</h5>
-                                    <p class="text-sm text-gray-500">${formatCurrency(product.price)} x ${item.quantity}</p>
-                                </div>
-                                <div class="text-right font-semibold">
-                                    ${formatCurrency(itemTotal)}
-                                </div>
-                                <button onclick="window.removeFromCart(${product.id})" class="ml-4 p-1 text-red-500 hover:bg-red-50 rounded-full">
-                                     <!-- Trash Icon -->
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                                </button>
-                            </div>
-                        `;
-                    }
-                });
-            }
-
-            // Update totals
-            document.getElementById('cart-subtotal').textContent = formatCurrency(subtotal);
-            document.getElementById('cart-total').textContent = formatCurrency(subtotal);
-            document.getElementById('cart-count').textContent = cart.reduce((acc, item) => acc + item.quantity, 0);
-        };
-
-        /** Adds a product to the cart */
-        window.addToCart = (productId) => {
-            const existingItem = cart.find(item => item.id === productId);
-            if (existingItem) {
-                existingItem.quantity++;
-            } else {
-                cart.push({ id: productId, quantity: 1 });
-            }
-            updateCartUI();
-            window.showMessageModal("Item Added!", `${allProducts.find(p => p.id === productId)?.name || 'Product'} has been added to your cart.`);
-        };
-
-        /** Removes all instances of a product from the cart */
-        window.removeFromCart = (productId) => {
-            const index = cart.findIndex(item => item.id === productId);
-            if (index !== -1) {
-                // For simplicity, we remove the whole item
-                cart.splice(index, 1);
-            }
-            updateCartUI();
-        };
-
-        /** Opens the cart sidebar modal */
-        window.openCartModal = () => {
-            updateCartUI();
-            document.getElementById('cart-modal').classList.remove('hidden');
-            document.getElementById('cart-modal').classList.add('flex');
-        };
-
-        /** Closes the cart sidebar modal */
-        window.closeCartModal = () => {
-            document.getElementById('cart-modal').classList.add('hidden');
-            document.getElementById('cart-modal').classList.remove('flex');
-        };
-
-        /** Mocks the checkout process */
-        window.checkout = () => {
-            if (cart.length === 0) {
-                window.showMessageModal("Cart Empty", "Please add items to your cart before checking out.");
-                return;
-            }
-            
-            // Clear cart
-            cart = [];
-            updateCartUI();
-            window.closeCartModal();
-            window.showMessageModal("Order Successful!", "Thank you for supporting our weavers! Your mock order has been placed.");
-        };
-
-        // --- Initialization and Event Listeners ---
-        
-        // This function merges mock data with any Firestore data
-        const loadAllProducts = (firestoreProducts) => {
-            // Ensure no duplicate IDs by prioritizing Firestore data if IDs overlap
-            const firestoreIds = firestoreProducts.map(p => p.id);
-            const mockFiltered = MOCK_PRODUCTS.filter(p => !firestoreIds.includes(p.id));
-            
-            allProducts = [...mockFiltered, ...firestoreProducts].map(p => ({
-                ...p,
-                price: typeof p.price === 'string' ? parseFloat(p.price) : p.price // Ensure price is number
-            }));
-            
-            // Sort by ID to maintain a consistent order (mock first, then firestore)
-            allProducts.sort((a, b) => a.id > b.id ? 1 : -1);
-
-            renderProducts(allProducts);
+    /**
+     * Toggles visibility of views and manages the header icon.
+     * @param {number} viewIndex - The view to switch to (0, 1, 2, or 3).
+     * @param {object} [productData] - Optional product data for detail view.
+     */
+    function toggleView(viewIndex, productData = null) {
+        // Save current view before switching, unless it's a detail/cart view, in which case we track the origin
+        if (currentView !== 2 && currentView !== 3) {
+            previousView = currentView;
         }
 
-        // Overwrite the globally exposed Firebase function to ensure it uses the imported modules
-        window.loadFeaturedProducts = () => {
-            if (!window.db) {
-                // DB is not yet initialized from the module script
-                console.warn("Firestore not ready. Rendering mock products only.");
-                loadAllProducts([]);
-                return;
+        // Hide all main content views
+        homeView.classList.add('hidden');
+        resultsView.classList.add('hidden');
+        detailView.classList.add('hidden');
+        cartView.classList.add('hidden');
+        detailActionBar.classList.add('hidden');
+
+        let newIcon = 'menu';
+        
+        if (viewIndex === 0) {
+            homeView.classList.remove('hidden');
+            newIcon = 'menu';
+        } else if (viewIndex === 1) {
+            resultsView.classList.remove('hidden');
+            newIcon = 'arrow-left';
+        } else if (viewIndex === 2) {
+            detailView.classList.remove('hidden');
+            detailActionBar.classList.remove('hidden');
+            newIcon = 'arrow-left';
+            if (productData) {
+                renderDetailView(productData);
             }
+        } else if (viewIndex === 3) {
+            cartView.classList.remove('hidden');
+            newIcon = 'arrow-left';
+            renderCartView(); // Render cart contents when switching to cart view
+        }
+        
+        // Update current view state
+        currentView = viewIndex;
 
-            const COLLECTION_PATH = `artifacts/${window.appId}/public/data/weavares_products`;
-            const db = getFirestore(window.app);
-            const productsRef = collection(db, COLLECTION_PATH);
+        // Update the navigation button icon
+        navButton.innerHTML = `<i data-lucide="${newIcon}" class="h-6 w-6"></i>`;
+        lucide.createIcons(); // Re-render icon
 
-            // Set up a real-time listener
-            onSnapshot(productsRef, (snapshot) => {
-                const firestoreProducts = snapshot.docs.map(doc => ({ 
-                    id: doc.id, 
-                    ...doc.data() 
-                }));
-                console.log(`Fetched ${firestoreProducts.length} products from Firestore.`);
-                loadAllProducts(firestoreProducts);
-            }, (error) => {
-                console.error("Error fetching real-time products:", error);
-                // Fallback to mock products if Firestore fails
-                loadAllProducts([]); 
-            });
-        };
+        // Scroll the main content area to top on view switch
+        document.getElementById('app-container').scrollTo({ top: 0, behavior: 'smooth' });
+    }
 
-        // Filter functionality
-        document.addEventListener('DOMContentLoaded', () => {
-            // Apply event listeners to filter buttons
-            const filterButtons = document.querySelectorAll('.filter-btn');
-            filterButtons.forEach(button => {
-                button.addEventListener('click', (e) => {
-                    const filter = e.target.getAttribute('data-filter');
-                    
-                    // Update button styling
-                    filterButtons.forEach(btn => {
-                        btn.classList.remove('border-indigo-600', 'bg-indigo-50', 'text-indigo-600');
-                        btn.classList.add('border-gray-300', 'text-gray-600', 'hover:border-indigo-400');
-                    });
-                    e.target.classList.add('border-indigo-600', 'bg-indigo-50', 'text-indigo-600');
-                    e.target.classList.remove('border-gray-300', 'text-gray-600', 'hover:border-indigo-400');
+    /**
+     * Handles clicks on the main header button (Menu/Back).
+     */
+    function handleHeaderNav() {
+        if (currentView === 2 || currentView === 3) { 
+            // If on Detail View (2) or Cart View (3), go back to the previous main view
+            toggleView(previousView === 1 ? 1 : 0);
+        } else if (currentView === 1) { 
+            // If on Results View (1), go back to Home View (0)
+            toggleView(0);
+        }
+        // If on Home View (0), the button acts as a menu toggle (no action in this prototype).
+    }
 
-                    // Render filtered products
-                    renderProducts(allProducts, filter);
-                });
-            });
+    // --- Initialization ---
+    window.onload = function() {
+        lucide.createIcons();
+        updateCartBadge(); // Ensure badge starts correctly
+        navButton.onclick = handleHeaderNav; // Assign the handler to the button
+        
+        // Force the app to start on the Home view (0)
+        toggleView(0); 
+    };
 
-            // Initial render call (will be followed by the Firebase callback if successful)
-            loadAllProducts(MOCK_PRODUCTS);
-        });
-    </script>
+</script>
+
 </body>
 </html>
