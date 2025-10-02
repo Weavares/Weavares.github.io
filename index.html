@@ -115,13 +115,25 @@
             opacity: 1;
         }
         
-        /* New: Style for clickable headers */
+        /* Style for clickable headers */
         .clickable-header {
             cursor: pointer;
             transition: color 0.15s ease-in-out;
         }
         .clickable-header:hover {
             color: var(--primary-color);
+        }
+        
+        /* FIX: Ensure flex items in results view are side-by-side on mobile */
+        .results-item-container {
+            display: flex;
+            align-items: flex-start; /* Align image and text block at the top */
+        }
+        .results-item-text-content {
+            flex-grow: 1; /* Allow the text content to take up the remaining space */
+            display: flex; /* Use flex inside to control spacing */
+            flex-direction: column;
+            height: 100%; /* Ensure full height to align items */
         }
     </style>
 </head>
@@ -229,7 +241,7 @@
                     ========================================
                     TRENDS & NEW COLLECTIONS SECTIONS (SCROLL FIX APPLIED)
                     Product cards use toggleView(2) to go to the detail page.
-                    Headers now use viewCategory() to go to results view (1).
+                    Headers use viewCategory() to go to results view (1).
                     ========================================
                 -->
 
@@ -422,16 +434,17 @@
                 
                 <!-- Product List (Dynamically populated based on category) -->
                 <div id="results-list" class="space-y-4 px-4 md:px-0 md:grid md:grid-cols-3 md:gap-6 md:space-y-0">
-                    <!-- Default content for 'Saree' category -->
+                    <!-- Default content for 'Saree' category, demonstrating the new mobile layout -->
                     <!-- Product Item 1: Silk Saree -->
-                    <div class="flex flex-col md:flex-row items-start bg-white p-3 rounded-xl shadow-md cursor-pointer transform transition-transform duration-200 hover:scale-[1.01]" 
+                    <div class="results-item-container bg-white p-3 rounded-xl shadow-md cursor-pointer transform transition-transform duration-200 hover:scale-[1.01]" 
                          onclick="toggleView(2, {id: 'product-A', name: 'Silk saree', image: 'https://placehold.co/80x120/7B3F00/ffffff?text=Silk'})">
-                        <img src="https://placehold.co/80x120/7B3F00/ffffff?text=Silk" alt="Silk Saree" class="w-20 h-32 object-cover rounded-lg flex-shrink-0 mb-3 md:mb-0">
-                        <div class="md:ml-4 flex flex-col justify-between h-full">
-                            <h3 class="text-lg font-bold text-gray-900">Silk saree</h3>
+                        <img src="https://placehold.co/80x120/7B3F00/ffffff?text=Silk" alt="Silk Saree" class="w-20 h-32 object-cover rounded-lg flex-shrink-0 mr-3">
+                        <!-- Text Content is now flex-grow and full height to utilize space -->
+                        <div class="results-item-text-content ml-1"> 
+                            <h3 class="text-lg font-bold text-gray-900 leading-tight">Silk saree</h3>
                             <p class="text-sm text-gray-500">10 Meters | $1250</p>
-                            <p class="text-sm text-green-600 font-semibold">24+ Offers</p>
-                            <div class="flex items-center mt-1">
+                            <p class="text-sm text-green-600 font-semibold mt-auto mb-1">24+ Offers</p> <!-- mt-auto pushes it down -->
+                            <div class="flex items-center">
                                 <i data-lucide="star" class="h-4 w-4 rating-star-filled fill-current mr-1"></i>
                                 <span class="text-sm text-gray-700 font-medium">(5.0)</span>
                             </div>
@@ -439,14 +452,14 @@
                     </div>
 
                     <!-- Product Item 2: Shiny Silk Saree -->
-                    <div class="flex flex-col md:flex-row items-start bg-white p-3 rounded-xl shadow-md cursor-pointer transform transition-transform duration-200 hover:scale-[1.01]" 
+                    <div class="results-item-container bg-white p-3 rounded-xl shadow-md cursor-pointer transform transition-transform duration-200 hover:scale-[1.01]" 
                          onclick="toggleView(2, {id: 'product-B', name: 'Shiny Silk saree', image: 'https://placehold.co/80x120/38761D/ffffff?text=Shiny'})">
-                        <img src="https://placehold.co/80x120/38761D/ffffff?text=Shiny" alt="Shiny Silk Saree" class="w-20 h-32 object-cover rounded-lg flex-shrink-0 mb-3 md:mb-0">
-                        <div class="md:ml-4 flex flex-col justify-between h-full">
-                            <h3 class="text-lg font-bold text-gray-900">Shiny Silk saree</h3>
+                        <img src="https://placehold.co/80x120/38761D/ffffff?text=Shiny" alt="Shiny Silk Saree" class="w-20 h-32 object-cover rounded-lg flex-shrink-0 mr-3">
+                        <div class="results-item-text-content ml-1">
+                            <h3 class="text-lg font-bold text-gray-900 leading-tight">Shiny Silk saree</h3>
                             <p class="text-sm text-gray-500">10 Meters | $990</p>
-                            <p class="text-sm text-green-600 font-semibold">2+ Offers</p>
-                            <div class="flex items-center mt-1">
+                            <p class="text-sm text-green-600 font-semibold mt-auto mb-1">2+ Offers</p>
+                            <div class="flex items-center">
                                 <i data-lucide="star" class="h-4 w-4 rating-star-filled fill-current mr-1"></i>
                                 <span class="text-sm text-gray-700 font-medium">(4.0)</span>
                             </div>
@@ -454,14 +467,14 @@
                     </div>
                     
                     <!-- Product Item 3: Dhavani Saree -->
-                    <div class="flex flex-col md:flex-row items-start bg-white p-3 rounded-xl shadow-md cursor-pointer transform transition-transform duration-200 hover:scale-[1.01]" 
+                    <div class="results-item-container bg-white p-3 rounded-xl shadow-md cursor-pointer transform transition-transform duration-200 hover:scale-[1.01]" 
                          onclick="toggleView(2, {id: 'product-C', name: 'Dhavani saree', image: 'https://placehold.co/80x120/004d40/ffffff?text=Dhavani'})">
-                        <img src="https://placehold.co/80x120/004d40/ffffff?text=Dhavani" alt="Dhavani Saree" class="w-20 h-32 object-cover rounded-lg flex-shrink-0 mb-3 md:mb-0">
-                        <div class="md:ml-4 flex flex-col justify-between h-full">
-                            <h3 class="text-lg font-bold text-gray-900">Dhavani saree</h3>
+                        <img src="https://placehold.co/80x120/004d40/ffffff?text=Dhavani" alt="Dhavani Saree" class="w-20 h-32 object-cover rounded-lg flex-shrink-0 mr-3">
+                        <div class="results-item-text-content ml-1">
+                            <h3 class="text-lg font-bold text-gray-900 leading-tight">Dhavani saree</h3>
                             <p class="text-sm text-gray-500">10 Meters | $800</p>
-                            <p class="text-sm text-green-600 font-semibold">2+ Offers</p>
-                            <div class="flex items-center mt-1">
+                            <p class="text-sm text-green-600 font-semibold mt-auto mb-1">2+ Offers</p>
+                            <div class="flex items-center">
                                 <i data-lucide="star" class="h-4 w-4 rating-star-filled fill-current mr-1"></i>
                                 <span class="text-sm text-gray-700 font-medium">(4.0)</span>
                             </div>
@@ -469,14 +482,14 @@
                     </div>
                     
                     <!-- Product Item 4: White Saree -->
-                    <div class="flex flex-col md:flex-row items-start bg-white p-3 rounded-xl shadow-md cursor-pointer transform transition-transform duration-200 hover:scale-[1.01]" 
+                    <div class="results-item-container bg-white p-3 rounded-xl shadow-md cursor-pointer transform transition-transform duration-200 hover:scale-[1.01]" 
                          onclick="toggleView(2, {id: 'product-D', name: 'White saree', image: 'https://placehold.co/80x120/F0F0F0/333333?text=White'})">
-                        <img src="https://placehold.co/80x120/F0F0F0/333333?text=White" alt="White Saree" class="w-20 h-32 object-cover rounded-lg flex-shrink-0 mb-3 md:mb-0">
-                        <div class="md:ml-4 flex flex-col justify-between h-full">
-                            <h3 class="text-lg font-bold text-gray-900">White saree</h3>
+                        <img src="https://placehold.co/80x120/F0F0F0/333333?text=White" alt="White Saree" class="w-20 h-32 object-cover rounded-lg flex-shrink-0 mr-3">
+                        <div class="results-item-text-content ml-1">
+                            <h3 class="text-lg font-bold text-gray-900 leading-tight">White saree</h3>
                             <p class="text-sm text-gray-500">10 Meters | $700</p>
-                            <p class="text-sm text-green-600 font-semibold">2+ Offers</p>
-                            <div class="flex items-center mt-1">
+                            <p class="text-sm text-green-600 font-semibold mt-auto mb-1">2+ Offers</p>
+                            <div class="flex items-center">
                                 <i data-lucide="star" class="h-4 w-4 rating-star-filled fill-current mr-1"></i>
                                 <span class="text-sm text-gray-700 font-medium">(4.0)</span>
                             </div>
@@ -739,18 +752,19 @@
         
         products.forEach(product => {
             const productElement = document.createElement('div');
-            productElement.className = 'flex flex-col md:flex-row items-start bg-white p-3 rounded-xl shadow-md cursor-pointer transform transition-transform duration-200 hover:scale-[1.01]';
+            // Applying the new class structure for better mobile alignment
+            productElement.className = 'results-item-container bg-white p-3 rounded-xl shadow-md cursor-pointer transform transition-transform duration-200 hover:scale-[1.01]';
             
             // Note: The toggleView function handles the detail view transition
             productElement.onclick = () => toggleView(2, product); 
             
             productElement.innerHTML = `
-                <img src="${product.image}" alt="${product.name}" class="w-20 h-32 object-cover rounded-lg flex-shrink-0 mb-3 md:mb-0">
-                <div class="md:ml-4 flex flex-col justify-between h-full">
-                    <h3 class="text-lg font-bold text-gray-900">${product.name}</h3>
+                <img src="${product.image}" alt="${product.name}" class="w-20 h-32 object-cover rounded-lg flex-shrink-0 mr-3">
+                <div class="results-item-text-content ml-1">
+                    <h3 class="text-lg font-bold text-gray-900 leading-tight">${product.name}</h3>
                     <p class="text-sm text-gray-500">10 Meters | $${product.price.toFixed(0)}</p>
-                    <p class="text-sm text-green-600 font-semibold">${product.offers}</p>
-                    <div class="flex items-center mt-1">
+                    <p class="text-sm text-green-600 font-semibold mt-auto mb-1">${product.offers}</p>
+                    <div class="flex items-center">
                         <!-- Star Rating -->
                         ${Array(Math.floor(product.rating)).fill(0).map(() => `<i data-lucide="star" class="h-4 w-4 rating-star-filled fill-current mr-1"></i>`).join('')}
                         <span class="text-sm text-gray-700 font-medium">(${product.rating.toFixed(1)})</span>
