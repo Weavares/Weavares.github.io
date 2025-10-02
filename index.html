@@ -37,19 +37,7 @@
         .content-area {
             max-width: 1200px; 
             margin: 0 auto;
-            padding: 1rem;
-        }
-        
-        /* Utility class for mobile-only padding where required */
-        .mobile-padding {
-             padding: 1rem;
-        }
-        
-        /* On screens wider than medium (768px), remove specific mobile padding */
-        @media (min-width: 768px) {
-            .mobile-padding {
-                padding: 0; 
-            }
+            padding: 1rem; /* Global padding for non-scrolling content */
         }
         
         /* Custom scrollbar for horizontal lists (mobile-only) */
@@ -172,7 +160,7 @@
         ========================================
     -->
     <main class="w-full">
-        <!-- Content Area Wrapper for Desktop Centering -->
+        <!-- Content Area Wrapper for Desktop Centering. Retains default padding: 1rem. -->
         <div class="content-area pt-0">
             
             <!-- ========================================
@@ -180,16 +168,16 @@
                  ======================================== -->
             <section id="home-view" class="view-content">
                 
-                <!-- Search Bar -->
-                <div class="mobile-padding py-4 md:py-8">
+                <!-- Search Bar (Uses parent content-area padding) -->
+                <div class="py-4 md:py-8">
                     <div class="flex items-center bg-gray-100 rounded-xl p-3 shadow-inner max-w-2xl md:max-w-full">
                         <i data-lucide="search" class="h-5 w-5 text-gray-500 mr-2"></i>
                         <input type="text" placeholder="Search for Silk, Cotton, or Handloom..." class="w-full bg-transparent text-gray-800 placeholder-gray-500 focus:outline-none" onclick="toggleView(1)">
                     </div>
                 </div>
 
-                <!-- Category Icons - More space on desktop -->
-                <nav class="mobile-padding flex justify-between py-4 md:justify-around md:py-8 md:px-12">
+                <!-- Category Icons (Uses parent content-area padding) -->
+                <nav class="flex justify-between py-4 md:justify-around md:py-8 md:px-12">
                     <!-- Data for the 5 categories (Icon, Label) -->
                     <div class="category-icon-container text-center flex flex-col items-center cursor-pointer p-2 rounded-xl">
                         <div class="bg-pink-100 p-3 rounded-xl text-pink-600">
@@ -225,15 +213,16 @@
 
                 <!-- 
                     ========================================
-                    TRENDS & NEW COLLECTIONS SECTIONS
+                    TRENDS & NEW COLLECTIONS SECTIONS (SCROLL FIX APPLIED)
                     ========================================
                 -->
 
                 <!-- 1. Today's Trends (Sarees) -->
-                <div class="mobile-padding py-4 md:py-8">
-                    <h2 class="text-lg md:text-2xl font-bold text-gray-800 mb-3">Today's Trends (Sarees)</h2>
-                    <!-- Mobile: Horizontal Scroll. Desktop (md: and up): 6-Column Grid -->
-                    <div class="flex space-x-4 overflow-x-auto horizontal-scroll md:grid md:grid-cols-6 md:gap-6 md:overflow-visible md:space-x-0">
+                <div class="py-4 md:py-8">
+                    <!-- Title aligned with rest of content using px-4 -->
+                    <h2 class="text-lg md:text-2xl font-bold text-gray-800 mb-3 px-4 md:px-0">Today's Trends (Sarees)</h2>
+                    <!-- Scroll container uses pl-4/pr-4 for content offset and allows full width scroll -->
+                    <div class="flex space-x-4 overflow-x-auto horizontal-scroll pl-4 pr-4 md:px-0 md:grid md:grid-cols-6 md:gap-6 md:overflow-visible md:space-x-0">
                         <!-- Saree Card 1 -->
                         <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02]" onclick="toggleView(2, {id: 'product-A', name: 'Maroon Silk Saree', image: 'https://placehold.co/96x140/7B3F00/ffffff?text=Saree+A'})">
                             <img src="https://placehold.co/96x140/7B3F00/ffffff?text=Saree+A" alt="Trending Saree" class="w-full h-40 object-cover">
@@ -268,9 +257,9 @@
                 </div>
 
                 <!-- 2. Mats Collection -->
-                <div class="mobile-padding py-4 md:py-8">
-                    <h2 class="text-lg md:text-2xl font-bold text-gray-800 mb-3">Handwoven Mats</h2>
-                    <div class="flex space-x-4 overflow-x-auto horizontal-scroll md:grid md:grid-cols-6 md:gap-6 md:overflow-visible md:space-x-0">
+                <div class="py-4 md:py-8">
+                    <h2 class="text-lg md:text-2xl font-bold text-gray-800 mb-3 px-4 md:px-0">Handwoven Mats</h2>
+                    <div class="flex space-x-4 overflow-x-auto horizontal-scroll pl-4 pr-4 md:px-0 md:grid md:grid-cols-6 md:gap-6 md:overflow-visible md:space-x-0">
                         <!-- Mat Item 1 -->
                         <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02]" onclick="toggleView(2, {id: 'mat-1', name: 'Bamboo Floor Mat', image: 'https://placehold.co/96x140/B08E6E/ffffff?text=Floor+Mat'})">
                             <img src="https://placehold.co/96x140/B08E6E/ffffff?text=Floor+Mat" alt="Bamboo Mat" class="w-full h-40 object-cover">
@@ -300,9 +289,9 @@
                 </div>
 
                 <!-- 3. Rugs Collection -->
-                <div class="mobile-padding py-4 md:py-8">
-                    <h2 class="text-lg md:text-2xl font-bold text-gray-800 mb-3">Artisan Rugs</h2>
-                    <div class="flex space-x-4 overflow-x-auto horizontal-scroll md:grid md:grid-cols-6 md:gap-6 md:overflow-visible md:space-x-0">
+                <div class="py-4 md:py-8">
+                    <h2 class="text-lg md:text-2xl font-bold text-gray-800 mb-3 px-4 md:px-0">Artisan Rugs</h2>
+                    <div class="flex space-x-4 overflow-x-auto horizontal-scroll pl-4 pr-4 md:px-0 md:grid md:grid-cols-6 md:gap-6 md:overflow-visible md:space-x-0">
                         <!-- Rug Item 1 -->
                         <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02]" onclick="toggleView(2, {id: 'rug-1', name: 'Terracotta Area Rug', image: 'https://placehold.co/96x140/CC5500/ffffff?text=Area+Rug'})">
                             <img src="https://placehold.co/96x140/CC5500/ffffff?text=Area+Rug" alt="Terracotta Rug" class="w-full h-40 object-cover">
@@ -327,9 +316,9 @@
                 </div>
 
                 <!-- 4. Bags Collection -->
-                <div class="mobile-padding py-4 md:py-8">
-                    <h2 class="text-lg md:text-2xl font-bold text-gray-800 mb-3">Woven Bags & Totes</h2>
-                    <div class="flex space-x-4 overflow-x-auto horizontal-scroll md:grid md:grid-cols-6 md:gap-6 md:overflow-visible md:space-x-0">
+                <div class="py-4 md:py-8">
+                    <h2 class="text-lg md:text-2xl font-bold text-gray-800 mb-3 px-4 md:px-0">Woven Bags & Totes</h2>
+                    <div class="flex space-x-4 overflow-x-auto horizontal-scroll pl-4 pr-4 md:px-0 md:grid md:grid-cols-6 md:gap-6 md:overflow-visible md:space-x-0">
                         <!-- Bag Item 1 -->
                         <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02]" onclick="toggleView(2, {id: 'bag-1', name: 'Jute Beach Tote', image: 'https://placehold.co/96x140/F0E68C/333333?text=Beach+Bag'})">
                             <img src="https://placehold.co/96x140/F0E68C/333333?text=Beach+Bag" alt="Beach Tote" class="w-full h-40 object-cover">
@@ -349,9 +338,9 @@
                 </div>
 
                 <!-- 5. Towels Collection -->
-                <div class="mobile-padding py-4 md:py-8">
-                    <h2 class="text-lg md:text-2xl font-bold text-gray-800 mb-3">Soft Towels & Throws</h2>
-                    <div class="flex space-x-4 overflow-x-auto horizontal-scroll md:grid md:grid-cols-6 md:gap-6 md:overflow-visible md:space-x-0">
+                <div class="py-4 md:py-8">
+                    <h2 class="text-lg md:text-2xl font-bold text-gray-800 mb-3 px-4 md:px-0">Soft Towels & Throws</h2>
+                    <div class="flex space-x-4 overflow-x-auto horizontal-scroll pl-4 pr-4 md:px-0 md:grid md:grid-cols-6 md:gap-6 md:overflow-visible md:space-x-0">
                         <!-- Towel Item 1 -->
                         <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02]" onclick="toggleView(2, {id: 'towel-1', name: 'Organic Cotton Towel', image: 'https://placehold.co/96x140/ADD8E6/333333?text=Bath+Towel'})">
                             <img src="https://placehold.co/96x140/ADD8E6/333333?text=Bath+Towel" alt="Cotton Towel" class="w-full h-40 object-cover">
@@ -378,8 +367,8 @@
                  ======================================== -->
             <section id="results-view" class="view-content hidden">
                 
-                <!-- Search Bar -->
-                <div class="mobile-padding py-4 md:py-8">
+                <!-- Search Bar (Uses parent content-area padding) -->
+                <div class="py-4 md:py-8">
                     <div class="flex items-center justify-between bg-gray-100 rounded-xl p-3 shadow-inner">
                         <div class="flex items-center w-full">
                             <i data-lucide="search" class="h-5 w-5 text-gray-500 mr-2"></i>
@@ -391,16 +380,16 @@
                     </div>
                 </div>
 
-                <!-- Results Header & Filter -->
-                <div class="mobile-padding flex justify-between items-center mb-4 md:py-4 md:border-b md:border-gray-100">
+                <!-- Results Header & Filter (Uses parent content-area padding) -->
+                <div class="flex justify-between items-center mb-4 md:py-4 md:border-b md:border-gray-100">
                     <h2 class="text-xl font-bold text-gray-800">Results (12 items)</h2>
                     <button class="text-sm text-blue-600 font-medium flex items-center p-2 rounded-lg hover:bg-blue-50 transition-colors">
                         Filter <i data-lucide="filter" class="h-4 w-4 ml-1"></i>
                     </button>
                 </div>
                 
-                <!-- Product List (Mobile: List, Desktop: 3-column grid) -->
-                <div class="mobile-padding space-y-4 md:grid md:grid-cols-3 md:gap-6 md:space-y-0">
+                <!-- Product List (Uses parent content-area padding) -->
+                <div class="space-y-4 md:grid md:grid-cols-3 md:gap-6 md:space-y-0">
                     
                     <!-- Product Item 1: Silk Saree -->
                     <div class="flex flex-col md:flex-row items-start bg-white p-3 rounded-xl shadow-md cursor-pointer transform transition-transform duration-200 hover:scale-[1.01]" onclick="toggleView(2, {id: 'product-A', name: 'Premium Silk Saree', image: 'https://placehold.co/80x120/7B3F00/ffffff?text=Silk'})">
@@ -442,15 +431,15 @@
                 <!-- Desktop: 2-Column Grid | Mobile: Stacked -->
                 <div class="md:grid md:grid-cols-2 md:gap-10 md:py-8 content-scroll-padding-mobile">
                     
-                    <!-- LEFT COLUMN: Product Image -->
-                    <div class="mobile-padding md:p-0">
+                    <!-- LEFT COLUMN: Product Image (Uses parent content-area padding on mobile) -->
+                    <div class="p-4 md:p-0">
                         <div class="detail-image-container mb-6 overflow-hidden rounded-xl shadow-lg md:mb-0">
                             <img id="detail-product-image" src="https://placehold.co/400x600/7B3F00/ffffff?text=Product+Detail" alt="Product Detail Image" class="object-cover">
                         </div>
                     </div>
 
-                    <!-- RIGHT COLUMN: Product Info and Actions -->
-                    <div class="mobile-padding md:p-0">
+                    <!-- RIGHT COLUMN: Product Info and Actions (Uses parent content-area padding on mobile) -->
+                    <div class="p-4 md:p-0">
                         <div class="flex items-center justify-between mb-2">
                             <h2 id="detail-product-name" class="text-2xl md:text-3xl font-bold text-gray-900">Handloom Silk Saree</h2>
                             <!-- Like Button -->
@@ -501,7 +490,7 @@
                     </div>
                 </div>
                 <!-- Long content placeholder to ensure scrolling on mobile is testable -->
-                <div class="mobile-padding md:p-0">
+                <div class="p-4 md:p-0">
                     <div class="md:hidden mt-4 text-sm text-gray-500">
                         <p class="mb-2">--- Detailed Product Description ---</p>
                         <p class="mb-4">This section has extra text to make sure the page scrolls past the image and description on smaller screens. Without enough content, scrolling doesn't activate, and the fixed bar might not be tested correctly. Scroll down to see the fixed 'Buy Now' button at the bottom!</p>
@@ -514,7 +503,7 @@
             <!-- ========================================
                  CART VIEW (viewIndex: 3)
                  ======================================== -->
-            <section id="cart-view" class="view-content hidden mobile-padding md:py-8">
+            <section id="cart-view" class="view-content hidden p-4 md:py-8">
                 <h2 class="text-3xl font-bold text-gray-900 mt-2 mb-6">Your Cart (<span id="cart-total-count">0</span> items)</h2>
                 <div id="cart-list" class="space-y-4">
                     <!-- Cart items will be rendered here -->
@@ -549,7 +538,6 @@
         4. FIXED MOBILE ACTION BAR (FOR DETAIL VIEW ONLY)
         ========================================
         Fixed at the bottom, ONLY visible on Mobile (md:hidden).
-        This ensures the Buy Now button is always accessible and is the fix for the scrolling issue.
     -->
     <div id="detail-actions-bar" class="fixed bottom-0 left-0 w-full p-4 bg-white border-t border-gray-100 shadow-2xl z-30 hidden md:hidden" style="border-radius: 0;">
         <div class="flex space-x-3">
