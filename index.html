@@ -261,41 +261,55 @@
                     </div>
                 </div>
 
-                <!-- Follows Section (Responsive Grid) -->
+                <!-- Follows Section (Scrollable on Mobile, Grid on Desktop) -->
                 <div class="mobile-padding py-4 md:py-8">
                     <h2 class="text-lg md:text-2xl font-bold text-gray-800 mb-3">New Collections</h2>
-                    <!-- Mobile: 3-Column Grid. Desktop (md: and up): 6-Column Grid -->
-                    <div class="grid grid-cols-3 gap-3 md:grid-cols-6 md:gap-6">
-                        <!-- Follow Item 1 -->
-                        <div class="flex flex-col items-center cursor-pointer" onclick="toggleView(2, {id: 'product-G', name: 'Maroon Weave', image: 'https://placehold.co/120x120/7B3F00/ffffff?text=Follow+1'})">
-                            <img src="https://placehold.co/120x120/7B3F00/ffffff?text=Follow+1" alt="Follow Saree 1" class="w-full h-28 object-cover rounded-lg shadow-md md:h-36">
+                    <!-- Mobile: Horizontal Scroll (flex + space-x-4). Desktop: 6-Column Grid (md:grid-cols-6) -->
+                    <div class="flex space-x-4 overflow-x-auto horizontal-scroll md:grid md:grid-cols-6 md:gap-6 md:overflow-visible md:space-x-0">
+                        
+                        <!-- Item 1: Maroon Saree -->
+                        <div class="flex flex-col items-center cursor-pointer w-28 flex-shrink-0" onclick="toggleView(2, {id: 'product-G', name: 'Maroon Weave', image: 'https://placehold.co/120x120/7B3F00/ffffff?text=Saree+1'})">
+                            <img src="https://placehold.co/120x120/7B3F00/ffffff?text=Saree+1" alt="Follow Saree 1" class="w-full h-28 object-cover rounded-lg shadow-md md:h-36">
                             <button class="text-xs text-gray-600 mt-2 font-semibold hover:text-gray-900 transition-colors">Maroon</button>
                         </div>
-                        <!-- Follow Item 2 -->
-                        <div class="flex flex-col items-center cursor-pointer" onclick="toggleView(2, {id: 'product-H', name: 'Forest Green', image: 'https://placehold.co/120x120/38761D/ffffff?text=Follow+2'})">
-                            <img src="https://placehold.co/120x120/38761D/ffffff?text=Follow+2" alt="Follow Saree 2" class="w-full h-28 object-cover rounded-lg shadow-md md:h-36">
+                        <!-- Item 2: Forest Green -->
+                        <div class="flex flex-col items-center cursor-pointer w-28 flex-shrink-0" onclick="toggleView(2, {id: 'product-H', name: 'Forest Green', image: 'https://placehold.co/120x120/38761D/ffffff?text=Saree+2'})">
+                            <img src="https://placehold.co/120x120/38761D/ffffff?text=Saree+2" alt="Follow Saree 2" class="w-full h-28 object-cover rounded-lg shadow-md md:h-36">
                             <button class="text-xs text-gray-600 mt-2 font-semibold hover:text-gray-900 transition-colors">Green</button>
                         </div>
-                        <!-- Follow Item 3 -->
-                        <div class="flex flex-col items-center cursor-pointer" onclick="toggleView(2, {id: 'product-I', name: 'Jet Black Cotton', image: 'https://placehold.co/120x120/000000/ffffff?text=Follow+3'})">
-                            <img src="https://placehold.co/120x120/000000/ffffff?text=Follow+3" alt="Follow Saree 3" class="w-full h-28 object-cover rounded-lg shadow-md md:h-36">
+                        <!-- Item 3: Jet Black Cotton -->
+                        <div class="flex flex-col items-center cursor-pointer w-28 flex-shrink-0" onclick="toggleView(2, {id: 'product-I', name: 'Jet Black Cotton', image: 'https://placehold.co/120x120/000000/ffffff?text=Saree+3'})">
+                            <img src="https://placehold.co/120x120/000000/ffffff?text=Saree+3" alt="Follow Saree 3" class="w-full h-28 object-cover rounded-lg shadow-md md:h-36">
                             <button class="text-xs text-gray-600 mt-2 font-semibold hover:text-gray-900 transition-colors">Black</button>
                         </div>
-                        <!-- Follow Item 4 (Visible on Desktop) -->
-                        <div class="flex flex-col items-center cursor-pointer hidden md:flex" onclick="toggleView(2, {id: 'product-J', name: 'Coffee Brown', image: 'https://placehold.co/120x120/5D4037/ffffff?text=Follow+4'})">
-                            <img src="https://placehold.co/120x120/5D4037/ffffff?text=Follow+4" alt="Follow Saree 4" class="w-full h-36 object-cover rounded-lg shadow-md">
+                        <!-- Item 4: Coffee Brown -->
+                        <div class="flex flex-col items-center cursor-pointer w-28 flex-shrink-0" onclick="toggleView(2, {id: 'product-J', name: 'Coffee Brown', image: 'https://placehold.co/120x120/5D4037/ffffff?text=Saree+4'})">
+                            <img src="https://placehold.co/120x120/5D4037/ffffff?text=Saree+4" alt="Follow Saree 4" class="w-full h-28 object-cover rounded-lg shadow-md md:h-36">
                             <button class="text-xs text-gray-600 mt-2 font-semibold hover:text-gray-900 transition-colors">Coffee</button>
                         </div>
-                        <!-- Follow Item 5 (Visible on Desktop) -->
-                        <div class="flex flex-col items-center cursor-pointer hidden md:flex" onclick="toggleView(2, {id: 'product-K', name: 'Sunny Gold', image: 'https://placehold.co/120x120/FBC02D/ffffff?text=Follow+5'})">
-                            <img src="https://placehold.co/120x120/FBC02D/ffffff?text=Follow+5" alt="Follow Saree 5" class="w-full h-36 object-cover rounded-lg shadow-md">
+                        <!-- Item 5: Sunny Gold -->
+                        <div class="flex flex-col items-center cursor-pointer w-28 flex-shrink-0" onclick="toggleView(2, {id: 'product-K', name: 'Sunny Gold', image: 'https://placehold.co/120x120/FBC02D/ffffff?text=Saree+5'})">
+                            <img src="https://placehold.co/120x120/FBC02D/ffffff?text=Saree+5" alt="Follow Saree 5" class="w-full h-28 object-cover rounded-lg shadow-md md:h-36">
                             <button class="text-xs text-gray-600 mt-2 font-semibold hover:text-gray-900 transition-colors">Sunny Gold</button>
                         </div>
-                        <!-- Follow Item 6 (Visible on Desktop) -->
-                        <div class="flex flex-col items-center cursor-pointer hidden md:flex" onclick="toggleView(2, {id: 'product-L', name: 'Linen Saree', image: 'https://placehold.co/120x120/FFFFFF/333333?text=Follow+6'})">
-                            <img src="https://placehold.co/120x120/FFFFFF/333333?text=Follow+6" alt="Follow Saree 6" class="w-full h-36 object-cover rounded-lg shadow-md border border-gray-100">
+                        <!-- Item 6: Linen Saree -->
+                        <div class="flex flex-col items-center cursor-pointer w-28 flex-shrink-0" onclick="toggleView(2, {id: 'product-L', name: 'Linen Saree', image: 'https://placehold.co/120x120/FFFFFF/333333?text=Saree+6'})">
+                            <img src="https://placehold.co/120x120/FFFFFF/333333?text=Saree+6" alt="Follow Saree 6" class="w-full h-28 object-cover rounded-lg shadow-md border border-gray-100">
                             <button class="text-xs text-gray-600 mt-2 font-semibold hover:text-gray-900 transition-colors">Linen</button>
                         </div>
+                        
+                        <!-- NEW ITEMS FOR SCROLL DEMO -->
+                        <!-- Item 7: Woven Mat -->
+                        <div class="flex flex-col items-center cursor-pointer w-28 flex-shrink-0" onclick="toggleView(2, {id: 'product-M', name: 'Woven Mat', image: 'https://placehold.co/120x120/8D6E63/ffffff?text=Mat'})">
+                            <img src="https://placehold.co/120x120/8D6E63/ffffff?text=Mat" alt="Woven Mat" class="w-full h-28 object-cover rounded-lg shadow-md md:h-36">
+                            <button class="text-xs text-gray-600 mt-2 font-semibold hover:text-gray-900 transition-colors">Mat</button>
+                        </div>
+                         <!-- Item 8: Patterned Rug -->
+                        <div class="flex flex-col items-center cursor-pointer w-28 flex-shrink-0" onclick="toggleView(2, {id: 'product-N', name: 'Patterned Rug', image: 'https://placehold.co/120x120/69422F/ffffff?text=Rug'})">
+                            <img src="https://placehold.co/120x120/69422F/ffffff?text=Rug" alt="Patterned Rug" class="w-full h-28 object-cover rounded-lg shadow-md md:h-36">
+                            <button class="text-xs text-gray-600 mt-2 font-semibold hover:text-gray-900 transition-colors">Rug</button>
+                        </div>
+
                     </div>
                 </div>
 
