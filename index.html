@@ -29,7 +29,7 @@
             background-color: white;
             position: relative;
             overflow-y: auto;
-            min-height: 100vh;
+            min-height: 10vh;
         }
 
         /* FIX: Content Area is full-width on mobile (no global padding). Padding is added to static children. */
@@ -155,11 +155,11 @@
                     <i data-lucide="menu" class="h-6 w-6"></i>
                 </button>
                 
-                <!-- Logo/App Name -->
+                <!-- Logo/App Name (IMAGE) -->
                 <div class="flex flex-col items-center">
-                    <h1 class="text-xl md:text-2xl font-bold text-gray-900 flex items-center">
-                        Our Weavers <span class="text-2xl ml-1 text-[#7B3F00]">:D</span>
-                    </h1>
+                    <!-- Image Logo will be set by JavaScript on load -->
+                    <!-- The src is set to a temporary placeholder and updated by JS -->
+                    <img id="main-logo-image" src="" alt="Weavers Logo" class="h-8 md:h-10 w-auto object-contain">
                     <p class="text-xs text-gray-500 font-medium hidden md:block">Authentic handloom collection</p>
                 </div>
                 
@@ -638,6 +638,11 @@
     ========================================
 -->
 <script>
+    // --- Logo Configuration ---
+    // FIX FOR LOCAL RUNNING: Changed the logo URL from a special Canvas ID to a relative local file path.
+    // Ensure you have a file named 'Weavares.jpg' in the same folder as this HTML file.
+    const logoUrl = "Weavares.png"; 
+    
     // --- State Initialization ---
     let cartItems = []; // [{id: 'product-A', name: 'Silk Saree A', quantity: 1, price: 1250}]
     let likedProducts = new Set(); // Stores product IDs of liked items
@@ -691,6 +696,7 @@
     const cartEmptyState = document.getElementById('cart-empty-state');
     const cartSummary = document.getElementById('cart-summary');
     const cartTotalCount = document.getElementById('cart-total-count');
+    const mainLogoImage = document.getElementById('main-logo-image'); // New element reference
     
     // New DOM elements for results view
     const resultsSearchInput = document.getElementById('results-search-input');
@@ -883,7 +889,7 @@
         cartList.innerHTML = ''; // Clear previous items
 
         if (cartItems.length === 0) {
-            cartEmptyState.classList.remove('hidden');
+            cartEmptyState.classList.remove('hidden'); // Should be visible if empty
             cartSummary.classList.add('hidden');
             return;
         }
@@ -1003,6 +1009,9 @@
 
     // --- Initialization ---
     window.onload = function() {
+        // Set the logo image source from the configuration variable
+        mainLogoImage.src = logoUrl; 
+
         lucide.createIcons();
         updateCartBadge(); // Ensure badge starts correctly
         navButton.onclick = handleHeaderNav; // Assign the handler to the button
@@ -1012,6 +1021,5 @@
     };
 
 </script>
-
 </body>
 </html>
