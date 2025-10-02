@@ -223,9 +223,15 @@
                     </div>
                 </nav>
 
-                <!-- Trends Section (Responsive Grid) -->
+                <!-- 
+                    ========================================
+                    TRENDS & NEW COLLECTIONS SECTIONS
+                    ========================================
+                -->
+
+                <!-- 1. Today's Trends (Sarees) -->
                 <div class="mobile-padding py-4 md:py-8">
-                    <h2 class="text-lg md:text-2xl font-bold text-gray-800 mb-3">Today's Trends</h2>
+                    <h2 class="text-lg md:text-2xl font-bold text-gray-800 mb-3">Today's Trends (Sarees)</h2>
                     <!-- Mobile: Horizontal Scroll. Desktop (md: and up): 6-Column Grid -->
                     <div class="flex space-x-4 overflow-x-auto horizontal-scroll md:grid md:grid-cols-6 md:gap-6 md:overflow-visible md:space-x-0">
                         <!-- Saree Card 1 -->
@@ -261,57 +267,109 @@
                     </div>
                 </div>
 
-                <!-- Follows Section (Scrollable on Mobile, Grid on Desktop) -->
+                <!-- 2. Mats Collection -->
                 <div class="mobile-padding py-4 md:py-8">
-                    <h2 class="text-lg md:text-2xl font-bold text-gray-800 mb-3">New Collections</h2>
-                    <!-- Mobile: Horizontal Scroll (flex + space-x-4). Desktop: 6-Column Grid (md:grid-cols-6) -->
+                    <h2 class="text-lg md:text-2xl font-bold text-gray-800 mb-3">Handwoven Mats</h2>
                     <div class="flex space-x-4 overflow-x-auto horizontal-scroll md:grid md:grid-cols-6 md:gap-6 md:overflow-visible md:space-x-0">
-                        
-                        <!-- Item 1: Maroon Saree -->
-                        <div class="flex flex-col items-center cursor-pointer w-28 flex-shrink-0" onclick="toggleView(2, {id: 'product-G', name: 'Maroon Weave', image: 'https://placehold.co/120x120/7B3F00/ffffff?text=Saree+1'})">
-                            <img src="https://placehold.co/120x120/7B3F00/ffffff?text=Saree+1" alt="Follow Saree 1" class="w-full h-28 object-cover rounded-lg shadow-md md:h-36">
-                            <button class="text-xs text-gray-600 mt-2 font-semibold hover:text-gray-900 transition-colors">Maroon</button>
+                        <!-- Mat Item 1 -->
+                        <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02]" onclick="toggleView(2, {id: 'mat-1', name: 'Bamboo Floor Mat', image: 'https://placehold.co/96x140/B08E6E/ffffff?text=Floor+Mat'})">
+                            <img src="https://placehold.co/96x140/B08E6E/ffffff?text=Floor+Mat" alt="Bamboo Mat" class="w-full h-40 object-cover">
+                            <p class="p-1 text-xs font-semibold text-center">Bamboo Mat</p>
                         </div>
-                        <!-- Item 2: Forest Green -->
-                        <div class="flex flex-col items-center cursor-pointer w-28 flex-shrink-0" onclick="toggleView(2, {id: 'product-H', name: 'Forest Green', image: 'https://placehold.co/120x120/38761D/ffffff?text=Saree+2'})">
-                            <img src="https://placehold.co/120x120/38761D/ffffff?text=Saree+2" alt="Follow Saree 2" class="w-full h-28 object-cover rounded-lg shadow-md md:h-36">
-                            <button class="text-xs text-gray-600 mt-2 font-semibold hover:text-gray-900 transition-colors">Green</button>
+                        <!-- Mat Item 2 -->
+                        <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02]" onclick="toggleView(2, {id: 'mat-2', name: 'Cotton Yoga Mat', image: 'https://placehold.co/96x140/5C6BC0/ffffff?text=Yoga+Mat'})">
+                            <img src="https://placehold.co/96x140/5C6BC0/ffffff?text=Yoga+Mat" alt="Yoga Mat" class="w-full h-40 object-cover">
+                            <p class="p-1 text-xs font-semibold text-center">Cotton Yoga</p>
                         </div>
-                        <!-- Item 3: Jet Black Cotton -->
-                        <div class="flex flex-col items-center cursor-pointer w-28 flex-shrink-0" onclick="toggleView(2, {id: 'product-I', name: 'Jet Black Cotton', image: 'https://placehold.co/120x120/000000/ffffff?text=Saree+3'})">
-                            <img src="https://placehold.co/120x120/000000/ffffff?text=Saree+3" alt="Follow Saree 3" class="w-full h-28 object-cover rounded-lg shadow-md md:h-36">
-                            <button class="text-xs text-gray-600 mt-2 font-semibold hover:text-gray-900 transition-colors">Black</button>
+                        <!-- Mat Item 3 -->
+                        <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02]" onclick="toggleView(2, {id: 'mat-3', name: 'Jute Table Runner', image: 'https://placehold.co/96x140/A1887F/ffffff?text=Table+Mat'})">
+                            <img src="https://placehold.co/96x140/A1887F/ffffff?text=Table+Mat" alt="Table Runner" class="w-full h-40 object-cover">
+                            <p class="p-1 text-xs font-semibold text-center">Table Runner</p>
                         </div>
-                        <!-- Item 4: Coffee Brown -->
-                        <div class="flex flex-col items-center cursor-pointer w-28 flex-shrink-0" onclick="toggleView(2, {id: 'product-J', name: 'Coffee Brown', image: 'https://placehold.co/120x120/5D4037/ffffff?text=Saree+4'})">
-                            <img src="https://placehold.co/120x120/5D4037/ffffff?text=Saree+4" alt="Follow Saree 4" class="w-full h-28 object-cover rounded-lg shadow-md md:h-36">
-                            <button class="text-xs text-gray-600 mt-2 font-semibold hover:text-gray-900 transition-colors">Coffee</button>
+                        <!-- Mat Item 4 -->
+                        <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02]" onclick="toggleView(2, {id: 'mat-4', name: 'Geometric Pattern Mat', image: 'https://placehold.co/96x140/008080/ffffff?text=Geo+Mat'})">
+                            <img src="https://placehold.co/96x140/008080/ffffff?text=Geo+Mat" alt="Geometric Mat" class="w-full h-40 object-cover">
+                            <p class="p-1 text-xs font-semibold text-center">Geometric</p>
                         </div>
-                        <!-- Item 5: Sunny Gold -->
-                        <div class="flex flex-col items-center cursor-pointer w-28 flex-shrink-0" onclick="toggleView(2, {id: 'product-K', name: 'Sunny Gold', image: 'https://placehold.co/120x120/FBC02D/ffffff?text=Saree+5'})">
-                            <img src="https://placehold.co/120x120/FBC02D/ffffff?text=Saree+5" alt="Follow Saree 5" class="w-full h-28 object-cover rounded-lg shadow-md md:h-36">
-                            <button class="text-xs text-gray-600 mt-2 font-semibold hover:text-gray-900 transition-colors">Sunny Gold</button>
+                        <!-- Mat Item 5 (Desktop Only) -->
+                        <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02] hidden sm:block" onclick="toggleView(2, {id: 'mat-5', name: 'Soft Pouch', image: 'https://placehold.co/96x140/D2B48C/ffffff?text=Soft+Mat'})">
+                            <img src="https://placehold.co/96x140/D2B48C/ffffff?text=Soft+Mat" alt="Soft Pouch" class="w-full h-40 object-cover">
+                            <p class="p-1 text-xs font-semibold text-center">Soft Pouch</p>
                         </div>
-                        <!-- Item 6: Linen Saree -->
-                        <div class="flex flex-col items-center cursor-pointer w-28 flex-shrink-0" onclick="toggleView(2, {id: 'product-L', name: 'Linen Saree', image: 'https://placehold.co/120x120/FFFFFF/333333?text=Saree+6'})">
-                            <img src="https://placehold.co/120x120/FFFFFF/333333?text=Saree+6" alt="Follow Saree 6" class="w-full h-28 object-cover rounded-lg shadow-md border border-gray-100">
-                            <button class="text-xs text-gray-600 mt-2 font-semibold hover:text-gray-900 transition-colors">Linen</button>
-                        </div>
-                        
-                        <!-- NEW ITEMS FOR SCROLL DEMO -->
-                        <!-- Item 7: Woven Mat -->
-                        <div class="flex flex-col items-center cursor-pointer w-28 flex-shrink-0" onclick="toggleView(2, {id: 'product-M', name: 'Woven Mat', image: 'https://placehold.co/120x120/8D6E63/ffffff?text=Mat'})">
-                            <img src="https://placehold.co/120x120/8D6E63/ffffff?text=Mat" alt="Woven Mat" class="w-full h-28 object-cover rounded-lg shadow-md md:h-36">
-                            <button class="text-xs text-gray-600 mt-2 font-semibold hover:text-gray-900 transition-colors">Mat</button>
-                        </div>
-                         <!-- Item 8: Patterned Rug -->
-                        <div class="flex flex-col items-center cursor-pointer w-28 flex-shrink-0" onclick="toggleView(2, {id: 'product-N', name: 'Patterned Rug', image: 'https://placehold.co/120x120/69422F/ffffff?text=Rug'})">
-                            <img src="https://placehold.co/120x120/69422F/ffffff?text=Rug" alt="Patterned Rug" class="w-full h-28 object-cover rounded-lg shadow-md md:h-36">
-                            <button class="text-xs text-gray-600 mt-2 font-semibold hover:text-gray-900 transition-colors">Rug</button>
-                        </div>
-
                     </div>
                 </div>
+
+                <!-- 3. Rugs Collection -->
+                <div class="mobile-padding py-4 md:py-8">
+                    <h2 class="text-lg md:text-2xl font-bold text-gray-800 mb-3">Artisan Rugs</h2>
+                    <div class="flex space-x-4 overflow-x-auto horizontal-scroll md:grid md:grid-cols-6 md:gap-6 md:overflow-visible md:space-x-0">
+                        <!-- Rug Item 1 -->
+                        <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02]" onclick="toggleView(2, {id: 'rug-1', name: 'Terracotta Area Rug', image: 'https://placehold.co/96x140/CC5500/ffffff?text=Area+Rug'})">
+                            <img src="https://placehold.co/96x140/CC5500/ffffff?text=Area+Rug" alt="Terracotta Rug" class="w-full h-40 object-cover">
+                            <p class="p-1 text-xs font-semibold text-center">Terracotta</p>
+                        </div>
+                        <!-- Rug Item 2 -->
+                        <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02]" onclick="toggleView(2, {id: 'rug-2', name: 'Woolen Runner Rug', image: 'https://placehold.co/96x140/800080/ffffff?text=Runner+Rug'})">
+                            <img src="https://placehold.co/96x140/800080/ffffff?text=Runner+Rug" alt="Runner Rug" class="w-full h-40 object-cover">
+                            <p class="p-1 text-xs font-semibold text-center">Wool Runner</p>
+                        </div>
+                        <!-- Rug Item 3 -->
+                        <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02]" onclick="toggleView(2, {id: 'rug-3', name: 'Blue Hand-Tufted', image: 'https://placehold.co/96x140/4682B4/ffffff?text=Tufted+Rug'})">
+                            <img src="https://placehold.co/96x140/4682B4/ffffff?text=Tufted+Rug" alt="Blue Tufted Rug" class="w-full h-40 object-cover">
+                            <p class="p-1 text-xs font-semibold text-center">Hand-Tufted</p>
+                        </div>
+                        <!-- Rug Item 4 (Desktop Only) -->
+                        <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02] hidden sm:block" onclick="toggleView(2, {id: 'rug-4', name: 'Geometric Pattern Rug', image: 'https://placehold.co/96x140/333333/ffffff?text=Modern+Rug'})">
+                            <img src="https://placehold.co/96x140/333333/ffffff?text=Modern+Rug" alt="Modern Rug" class="w-full h-40 object-cover">
+                            <p class="p-1 text-xs font-semibold text-center">Modern Black</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Bags Collection -->
+                <div class="mobile-padding py-4 md:py-8">
+                    <h2 class="text-lg md:text-2xl font-bold text-gray-800 mb-3">Woven Bags & Totes</h2>
+                    <div class="flex space-x-4 overflow-x-auto horizontal-scroll md:grid md:grid-cols-6 md:gap-6 md:overflow-visible md:space-x-0">
+                        <!-- Bag Item 1 -->
+                        <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02]" onclick="toggleView(2, {id: 'bag-1', name: 'Jute Beach Tote', image: 'https://placehold.co/96x140/F0E68C/333333?text=Beach+Bag'})">
+                            <img src="https://placehold.co/96x140/F0E68C/333333?text=Beach+Bag" alt="Beach Tote" class="w-full h-40 object-cover">
+                            <p class="p-1 text-xs font-semibold text-center">Beach Tote</p>
+                        </div>
+                        <!-- Bag Item 2 -->
+                        <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02]" onclick="toggleView(2, {id: 'bag-2', name: 'Kalamkari Sling Bag', image: 'https://placehold.co/96x140/CD5C5C/ffffff?text=Sling+Bag'})">
+                            <img src="https://placehold.co/96x140/CD5C5C/ffffff?text=Sling+Bag" alt="Sling Bag" class="w-full h-40 object-cover">
+                            <p class="p-1 text-xs font-semibold text-center">Kalamkari Sling</p>
+                        </div>
+                        <!-- Bag Item 3 -->
+                        <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02]" onclick="toggleView(2, {id: 'bag-3', name: 'Embroidered Backpack', image: 'https://placehold.co/96x140/8FBC8F/ffffff?text=Backpack'})">
+                            <img src="https://placehold.co/96x140/8FBC8F/ffffff?text=Backpack" alt="Backpack" class="w-full h-40 object-cover">
+                            <p class="p-1 text-xs font-semibold text-center">Backpack</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. Towels Collection -->
+                <div class="mobile-padding py-4 md:py-8">
+                    <h2 class="text-lg md:text-2xl font-bold text-gray-800 mb-3">Soft Towels & Throws</h2>
+                    <div class="flex space-x-4 overflow-x-auto horizontal-scroll md:grid md:grid-cols-6 md:gap-6 md:overflow-visible md:space-x-0">
+                        <!-- Towel Item 1 -->
+                        <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02]" onclick="toggleView(2, {id: 'towel-1', name: 'Organic Cotton Towel', image: 'https://placehold.co/96x140/ADD8E6/333333?text=Bath+Towel'})">
+                            <img src="https://placehold.co/96x140/ADD8E6/333333?text=Bath+Towel" alt="Cotton Towel" class="w-full h-40 object-cover">
+                            <p class="p-1 text-xs font-semibold text-center">Bath Towel</p>
+                        </div>
+                        <!-- Towel Item 2 -->
+                        <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02]" onclick="toggleView(2, {id: 'towel-2', name: 'Linen Kitchen Towel', image: 'https://placehold.co/96x140/F5DEB3/333333?text=Kitchen+Towel'})">
+                            <img src="https://placehold.co/96x140/F5DEB3/333333?text=Kitchen+Towel" alt="Kitchen Towel" class="w-full h-40 object-cover">
+                            <p class="p-1 text-xs font-semibold text-center">Kitchen Linen</p>
+                        </div>
+                        <!-- Towel Item 3 -->
+                        <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02]" onclick="toggleView(2, {id: 'towel-3', name: 'Beach Throw', image: 'https://placehold.co/96x140/FFA07A/ffffff?text=Beach+Throw'})">
+                            <img src="https://placehold.co/96x140/FFA07A/ffffff?text=Beach+Throw" alt="Beach Throw" class="w-full h-40 object-cover">
+                            <p class="p-1 text-xs font-semibold text-center">Beach Throw</p>
+                        </div>
+                    </div>
+                </div>
+
 
             </section>
 
@@ -387,7 +445,7 @@
                     <!-- LEFT COLUMN: Product Image -->
                     <div class="mobile-padding md:p-0">
                         <div class="detail-image-container mb-6 overflow-hidden rounded-xl shadow-lg md:mb-0">
-                            <img id="detail-product-image" src="https://placehold.co/400x600/7B3F00/ffffff?text=Silk+Saree+Detail" alt="Product Detail Image" class="object-cover">
+                            <img id="detail-product-image" src="https://placehold.co/400x600/7B3F00/ffffff?text=Product+Detail" alt="Product Detail Image" class="object-cover">
                         </div>
                     </div>
 
@@ -403,7 +461,7 @@
                         
                         <p class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-3">$1,250</p>
                         <p class="text-base text-gray-700 mb-4">
-                            A beautiful, authentic silk saree, hand-woven by master artisans. Certified ethical sourcing from Karnataka. Perfect for weddings and festive occasions.
+                            A beautiful, authentic hand-woven textile. Ethically sourced from master artisans. See details below for material and dimensions.
                         </p>
 
                         <!-- Details/Ratings -->
@@ -630,7 +688,7 @@
         
         // Update product details on the page
         document.getElementById('detail-product-name').textContent = productData.name;
-        // Use a high-res placeholder for detail view
+        // Use a high-res placeholder for detail view (replace size tokens)
         document.getElementById('detail-product-image').src = productData.image.replace('96x140', '600x900').replace('80x120', '600x900').replace('120x120', '600x900'); 
         
         // Update Like button state and Add to Cart button listener
