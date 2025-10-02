@@ -20,14 +20,11 @@
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f8f8f8;
-            /* Allow the body to stretch full width */
             padding: 0;
             margin: 0;
         }
 
-        /* * App Container: Full width on all screens. 
-         * The content area inside will handle max-width on desktop.
-         */
+        /* * App Container: Ensure it can scroll freely */
         .app-container {
             width: 100%;
             background-color: white;
@@ -36,9 +33,7 @@
             min-height: 100vh;
         }
 
-        /* * Content Area: This div centers and limits the width of the main content 
-         * on desktop, providing the professional "Amazon-like" feel.
-         */
+        /* * Content Area: Centers and limits the width of the main content on desktop (768px+). */
         .content-area {
             max-width: 1200px; 
             margin: 0 auto;
@@ -93,6 +88,19 @@
             height: 100%;
         }
         
+        /* Mobile Detail View: Add padding to the bottom of the content area 
+           to prevent the fixed footer bar from covering content. */
+        #detail-view .content-scroll-padding-mobile {
+            padding-bottom: 7rem; /* Space for the 64px fixed bar + padding */
+        }
+        
+        /* Remove extra padding on desktop */
+        @media (min-width: 768px) {
+            #detail-view .content-scroll-padding-mobile {
+                padding-bottom: 0;
+            }
+        }
+
         /* Toast Notification Styling */
         #toast-container {
             position: fixed;
@@ -323,7 +331,7 @@
                 <div class="mobile-padding space-y-4 md:grid md:grid-cols-3 md:gap-6 md:space-y-0">
                     
                     <!-- Product Item 1: Silk Saree -->
-                    <div class="flex flex-col md:flex-row items-start bg-white p-3 rounded-xl shadow-md cursor-pointer transform transition-transform duration-200 hover:scale-[1.01]" onclick="toggleView(2, {id: 'product-A', name: 'Silk Saree A', image: 'https://placehold.co/80x120/7B3F00/ffffff?text=Silk'})">
+                    <div class="flex flex-col md:flex-row items-start bg-white p-3 rounded-xl shadow-md cursor-pointer transform transition-transform duration-200 hover:scale-[1.01]" onclick="toggleView(2, {id: 'product-A', name: 'Premium Silk Saree', image: 'https://placehold.co/80x120/7B3F00/ffffff?text=Silk'})">
                         <img src="https://placehold.co/80x120/7B3F00/ffffff?text=Silk" alt="Silk Saree" class="w-20 h-32 object-cover rounded-lg flex-shrink-0 mb-3 md:mb-0">
                         <div class="md:ml-4 flex flex-col justify-between h-full">
                             <h3 class="text-lg font-bold text-gray-900">Premium Silk</h3>
@@ -360,7 +368,7 @@
             <section id="detail-view" class="view-content hidden">
                 
                 <!-- Desktop: 2-Column Grid | Mobile: Stacked -->
-                <div class="md:grid md:grid-cols-2 md:gap-10 md:py-8">
+                <div class="md:grid md:grid-cols-2 md:gap-10 md:py-8 content-scroll-padding-mobile">
                     
                     <!-- LEFT COLUMN: Product Image -->
                     <div class="mobile-padding md:p-0">
@@ -397,7 +405,7 @@
                             </div>
                         </div>
 
-                        <!-- Call to action/Options Placeholder -->
+                        <!-- Options Placeholder -->
                         <div class="pt-4">
                             <h3 class="text-lg font-semibold text-gray-800 mb-3">Color Options</h3>
                             <div class="flex space-x-3">
@@ -407,16 +415,26 @@
                             </div>
                         </div>
                         
-                        <!-- DESKTOP ADD TO CART BUTTON (Visible on md: and up) -->
-                        <div id="desktop-add-to-cart" class="hidden md:block border-t border-gray-100 pt-6 mt-6">
+                        <!-- DESKTOP ADD TO CART & BUY NOW BUTTONS (Visible on md: and up) -->
+                        <div id="desktop-actions" class="hidden md:block border-t border-gray-100 pt-6 mt-6">
                             <button onclick="addToCart()" class="w-full bg-[#7B3F00] text-white font-bold py-3 rounded-xl shadow-lg shadow-[#7B3F00]/30 transition-all duration-200 hover:bg-[#5e3000]">
                                 Add to Cart
                             </button>
-                            <button class="w-full mt-3 bg-gray-100 text-gray-800 font-bold py-3 rounded-xl transition-all duration-200 hover:bg-gray-200">
+                            <!-- Buy Now button for desktop -->
+                            <button onclick="showToast('Proceeding to Buy Now...')" class="w-full mt-3 bg-gray-100 text-gray-800 font-bold py-3 rounded-xl transition-all duration-200 hover:bg-gray-200">
                                 Buy Now
                             </button>
                         </div>
                         
+                    </div>
+                </div>
+                <!-- Long content placeholder to ensure scrolling on mobile is testable -->
+                <div class="mobile-padding md:p-0">
+                    <div class="md:hidden mt-4 text-sm text-gray-500">
+                        <p class="mb-2">--- Detailed Product Description ---</p>
+                        <p class="mb-4">This section has extra text to make sure the page scrolls past the image and description on smaller screens. Without enough content, scrolling doesn't activate, and the fixed bar might not be tested correctly. Scroll down to see the fixed 'Buy Now' button at the bottom!</p>
+                        <p class="mb-4">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Laudantium, ab, quidem error ipsam, ad eaque nobis voluptas minus doloremque sapiente sequi. Reprehenderit totam in, quos voluptatum iure animi temporibus iusto!</p>
+                        <p class="mb-4">Earum, vitae architecto? Voluptas, dolorum. Totam, aspernatur! Magni, dolorum. Repellendus, voluptatum eaque. Blanditiis, sapiente doloremque! Nisi, dolor iusto?</p>
                     </div>
                 </div>
             </section>
@@ -456,18 +474,20 @@
     
     <!-- 
         ========================================
-        4. Floating Bottom Bar (For Detail View)
+        4. FIXED MOBILE ACTION BAR (FOR DETAIL VIEW ONLY)
         ========================================
-        This is ONLY for the MOBILE view when in Detail page. Hidden on desktop (md:hidden).
+        Fixed at the bottom, ONLY visible on Mobile (md:hidden).
+        This ensures the Buy Now button is always accessible and is the fix for the scrolling issue.
     -->
     <div id="detail-actions-bar" class="fixed bottom-0 left-0 w-full p-4 bg-white border-t border-gray-100 shadow-2xl z-30 hidden md:hidden" style="border-radius: 0;">
         <div class="flex space-x-3">
-            <button class="flex items-center justify-center p-3 rounded-xl border border-gray-300 text-gray-700 transition-colors hover:bg-gray-50 w-1/4">
-                <i data-lucide="message-square" class="h-6 w-6"></i>
-            </button>
             <!-- Add to Cart Button -->
-            <button id="add-to-cart-button" class="w-3/4 bg-[#B8860B] text-white font-bold py-3 rounded-xl shadow-lg shadow-yellow-300/50 transition-all duration-200 hover:bg-[#a0770a]">
+            <button id="add-to-cart-button" class="w-1/2 bg-[#B8860B] text-white font-bold py-3 rounded-xl shadow-lg shadow-yellow-300/50 transition-all duration-200 hover:bg-[#a0770a]">
                 Add to Cart
+            </button>
+            <!-- Buy Now Button (Added as requested) -->
+            <button onclick="showToast('Proceeding to Buy Now...')" class="w-1/2 bg-red-600 text-white font-bold py-3 rounded-xl shadow-lg shadow-red-300/50 transition-all duration-200 hover:bg-red-700">
+                Buy Now
             </button>
         </div>
     </div>
@@ -596,7 +616,8 @@
         
         // Update product details on the page
         document.getElementById('detail-product-name').textContent = productData.name;
-        document.getElementById('detail-product-image').src = productData.image.replace('96x140', '600x900').replace('80x120', '600x900'); 
+        // Use a high-res placeholder for detail view
+        document.getElementById('detail-product-image').src = productData.image.replace('96x140', '600x900').replace('80x120', '600x900').replace('120x120', '600x900'); 
         
         // Update Like button state and Add to Cart button listener
         updateDetailButtons(productData);
@@ -643,7 +664,7 @@
             const itemElement = document.createElement('div');
             itemElement.className = 'flex items-start bg-white p-3 rounded-xl shadow-md';
             itemElement.innerHTML = `
-                <img src="${item.image.replace('96x140', '80x120')}" alt="${item.name}" class="w-20 h-32 object-cover rounded-lg flex-shrink-0">
+                <img src="${item.image.replace('96x140', '80x120').replace('120x120', '80x120')}" alt="${item.name}" class="w-20 h-32 object-cover rounded-lg flex-shrink-0">
                 <div class="ml-4 flex flex-col justify-between h-full w-full">
                     <h3 class="text-lg font-bold text-gray-900">${item.name}</h3>
                     <p class="text-sm text-gray-500">Qty: ${item.quantity}</p>
@@ -683,10 +704,10 @@
         }
 
         // Hide all main content views
-        homeView.classList.add('hidden');
-        resultsView.classList.add('hidden');
-        detailView.classList.add('hidden');
-        cartView.classList.add('hidden');
+        const views = [homeView, resultsView, detailView, cartView];
+        views.forEach(v => v.classList.add('hidden'));
+        
+        // Hide the fixed mobile action bar by default
         detailActionBar.classList.add('hidden');
 
         let newIcon = 'menu';
@@ -699,7 +720,7 @@
             newIcon = 'arrow-left';
         } else if (viewIndex === 2) {
             detailView.classList.remove('hidden');
-            // Detail action bar is only visible on mobile (handled by CSS class 'md:hidden' on the bar element)
+            // The fixed action bar is ONLY for the Detail View (2) on mobile
             detailActionBar.classList.remove('hidden'); 
             newIcon = 'arrow-left';
             if (productData) {
@@ -718,8 +739,8 @@
         navButton.innerHTML = `<i data-lucide="${newIcon}" class="h-6 w-6"></i>`;
         lucide.createIcons(); // Re-render icon
 
-        // Scroll the main content area to top on view switch
-        document.getElementById('app-container').scrollTo({ top: 0, behavior: 'smooth' });
+        // Scroll the main app container to top on view switch to fix scrolling issues
+        document.getElementById('app-container').scrollTo({ top: 0, behavior: 'instant' });
     }
 
     /**
