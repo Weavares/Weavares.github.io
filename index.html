@@ -3,6 +3,7 @@
 <head>
     <!-- Pacifico font link (already present) -->
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Our Weavers :) E-commerce</title>
@@ -10,8 +11,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Load Lucide Icons for aesthetic vectors -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    
-    <!-- Configure Tailwind CSS and Custom Styles -->
+    <!-- Configure Tailwind CSS -->
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
         
@@ -26,7 +26,7 @@
             padding: 0;
             margin: 0;
         }
-        
+
         .script-font {
             font-family: 'Pacifico', cursive; 
             color: var(--primary-color) !important; 
@@ -37,22 +37,23 @@
             background-color: white;
             position: relative;
             overflow-y: auto;
-            min-height: 100vh;
+            min-height: 10vh;
         }
 
-        /* Center the content on desktop */
+        /* FIX: Content Area is full-width on mobile (no global padding). Padding is added to static children. */
         .content-area {
             max-width: 1200px; 
             margin: 0 auto;
         }
 
         @media (min-width: 768px) {
+            /* On desktop, apply standard padding to the main content area */
             .content-area {
                 padding: 1rem; 
             }
         }
         
-        /* Hide scrollbar for clean horizontal scrolling */
+        /* Custom scrollbar for horizontal lists */
         .horizontal-scroll::-webkit-scrollbar {
             display: none;
         }
@@ -74,7 +75,7 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
 
-        /* Detail view image aspect ratio (3:2 vertical) */
+        /* Detail view image aspect ratio */
         .detail-image-container {
             width: 100%;
             padding-top: 150%; 
@@ -92,6 +93,7 @@
         #detail-view .content-scroll-padding-mobile {
             padding-bottom: 7rem; 
         }
+        
         
         @media (min-width: 768px) {
             #detail-view .content-scroll-padding-mobile {
@@ -131,17 +133,19 @@
             color: var(--primary-color);
         }
         
-        /* Responsive list item structure for search results */
+        /* FIX: Ensure flex items in results view are side-by-side on mobile */
         .results-item-container {
             display: flex;
-            align-items: flex-start; 
+            align-items: flex-start; /* Align image and text block at the top */
         }
         .results-item-text-content {
-            flex-grow: 1; 
-            display: flex; 
+            flex-grow: 1; /* Allow the text content to take up the remaining space */
+            display: flex; /* Use flex inside to control spacing */
             flex-direction: column;
-            height: 100%; 
+            height: 100%; /* Ensure full height to align items */
         }
+
+        
     </style>
 </head>
 <body>
@@ -154,6 +158,7 @@
         ========================================
     -->
     <header class="sticky top-0 bg-white border-b border-gray-100 z-20 shadow-sm">
+        <!-- Explicitly use px-4 for mobile alignment, inherit from content-area on desktop -->
         <div class="content-area py-4 px-4 md:px-0"> 
             <div class="flex items-center justify-between">
                 <!-- Menu/Back Button -->
@@ -161,12 +166,14 @@
                     <i data-lucide="menu" class="h-6 w-6"></i>
                 </button>
                 
-                <!-- Logo/App Name -->
-                <div class="flex flex-col items-center cursor-pointer" onclick="toggleView(0)"> 
-                    <!-- Image Logo: Loaded via JS -->
+                <!-- Logo/App Name (MODIFIED FOR CENTERED VERTICAL STACK) -->
+                <div class="flex flex-col items-center"> 
+                    <!-- Image Logo: SIZE (h-10 on mobile, md:h-14 on desktop) -->
                     <img id="main-logo-image" src="" alt="Weavers Logo" class="h-20 md:h-25 w-auto object-contain">
+                    
                     <!-- Tagline "We Are Handmade" (Pacifico font) -->
-                    <p class="script-font text-xl md:text-2xl mt-1 whitespace-nowrap">We Are Handmade</p>
+                    <p class="script-font text-xl md:text-50 mt-1 whitespace-nowrap">We Are Handmade</p>
+                    <!-- Original Tagline (Hidden on mobile, only on desktop) -->
                 </div>
                 
                 <!-- Icons (Cart and Profile) -->
@@ -177,7 +184,7 @@
                         <span id="cart-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full opacity-0 scale-0 transition-all duration-300 transform">0</span>
                     </button>
                     <!-- Profile Icon -->
-                    <button class="text-gray-700 p-2 rounded-full hover:bg-gray-100 transition-colors" onclick="showToast('User profile functionality coming soon!', 'info')">
+                    <button class="text-gray-700 p-2 rounded-full hover:bg-gray-100 transition-colors">
                         <i data-lucide="user" class="h-6 w-6"></i>
                     </button>
                 </div>
@@ -190,13 +197,13 @@
         2. View Switcher Container 
         ========================================
     -->
-    <main class="w-full pb-10">
+    <main class="w-full">
         <!-- Content Area Wrapper for Desktop Centering. Removed mobile padding. -->
         <div class="content-area pt-0">
             
             <!-- ========================================
-                HOME VIEW (viewIndex: 0)
-                ======================================== -->
+                 HOME VIEW (viewIndex: 0)
+                 ======================================== -->
             <section id="home-view" class="view-content">
                 
                 <!-- Search Bar (Explicitly added px-4 for mobile alignment) -->
@@ -211,31 +218,31 @@
                 <!-- Category Icons (Explicitly added px-4 for mobile alignment) -->
                 <nav class="flex justify-between py-4 px-4 md:justify-around md:py-8 md:px-12 md:px-0">
                     <!-- Categories -->
-                    <div class="category-icon-container text-center flex flex-col items-center cursor-pointer p-2 rounded-xl" onclick="viewCategory('Handmade Gifts', 'Gift')">
+                    <div class="category-icon-container text-center flex flex-col items-center cursor-pointer p-2 rounded-xl">
                         <div class="bg-pink-100 p-3 rounded-xl text-pink-600">
                             <i data-lucide="gift" class="h-6 w-6 md:h-8 md:w-8"></i>
                         </div>
                         <span class="text-xs mt-1 text-gray-700 font-medium">Gifts</span>
                     </div>
-                    <div class="category-icon-container text-center flex flex-col items-center cursor-pointer p-2 rounded-xl" onclick="showToast('No active offers right now.', 'info')">
+                    <div class="category-icon-container text-center flex flex-col items-center cursor-pointer p-2 rounded-xl">
                         <div class="bg-green-100 p-3 rounded-xl text-green-600">
                             <i data-lucide="percent" class="h-6 w-6 md:h-8 md:w-8"></i>
                         </div>
                         <span class="text-xs mt-1 text-gray-700 font-medium">Offers</span>
                     </div>
-                    <div class="category-icon-container text-center flex flex-col items-center cursor-pointer p-2 rounded-xl hidden md:flex" onclick="showToast('Viewing New Arrivals!', 'info')">
+                    <div class="category-icon-container text-center flex flex-col items-center cursor-pointer p-2 rounded-xl hidden md:flex">
                         <div class="bg-purple-100 p-3 rounded-xl text-purple-600">
                             <i data-lucide="award" class="h-6 w-6 md:h-8 md:w-8"></i>
                         </div>
                         <span class="text-xs mt-1 text-gray-700 font-medium">New</span>
                     </div>
-                    <div class="category-icon-container text-center flex flex-col items-center cursor-pointer p-2 rounded-xl" onclick="showToast('Top Sellers functionality coming soon!', 'info')">
+                    <div class="category-icon-container text-center flex flex-col items-center cursor-pointer p-2 rounded-xl">
                         <div class="bg-yellow-100 p-3 rounded-xl text-yellow-600">
                             <i data-lucide="store" class="h-6 w-6 md:h-8 md:w-8"></i>
                         </div>
                         <span class="text-xs mt-1 text-gray-700 font-medium">Seller</span>
                     </div>
-                    <div class="category-icon-container text-center flex flex-col items-center cursor-pointer p-2 rounded-xl" onclick="showToast('View your liked items!', 'info')">
+                    <div class="category-icon-container text-center flex flex-col items-center cursor-pointer p-2 rounded-xl">
                         <div class="bg-red-100 p-3 rounded-xl text-red-600">
                             <i data-lucide="heart" class="h-6 w-6 md:h-8 md:w-8"></i>
                         </div>
@@ -245,47 +252,50 @@
 
                 <!-- 
                     ========================================
-                    TRENDS & NEW COLLECTIONS SECTIONS
+                    TRENDS & NEW COLLECTIONS SECTIONS (SCROLL FIX APPLIED)
+                    Product cards use toggleView(2) to go to the detail page.
+                    Headers use viewCategory() to go to results view (1).
                     ========================================
                 -->
 
                 <!-- 1. Today's Trends (Sarees) -->
                 <div class="py-4 md:py-8">
+                    <!-- Title aligned with rest of content using px-4. ADDED CLICK HANDLER -->
                     <h2 class="clickable-header text-lg md:text-2xl font-bold text-gray-800 mb-3 px-4 md:px-0" 
                         onclick="viewCategory('Today\'s Trends (Sarees)', 'Saree')">
-                        Today's Trends (Sarees) <i data-lucide="chevron-right" class="h-5 w-5 inline-block align-middle"></i>
+                        Today's Trends (Sarees)
                     </h2>
                     <!-- Scroll container uses pl-4/pr-4 for content offset and allows full width scroll -->
                     <div class="flex space-x-4 overflow-x-auto horizontal-scroll pl-4 pr-4 md:px-0 md:grid md:grid-cols-6 md:gap-6 md:overflow-visible md:space-x-0">
                         <!-- Saree Card 1 -->
-                        <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02] border border-gray-100" onclick="toggleView(2, {id: 'product-A', name: 'Maroon Silk Saree', image: 'https://placehold.co/96x140/7B3F00/ffffff?text=Saree+A'})">
+                        <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02]" onclick="toggleView(2, {id: 'product-A', name: 'Maroon Silk Saree', image: 'https://placehold.co/96x140/7B3F00/ffffff?text=Saree+A'})">
                             <img src="https://placehold.co/96x140/7B3F00/ffffff?text=Saree+A" alt="Trending Saree" class="w-full h-40 object-cover">
-                            <p class="p-1 text-xs font-semibold text-center text-gray-700">Maroon Silk</p>
+                            <p class="p-1 text-xs font-semibold text-center">Maroon Silk</p>
                         </div>
                         <!-- Saree Card 2 -->
-                        <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02] border border-gray-100" onclick="toggleView(2, {id: 'product-B', name: 'Green Dhavani', image: 'https://placehold.co/96x140/38761D/ffffff?text=Saree+B'})">
+                        <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02]" onclick="toggleView(2, {id: 'product-B', name: 'Green Dhavani', image: 'https://placehold.co/96x140/38761D/ffffff?text=Saree+B'})">
                             <img src="https://placehold.co/96x140/38761D/ffffff?text=Saree+B" alt="Trending Saree" class="w-full h-40 object-cover">
-                            <p class="p-1 text-xs font-semibold text-center text-gray-700">Green Dhavani</p>
+                            <p class="p-1 text-xs font-semibold text-center">Green Dhavani</p>
                         </div>
                         <!-- Saree Card 3 -->
-                        <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02] border border-gray-100" onclick="toggleView(2, {id: 'product-C', name: 'Black Cotton', image: 'https://placehold.co/96x140/000000/ffffff?text=Saree+C'})">
+                        <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02]" onclick="toggleView(2, {id: 'product-C', name: 'Black Cotton', image: 'https://placehold.co/96x140/000000/ffffff?text=Saree+C'})">
                             <img src="https://placehold.co/96x140/000000/ffffff?text=Saree+C" alt="Trending Saree" class="w-full h-40 object-cover">
-                            <p class="p-1 text-xs font-semibold text-center text-gray-700">Black Cotton</p>
+                            <p class="p-1 text-xs font-semibold text-center">Black Cotton</p>
                         </div>
                         <!-- Saree Card 4 -->
-                        <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02] border border-gray-100" onclick="toggleView(2, {id: 'product-D', name: 'Ivory White', image: 'https://placehold.co/96x140/FFFFFF/333333?text=Saree+D'})">
+                        <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02]" onclick="toggleView(2, {id: 'product-D', name: 'Ivory White', image: 'https://placehold.co/96x140/FFFFFF/333333?text=Saree+D'})">
                             <img src="https://placehold.co/96x140/FFFFFF/333333?text=Saree+D" alt="Trending Saree" class="w-full h-40 object-cover border border-gray-100">
-                            <p class="p-1 text-xs font-semibold text-center text-gray-700">Ivory White</p>
+                            <p class="p-1 text-xs font-semibold text-center">Ivory White</p>
                         </div>
                         <!-- Saree Card 5 (Desktop Only) -->
-                        <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02] hidden sm:block border border-gray-100" onclick="toggleView(2, {id: 'product-E', name: 'Rose Red Blend', image: 'https://placehold.co/96x140/CD5C5C/ffffff?text=Saree+E'})">
+                        <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02] hidden sm:block" onclick="toggleView(2, {id: 'product-E', name: 'Rose Red Blend', image: 'https://placehold.co/96x140/CD5C5C/ffffff?text=Saree+E'})">
                             <img src="https://placehold.co/96x140/CD5C5C/ffffff?text=Saree+E" alt="Trending Saree" class="w-full h-40 object-cover">
-                            <p class="p-1 text-xs font-semibold text-center text-gray-700">Rose Red</p>
+                            <p class="p-1 text-xs font-semibold text-center">Rose Red</p>
                         </div>
                         <!-- Saree Card 6 (Desktop Only) -->
-                        <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02] hidden md:block border border-gray-100" onclick="toggleView(2, {id: 'product-F', name: 'Marigold Gold', image: 'https://placehold.co/96x140/DAA520/ffffff?text=Saree+F'})">
+                        <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02] hidden md:block" onclick="toggleView(2, {id: 'product-F', name: 'Marigold Gold', image: 'https://placehold.co/96x140/DAA520/ffffff?text=Saree+F'})">
                             <img src="https://placehold.co/96x140/DAA520/ffffff?text=Saree+F" alt="Trending Saree" class="w-full h-40 object-cover">
-                            <p class="p-1 text-xs font-semibold text-center text-gray-700">Marigold Gold</p>
+                            <p class="p-1 text-xs font-semibold text-center">Marigold Gold</p>
                         </div>
                     </div>
                 </div>
@@ -294,33 +304,33 @@
                 <div class="py-4 md:py-8">
                     <h2 class="clickable-header text-lg md:text-2xl font-bold text-gray-800 mb-3 px-4 md:px-0" 
                         onclick="viewCategory('Handwoven Mats', 'Mat')">
-                        Handwoven Mats <i data-lucide="chevron-right" class="h-5 w-5 inline-block align-middle"></i>
+                        Handwoven Mats
                     </h2>
                     <div class="flex space-x-4 overflow-x-auto horizontal-scroll pl-4 pr-4 md:px-0 md:grid md:grid-cols-6 md:gap-6 md:overflow-visible md:space-x-0">
                         <!-- Mat Item 1 -->
-                        <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02] border border-gray-100" onclick="toggleView(2, {id: 'mat-1', name: 'Bamboo Floor Mat', image: 'https://placehold.co/96x140/B08E6E/ffffff?text=Floor+Mat'})">
+                        <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02]" onclick="toggleView(2, {id: 'mat-1', name: 'Bamboo Floor Mat', image: 'https://placehold.co/96x140/B08E6E/ffffff?text=Floor+Mat'})">
                             <img src="https://placehold.co/96x140/B08E6E/ffffff?text=Floor+Mat" alt="Bamboo Mat" class="w-full h-40 object-cover">
-                            <p class="p-1 text-xs font-semibold text-center text-gray-700">Bamboo Mat</p>
+                            <p class="p-1 text-xs font-semibold text-center">Bamboo Mat</p>
                         </div>
                         <!-- Mat Item 2 -->
-                        <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02] border border-gray-100" onclick="toggleView(2, {id: 'mat-2', name: 'Cotton Yoga Mat', image: 'https://placehold.co/96x140/5C6BC0/ffffff?text=Yoga+Mat'})">
+                        <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02]" onclick="toggleView(2, {id: 'mat-2', name: 'Cotton Yoga Mat', image: 'https://placehold.co/96x140/5C6BC0/ffffff?text=Yoga+Mat'})">
                             <img src="https://placehold.co/96x140/5C6BC0/ffffff?text=Yoga+Mat" alt="Yoga Mat" class="w-full h-40 object-cover">
-                            <p class="p-1 text-xs font-semibold text-center text-gray-700">Cotton Yoga</p>
+                            <p class="p-1 text-xs font-semibold text-center">Cotton Yoga</p>
                         </div>
                         <!-- Mat Item 3 -->
-                        <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02] border border-gray-100" onclick="toggleView(2, {id: 'mat-3', name: 'Jute Table Runner', image: 'https://placehold.co/96x140/A1887F/ffffff?text=Table+Mat'})">
+                        <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02]" onclick="toggleView(2, {id: 'mat-3', name: 'Jute Table Runner', image: 'https://placehold.co/96x140/A1887F/ffffff?text=Table+Mat'})">
                             <img src="https://placehold.co/96x140/A1887F/ffffff?text=Table+Mat" alt="Table Runner" class="w-full h-40 object-cover">
-                            <p class="p-1 text-xs font-semibold text-center text-gray-700">Table Runner</p>
+                            <p class="p-1 text-xs font-semibold text-center">Table Runner</p>
                         </div>
                         <!-- Mat Item 4 -->
-                        <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02] border border-gray-100" onclick="toggleView(2, {id: 'mat-4', name: 'Geometric Pattern Mat', image: 'https://placehold.co/96x140/008080/ffffff?text=Geo+Mat'})">
+                        <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02]" onclick="toggleView(2, {id: 'mat-4', name: 'Geometric Pattern Mat', image: 'https://placehold.co/96x140/008080/ffffff?text=Geo+Mat'})">
                             <img src="https://placehold.co/96x140/008080/ffffff?text=Geo+Mat" alt="Geometric Mat" class="w-full h-40 object-cover">
-                            <p class="p-1 text-xs font-semibold text-center text-gray-700">Geometric</p>
+                            <p class="p-1 text-xs font-semibold text-center">Geometric</p>
                         </div>
                         <!-- Mat Item 5 (Desktop Only) -->
-                        <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02] hidden sm:block border border-gray-100" onclick="toggleView(2, {id: 'mat-5', name: 'Soft Pouch', image: 'https://placehold.co/96x140/D2B48C/ffffff?text=Soft+Mat'})">
+                        <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02] hidden sm:block" onclick="toggleView(2, {id: 'mat-5', name: 'Soft Pouch', image: 'https://placehold.co/96x140/D2B48C/ffffff?text=Soft+Mat'})">
                             <img src="https://placehold.co/96x140/D2B48C/ffffff?text=Soft+Mat" alt="Soft Pouch" class="w-full h-40 object-cover">
-                            <p class="p-1 text-xs font-semibold text-center text-gray-700">Soft Pouch</p>
+                            <p class="p-1 text-xs font-semibold text-center">Soft Pouch</p>
                         </div>
                     </div>
                 </div>
@@ -329,28 +339,28 @@
                 <div class="py-4 md:py-8">
                     <h2 class="clickable-header text-lg md:text-2xl font-bold text-gray-800 mb-3 px-4 md:px-0"
                         onclick="viewCategory('Artisan Rugs', 'Rug')">
-                        Artisan Rugs <i data-lucide="chevron-right" class="h-5 w-5 inline-block align-middle"></i>
+                        Artisan Rugs
                     </h2>
                     <div class="flex space-x-4 overflow-x-auto horizontal-scroll pl-4 pr-4 md:px-0 md:grid md:grid-cols-6 md:gap-6 md:overflow-visible md:space-x-0">
                         <!-- Rug Item 1 -->
-                        <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02] border border-gray-100" onclick="toggleView(2, {id: 'rug-1', name: 'Terracotta Area Rug', image: 'https://placehold.co/96x140/CC5500/ffffff?text=Area+Rug'})">
+                        <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02]" onclick="toggleView(2, {id: 'rug-1', name: 'Terracotta Area Rug', image: 'https://placehold.co/96x140/CC5500/ffffff?text=Area+Rug'})">
                             <img src="https://placehold.co/96x140/CC5500/ffffff?text=Area+Rug" alt="Terracotta Rug" class="w-full h-40 object-cover">
-                            <p class="p-1 text-xs font-semibold text-center text-gray-700">Terracotta</p>
+                            <p class="p-1 text-xs font-semibold text-center">Terracotta</p>
                         </div>
                         <!-- Rug Item 2 -->
-                        <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02] border border-gray-100" onclick="toggleView(2, {id: 'rug-2', name: 'Woolen Runner Rug', image: 'https://placehold.co/96x140/800080/ffffff?text=Runner+Rug'})">
+                        <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02]" onclick="toggleView(2, {id: 'rug-2', name: 'Woolen Runner Rug', image: 'https://placehold.co/96x140/800080/ffffff?text=Runner+Rug'})">
                             <img src="https://placehold.co/96x140/800080/ffffff?text=Runner+Rug" alt="Runner Rug" class="w-full h-40 object-cover">
-                            <p class="p-1 text-xs font-semibold text-center text-gray-700">Wool Runner</p>
+                            <p class="p-1 text-xs font-semibold text-center">Wool Runner</p>
                         </div>
                         <!-- Rug Item 3 -->
-                        <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02] border border-gray-100" onclick="toggleView(2, {id: 'rug-3', name: 'Blue Hand-Tufted', image: 'https://placehold.co/96x140/4682B4/ffffff?text=Tufted+Rug'})">
+                        <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02]" onclick="toggleView(2, {id: 'rug-3', name: 'Blue Hand-Tufted', image: 'https://placehold.co/96x140/4682B4/ffffff?text=Tufted+Rug'})">
                             <img src="https://placehold.co/96x140/4682B4/ffffff?text=Tufted+Rug" alt="Blue Tufted Rug" class="w-full h-40 object-cover">
-                            <p class="p-1 text-xs font-semibold text-center text-gray-700">Hand-Tufted</p>
+                            <p class="p-1 text-xs font-semibold text-center">Hand-Tufted</p>
                         </div>
                         <!-- Rug Item 4 (Desktop Only) -->
-                        <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02] hidden sm:block border border-gray-100" onclick="toggleView(2, {id: 'rug-4', name: 'Geometric Pattern Rug', image: 'https://placehold.co/96x140/333333/ffffff?text=Modern+Rug'})">
+                        <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02] hidden sm:block" onclick="toggleView(2, {id: 'rug-4', name: 'Geometric Pattern Rug', image: 'https://placehold.co/96x140/333333/ffffff?text=Modern+Rug'})">
                             <img src="https://placehold.co/96x140/333333/ffffff?text=Modern+Rug" alt="Modern Rug" class="w-full h-40 object-cover">
-                            <p class="p-1 text-xs font-semibold text-center text-gray-700">Modern Black</p>
+                            <p class="p-1 text-xs font-semibold text-center">Modern Black</p>
                         </div>
                     </div>
                 </div>
@@ -359,31 +369,58 @@
                 <div class="py-4 md:py-8">
                     <h2 class="clickable-header text-lg md:text-2xl font-bold text-gray-800 mb-3 px-4 md:px-0"
                         onclick="viewCategory('Woven Bags & Totes', 'Bag')">
-                        Woven Bags & Totes <i data-lucide="chevron-right" class="h-5 w-5 inline-block align-middle"></i>
+                        Woven Bags & Totes
                     </h2>
                     <div class="flex space-x-4 overflow-x-auto horizontal-scroll pl-4 pr-4 md:px-0 md:grid md:grid-cols-6 md:gap-6 md:overflow-visible md:space-x-0">
                         <!-- Bag Item 1 -->
-                        <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02] border border-gray-100" onclick="toggleView(2, {id: 'bag-1', name: 'Jute Beach Tote', image: 'https://placehold.co/96x140/F0E68C/333333?text=Beach+Bag'})">
+                        <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02]" onclick="toggleView(2, {id: 'bag-1', name: 'Jute Beach Tote', image: 'https://placehold.co/96x140/F0E68C/333333?text=Beach+Bag'})">
                             <img src="https://placehold.co/96x140/F0E68C/333333?text=Beach+Bag" alt="Beach Tote" class="w-full h-40 object-cover">
-                            <p class="p-1 text-xs font-semibold text-center text-gray-700">Beach Tote</p>
+                            <p class="p-1 text-xs font-semibold text-center">Beach Tote</p>
                         </div>
                         <!-- Bag Item 2 -->
-                        <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02] border border-gray-100" onclick="toggleView(2, {id: 'bag-2', name: 'Kalamkari Sling Bag', image: 'https://placehold.co/96x140/CD5C5C/ffffff?text=Sling+Bag'})">
+                        <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02]" onclick="toggleView(2, {id: 'bag-2', name: 'Kalamkari Sling Bag', image: 'https://placehold.co/96x140/CD5C5C/ffffff?text=Sling+Bag'})">
                             <img src="https://placehold.co/96x140/CD5C5C/ffffff?text=Sling+Bag" alt="Sling Bag" class="w-full h-40 object-cover">
-                            <p class="p-1 text-xs font-semibold text-center text-gray-700">Kalamkari Sling</p>
+                            <p class="p-1 text-xs font-semibold text-center">Kalamkari Sling</p>
                         </div>
                         <!-- Bag Item 3 -->
-                        <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02] border border-gray-100" onclick="toggleView(2, {id: 'bag-3', name: 'Embroidered Backpack', image: 'https://placehold.co/96x140/8FBC8F/ffffff?text=Backpack'})">
+                        <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02]" onclick="toggleView(2, {id: 'bag-3', name: 'Embroidered Backpack', image: 'https://placehold.co/96x140/8FBC8F/ffffff?text=Backpack'})">
                             <img src="https://placehold.co/96x140/8FBC8F/ffffff?text=Backpack" alt="Backpack" class="w-full h-40 object-cover">
-                            <p class="p-1 text-xs font-semibold text-center text-gray-700">Backpack</p>
+                            <p class="p-1 text-xs font-semibold text-center">Backpack</p>
                         </div>
                     </div>
                 </div>
+
+                <!-- 5. Towels Collection -->
+                <div class="py-4 md:py-8">
+                    <h2 class="clickable-header text-lg md:text-2xl font-bold text-gray-800 mb-3 px-4 md:px-0"
+                        onclick="viewCategory('Soft Towels & Throws', 'Towel')">
+                        Soft Towels & Throws
+                    </h2>
+                    <div class="flex space-x-4 overflow-x-auto horizontal-scroll pl-4 pr-4 md:px-0 md:grid md:grid-cols-6 md:gap-6 md:overflow-visible md:space-x-0">
+                        <!-- Towel Item 1 -->
+                        <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02]" onclick="toggleView(2, {id: 'towel-1', name: 'Organic Cotton Towel', image: 'https://placehold.co/96x140/ADD8E6/333333?text=Bath+Towel'})">
+                            <img src="https://placehold.co/96x140/ADD8E6/333333?text=Bath+Towel" alt="Cotton Towel" class="w-full h-40 object-cover">
+                            <p class="p-1 text-xs font-semibold text-center">Bath Towel</p>
+                        </div>
+                        <!-- Towel Item 2 -->
+                        <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02]" onclick="toggleView(2, {id: 'towel-2', name: 'Linen Kitchen Towel', image: 'https://placehold.co/96x140/F5DEB3/333333?text=Kitchen+Towel'})">
+                            <img src="https://placehold.co/96x140/F5DEB3/333333?text=Kitchen+Towel" alt="Kitchen Towel" class="w-full h-40 object-cover">
+                            <p class="p-1 text-xs font-semibold text-center">Kitchen Linen</p>
+                        </div>
+                        <!-- Towel Item 3 -->
+                        <div class="w-28 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02]" onclick="toggleView(2, {id: 'towel-3', name: 'Beach Throw', image: 'https://placehold.co/96x140/FFA07A/ffffff?text=Beach+Throw'})">
+                            <img src="https://placehold.co/96x140/FFA07A/ffffff?text=Beach+Throw" alt="Beach Throw" class="w-full h-40 object-cover">
+                            <p class="p-1 text-xs font-semibold text-center">Beach Throw</p>
+                        </div>
+                    </div>
+                </div>
+
+
             </section>
 
             <!-- ========================================
-                SEARCH RESULTS VIEW (viewIndex: 1)
-                ======================================== -->
+                 SEARCH RESULTS VIEW (viewIndex: 1)
+                 ======================================== -->
             <section id="results-view" class="view-content hidden">
                 
                 <!-- Search Bar (Explicitly added px-4 for mobile alignment) -->
@@ -394,7 +431,7 @@
                             <!-- Input will be updated dynamically with the category name -->
                             <input id="results-search-input" type="text" value="Trending Sarees" class="w-full bg-transparent text-gray-800 font-medium focus:outline-none">
                         </div>
-                        <button class="text-sm text-gray-600 font-semibold ml-2 p-1 rounded-md hover:bg-gray-200 transition-colors" onclick="showToast('Filter options are not implemented.', 'info')">
+                        <button class="text-sm text-blue-600 font-semibold ml-2 p-1 rounded-md hover:bg-gray-200 transition-colors">
                             <i data-lucide="sliders" class="h-5 w-5"></i>
                         </button>
                     </div>
@@ -403,22 +440,21 @@
                 <!-- Results Header & Filter (Explicitly added px-4 for mobile alignment) -->
                 <div class="flex justify-between items-center mb-4 md:py-4 md:border-b md:border-gray-100 px-4 md:px-0">
                     <h2 id="results-header-title" class="text-xl font-bold text-gray-800">Results (4 items)</h2>
-                    <button class="text-sm text-gray-600 font-medium flex items-center p-2 rounded-lg hover:bg-gray-100 transition-colors" onclick="showToast('Sorting options are not implemented.', 'info')">
-                        Sort <i data-lucide="filter" class="h-4 w-4 ml-1"></i>
+                    <button class="text-sm text-blue-600 font-medium flex items-center p-2 rounded-lg hover:bg-blue-50 transition-colors">
+                        Filter <i data-lucide="filter" class="h-4 w-4 ml-1"></i>
                     </button>
                 </div>
                 
                 <!-- Product List (Dynamically populated based on category) -->
                 <div id="results-list" class="space-y-4 px-4 md:px-0 md:grid md:grid-cols-3 md:gap-6 md:space-y-0">
                     <!-- Default content for 'Saree' category, demonstrating the new mobile layout -->
-                    
                     <!-- Product Item 1: Silk Saree -->
                     <div class="results-item-container bg-white p-3 rounded-xl shadow-md cursor-pointer transform transition-transform duration-200 hover:scale-[1.01]" 
-                          onclick="toggleView(2, {id: 'product-A', name: 'Maroon Silk Saree', image: 'https://placehold.co/80x120/7B3F00/ffffff?text=Silk'})">
+                         onclick="toggleView(2, {id: 'product-A', name: 'Silk saree', image: 'https://placehold.co/80x120/7B3F00/ffffff?text=Silk'})">
                         <img src="https://placehold.co/80x120/7B3F00/ffffff?text=Silk" alt="Silk Saree" class="w-20 h-32 object-cover rounded-lg flex-shrink-0 mr-3">
                         <!-- Text Content is now flex-grow and full height to utilize space -->
                         <div class="results-item-text-content ml-1"> 
-                            <h3 class="text-lg font-bold text-gray-900 leading-tight">Maroon Silk Saree</h3>
+                            <h3 class="text-lg font-bold text-gray-900 leading-tight">Silk saree</h3>
                             <p class="text-sm text-gray-500">10 Meters | $1250</p>
                             <p class="text-sm text-green-600 font-semibold mt-auto mb-1">24+ Offers</p> <!-- mt-auto pushes it down -->
                             <div class="flex items-center">
@@ -430,760 +466,566 @@
 
                     <!-- Product Item 2: Shiny Silk Saree -->
                     <div class="results-item-container bg-white p-3 rounded-xl shadow-md cursor-pointer transform transition-transform duration-200 hover:scale-[1.01]" 
-                          onclick="toggleView(2, {id: 'product-B', name: 'Green Dhavani', image: 'https://placehold.co/80x120/38761D/ffffff?text=Shiny'})">
+                         onclick="toggleView(2, {id: 'product-B', name: 'Shiny Silk saree', image: 'https://placehold.co/80x120/38761D/ffffff?text=Shiny'})">
                         <img src="https://placehold.co/80x120/38761D/ffffff?text=Shiny" alt="Shiny Silk Saree" class="w-20 h-32 object-cover rounded-lg flex-shrink-0 mr-3">
                         <div class="results-item-text-content ml-1">
-                            <h3 class="text-lg font-bold text-gray-900 leading-tight">Green Dhavani</h3>
+                            <h3 class="text-lg font-bold text-gray-900 leading-tight">Shiny Silk saree</h3>
                             <p class="text-sm text-gray-500">10 Meters | $990</p>
                             <p class="text-sm text-green-600 font-semibold mt-auto mb-1">2+ Offers</p>
                             <div class="flex items-center">
                                 <i data-lucide="star" class="h-4 w-4 rating-star-filled fill-current mr-1"></i>
-                                <span class="text-sm text-gray-700 font-medium">(4.8)</span>
+                                <span class="text-sm text-gray-700 font-medium">(4.0)</span>
                             </div>
-                        </div>
-                    </div>
-
-                    <!-- Product Item 3: Cotton Saree (Desktop Only) -->
-                    <div class="results-item-container bg-white p-3 rounded-xl shadow-md cursor-pointer transform transition-transform duration-200 hover:scale-[1.01] hidden md:flex" 
-                          onclick="toggleView(2, {id: 'product-C', name: 'Handloom Cotton', image: 'https://placehold.co/80x120/000000/ffffff?text=Cotton'})">
-                        <img src="https://placehold.co/80x120/000000/ffffff?text=Cotton" alt="Cotton Saree" class="w-20 h-32 object-cover rounded-lg flex-shrink-0 mr-3">
-                        <div class="results-item-text-content ml-1">
-                            <h3 class="text-lg font-bold text-gray-900 leading-tight">Handloom Cotton</h3>
-                            <p class="text-sm text-gray-500">8 Meters | $550</p>
-                            <p class="text-sm text-green-600 font-semibold mt-auto mb-1">New Arrival</p>
-                            <div class="flex items-center">
-                                <i data-lucide="star" class="h-4 w-4 rating-star-filled fill-current mr-1"></i>
-                                <span class="text-sm text-gray-700 font-medium">(4.9)</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-            
-            <!-- ========================================
-                PRODUCT DETAIL VIEW (viewIndex: 2)
-                ======================================== -->
-            <section id="detail-view" class="view-content hidden">
-                <div class="md:grid md:grid-cols-2 md:gap-8 content-scroll-padding-mobile">
-                    <!-- Image Column (Mobile: Full Width, Desktop: Left Column) -->
-                    <div class="px-4 md:px-0">
-                        <div class="detail-image-container rounded-xl shadow-lg border border-gray-100 mb-6">
-                            <!-- Dynamically populated main image -->
-                            <img id="detail-image" src="https://placehold.co/400x600/7B3F00/ffffff?text=Product" alt="Product Image" class="object-cover rounded-xl">
                         </div>
                     </div>
                     
-                    <!-- Details Column (Mobile: Padded Content, Desktop: Right Column) -->
-                    <div class="px-4 md:px-0">
-                        <div id="detail-content" class="space-y-4">
-                            <!-- Product Name -->
-                            <h1 id="detail-name" class="text-3xl md:text-4xl font-extrabold text-gray-900 leading-tight">Product Name</h1>
-                            
-                            <!-- Price and Rating -->
-                            <div class="flex items-baseline justify-between pt-2 border-t border-gray-100">
-                                <p id="detail-price" class="text-3xl font-bold" style="color: var(--primary-color);">$0</p>
-                                <div class="flex items-center text-lg">
-                                    <i data-lucide="star" class="h-5 w-5 rating-star-filled fill-current mr-1"></i>
-                                    <span id="detail-rating" class="text-gray-700 font-semibold">5.0 (20 Reviews)</span>
-                                </div>
+                    <!-- Product Item 3: Dhavani Saree -->
+                    <div class="results-item-container bg-white p-3 rounded-xl shadow-md cursor-pointer transform transition-transform duration-200 hover:scale-[1.01]" 
+                         onclick="toggleView(2, {id: 'product-C', name: 'Dhavani saree', image: 'https://placehold.co/80x120/004d40/ffffff?text=Dhavani'})">
+                        <img src="https://placehold.co/80x120/004d40/ffffff?text=Dhavani" alt="Dhavani Saree" class="w-20 h-32 object-cover rounded-lg flex-shrink-0 mr-3">
+                        <div class="results-item-text-content ml-1">
+                            <h3 class="text-lg font-bold text-gray-900 leading-tight">Dhavani saree</h3>
+                            <p class="text-sm text-gray-500">10 Meters | $800</p>
+                            <p class="text-sm text-green-600 font-semibold mt-auto mb-1">2+ Offers</p>
+                            <div class="flex items-center">
+                                <i data-lucide="star" class="h-4 w-4 rating-star-filled fill-current mr-1"></i>
+                                <span class="text-sm text-gray-700 font-medium">(4.0)</span>
                             </div>
-                            
-                            <!-- Product Description -->
-                            <div>
-                                <h3 class="text-xl font-bold text-gray-800 mb-2">Description</h3>
-                                <p id="detail-description" class="text-gray-600 leading-relaxed text-base">
-                                    Loading...
-                                </p>
-                            </div>
-
-                            <!-- Options/Details -->
-                            <div class="space-y-3 pt-2">
-                                <p class="text-gray-800 font-semibold"><i data-lucide="droplets" class="h-4 w-4 inline-block mr-2 text-blue-500"></i> Material: <span class="font-normal text-gray-600" id="detail-material">Loading...</span></p>
-                                <p class="text-gray-800 font-semibold"><i data-lucide="ruler" class="h-4 w-4 inline-block mr-2 text-green-500"></i> Size: <span class="font-normal text-gray-600" id="detail-size">Loading...</span></p>
-                                <p class="text-gray-800 font-semibold"><i data-lucide="truck" class="h-4 w-4 inline-block mr-2 text-orange-500"></i> Shipping: <span class="font-normal text-gray-600">Free 3-Day Express</span></p>
-                            </div>
-
                         </div>
                     </div>
-                </div>
-                
-                <!-- Fixed Call-to-Action Bar (Mobile Only) -->
-                <div class="fixed bottom-0 left-0 w-full bg-white p-4 border-t border-gray-200 z-10 md:hidden shadow-2xl">
-                    <button id="add-to-cart-mobile" class="w-full py-3 rounded-full text-white font-bold text-lg shadow-xl hover:shadow-2xl transition-all" style="background-color: var(--primary-color);">
-                        Add to Cart ($0)
-                    </button>
-                </div>
-                
-                <!-- Desktop Add to Cart Button (Hidden on mobile) -->
-                <div class="mt-8 hidden md:block px-4 md:px-0">
-                    <button id="add-to-cart-desktop" class="w-1/2 max-w-sm py-3 rounded-xl text-white font-bold text-lg shadow-xl hover:shadow-2xl transition-all" style="background-color: var(--primary-color);">
-                        Add to Cart ($0)
-                    </button>
+                    
+                    <!-- Product Item 4: White Saree -->
+                    <div class="results-item-container bg-white p-3 rounded-xl shadow-md cursor-pointer transform transition-transform duration-200 hover:scale-[1.01]" 
+                         onclick="toggleView(2, {id: 'product-D', name: 'White saree', image: 'https://placehold.co/80x120/F0F0F0/333333?text=White'})">
+                        <img src="https://placehold.co/80x120/F0F0F0/333333?text=White" alt="White Saree" class="w-20 h-32 object-cover rounded-lg flex-shrink-0 mr-3">
+                        <div class="results-item-text-content ml-1">
+                            <h3 class="text-lg font-bold text-gray-900 leading-tight">White saree</h3>
+                            <p class="text-sm text-gray-500">10 Meters | $700</p>
+                            <p class="text-sm text-green-600 font-semibold mt-auto mb-1">2+ Offers</p>
+                            <div class="flex items-center">
+                                <i data-lucide="star" class="h-4 w-4 rating-star-filled fill-current mr-1"></i>
+                                <span class="text-sm text-gray-700 font-medium">(4.0)</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
             
             <!-- ========================================
-                CART VIEW (viewIndex: 3)
-                ======================================== -->
-            <section id="cart-view" class="view-content hidden p-4 md:p-0">
-                <h1 class="text-3xl font-bold text-gray-900 mb-6 mt-4 px-4 md:px-0">Your Shopping Cart</h1>
+                 PRODUCT DETAIL VIEW (viewIndex: 2)
+                 ======================================== -->
+            <section id="detail-view" class="view-content hidden">
+                
+                <!-- Desktop: 2-Column Grid | Mobile: Stacked -->
+                <div class="md:grid md:grid-cols-2 md:gap-10 md:py-8 content-scroll-padding-mobile">
+                    
+                    <!-- LEFT COLUMN: Product Image (Explicitly added px-4 for mobile alignment) -->
+                    <div class="px-4 md:p-0">
+                        <div class="detail-image-container mb-6 overflow-hidden rounded-xl shadow-lg md:mb-0">
+                            <img id="detail-product-image" src="https://placehold.co/400x600/7B3F00/ffffff?text=Product+Detail" alt="Product Detail Image" class="object-cover">
+                        </div>
+                    </div>
 
-                <div id="cart-list" class="space-y-4 px-4 md:px-0">
+                    <!-- RIGHT COLUMN: Product Info and Actions (Explicitly added px-4 for mobile alignment) -->
+                    <div class="px-4 md:p-0">
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 id="detail-product-name" class="text-2xl md:text-3xl font-bold text-gray-900">Handloom Silk Saree</h2>
+                            <!-- Like Button -->
+                            <button id="detail-like-button" class="text-red-500 p-2 rounded-full bg-red-50 hover:bg-red-100 transition-colors" onclick="toggleLike(currentProduct?.id)">
+                                <i data-lucide="heart" class="h-6 w-6"></i>
+                            </button>
+                        </div>
+                        
+                        <p class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-3">$1,250</p>
+                        <p class="text-base text-gray-700 mb-4">
+                            A beautiful, authentic hand-woven textile. Ethically sourced from master artisans. See details below for material and dimensions.
+                        </p>
+
+                        <!-- Details/Ratings -->
+                        <div class="flex items-center mb-6 border-b border-gray-100 pb-4">
+                            <div class="flex items-center mr-6">
+                                <i data-lucide="star" class="h-5 w-5 rating-star-filled fill-current mr-1"></i>
+                                <span class="text-lg font-semibold text-gray-700">4.8</span>
+                                <span class="text-sm text-gray-500 ml-1">(124 reviews)</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i data-lucide="ruler" class="h-5 w-5 text-gray-500 mr-1"></i>
+                                <span class="text-lg font-semibold text-gray-700">10 Meters</span>
+                            </div>
+                        </div>
+
+                        <!-- Options Placeholder -->
+                        <div class="pt-4">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-3">Color Options</h3>
+                            <div class="flex space-x-3">
+                                <div class="h-8 w-8 rounded-full border-2 border-red-500 bg-red-700 cursor-pointer shadow-md"></div>
+                                <div class="h-8 w-8 rounded-full border border-gray-300 bg-green-700 cursor-pointer hover:border-black transition-all"></div>
+                                <div class="h-8 w-8 rounded-full border border-gray-300 bg-blue-700 cursor-pointer hover:border-black transition-all"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- DESKTOP ADD TO CART & BUY NOW BUTTONS -->
+                        <div id="desktop-actions" class="hidden md:block border-t border-gray-100 pt-6 mt-6">
+                            <button onclick="addToCart()" class="w-full bg-[#7B3F00] text-white font-bold py-3 rounded-xl shadow-lg shadow-[#7B3F00]/30 transition-all duration-200 hover:bg-[#5e3000]">
+                                Add to Cart
+                            </button>
+                            <!-- Buy Now button for desktop -->
+                            <button onclick="showToast('Proceeding to Buy Now...')" class="w-full mt-3 bg-gray-100 text-gray-800 font-bold py-3 rounded-xl transition-all duration-200 hover:bg-gray-200">
+                                Buy Now
+                            </button>
+                        </div>
+                        
+                    </div>
+                </div>
+                <!-- Long content placeholder to ensure scrolling on mobile is testable (Explicitly added px-4 for mobile alignment) -->
+                <div class="px-4 md:p-0">
+                    <div class="md:hidden mt-4 text-sm text-gray-500">
+                        <p class="mb-2">--- Detailed Product Description ---</p>
+                        <p class="mb-4">This section has extra text to make sure the page scrolls past the image and description on smaller screens. Scroll down to see the fixed 'Buy Now' bar at the very bottom!</p>
+                        <p class="mb-4">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Laudantium, ab, quidem error ipsam, ad eaque nobis voluptas minus doloremque sapiente sequi. Reprehenderit totam in, quos voluptatum iure animi temporibus iusto!</p>
+                        <p class="mb-4">Earum, vitae architecto? Voluptas, dolorum. Totam, aspernatur! Magni, dolorum. Repellendus, voluptatum eaque. Blanditiis, sapiente doloremque! Nisi, dolor iusto?</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========================================
+                 CART VIEW (viewIndex: 3)
+                 ======================================== -->
+            <!-- Explicitly added px-4 for mobile alignment -->
+            <section id="cart-view" class="view-content hidden px-4 md:py-8 md:px-0">
+                <h2 class="text-3xl font-bold text-gray-900 mt-2 mb-6">Your Cart (<span id="cart-total-count">0</span> items)</h2>
+                <div id="cart-list" class="space-y-4">
                     <!-- Cart items will be rendered here -->
                 </div>
                 
-                <div id="cart-empty-state" class="text-center py-20 border-2 border-dashed border-gray-200 rounded-xl text-gray-500 hidden mx-4 md:mx-0">
-                    <i data-lucide="package" class="h-10 w-10 mx-auto mb-3"></i>
-                    <p class="text-lg font-semibold">Your cart is empty.</p>
-                    <p>Add some beautiful handloom pieces to get started!</p>
-                    <button onclick="toggleView(0)" class="mt-4 px-6 py-2 text-sm font-semibold rounded-full text-white transition-colors" style="background-color: var(--primary-color);">Start Shopping</button>
+                <div id="cart-empty-state" class="text-center p-8 mt-12 bg-gray-50 rounded-xl hidden">
+                    <i data-lucide="shopping-bag" class="h-12 w-12 text-gray-400 mx-auto mb-3"></i>
+                    <p class="text-lg font-medium text-gray-600">Your cart is empty.</p>
+                    <button class="text-sm text-blue-600 mt-4 font-semibold" onclick="toggleView(0)">Continue Shopping</button>
                 </div>
-
-                <div id="cart-summary" class="mt-8 pt-4 border-t border-gray-200 hidden px-4 md:px-0">
-                    <div class="flex justify-between text-lg font-medium text-gray-700">
+                
+                <div id="cart-summary" class="mt-8 pt-4 border-t border-gray-200 hidden">
+                    <div class="flex justify-between text-lg font-medium text-gray-700 mb-2">
                         <span>Subtotal:</span>
-                        <span id="cart-subtotal" class="font-semibold text-gray-800">$0</span>
+                        <span>$1,250.00</span>
                     </div>
-                    <div class="flex justify-between text-xl font-bold mt-2">
-                        <span>Total:</span>
-                        <span id="cart-total" class="text-green-600">$0</span>
+                    <div class="flex justify-between text-lg font-medium text-green-600 mb-4">
+                        <span>Shipping:</span>
+                        <span>FREE</span>
                     </div>
-                    
-                    <button class="w-full mt-6 py-3 rounded-xl text-white font-bold text-lg shadow-xl hover:shadow-2xl transition-all" style="background-color: var(--secondary-color);" onclick="showToast('Checkout functionality is not implemented.', 'info')">
+                    <button class="w-full bg-green-600 text-white font-bold py-3 rounded-xl shadow-lg shadow-green-300/50 transition-all duration-200 hover:bg-green-700">
                         Proceed to Checkout
                     </button>
                 </div>
             </section>
+
         </div>
     </main>
     
     <!-- 
-        ========================================
-        3. Toast Notification Container 
-        ========================================
+        4. FIXED MOBILE ACTION BAR (FOR DETAIL VIEW ONLY)
     -->
-    <div id="toast-container"></div>
+    <div id="detail-actions-bar" class="fixed bottom-0 left-0 w-full p-4 bg-white border-t border-gray-100 shadow-2xl z-30 hidden md:hidden" style="border-radius: 0;">
+        <div class="flex space-x-3">
+            <!-- Add to Cart Button -->
+            <button id="add-to-cart-button" class="w-1/2 bg-[#B8860B] text-white font-bold py-3 rounded-xl shadow-lg shadow-yellow-300/50 transition-all duration-200 hover:bg-[#a0770a]">
+                Add to Cart
+            </button>
+            <!-- Buy Now Button -->
+            <button onclick="showToast('Proceeding to Buy Now...')" class="w-1/2 bg-red-600 text-white font-bold py-3 rounded-xl shadow-lg shadow-red-300/50 transition-all duration-200 hover:bg-red-700">
+                Buy Now
+            </button>
+        </div>
+    </div>
     
+    <!-- Toast Message Container -->
+    <div id="toast-container"></div>
+
 </div>
 
 <!-- 
-    ========================================
-    4. JAVASCRIPT LOGIC (SPA, FIRESTORE, CART)
-    ========================================
+    5. JavaScript for State and View Switching 
 -->
-<script type="module">
-// [Firebase Imports]
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-import { 
-    getAuth, 
-    signInAnonymously, 
-    signInWithCustomToken, 
-    onAuthStateChanged 
-} from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-import { 
-    getFirestore, 
-    doc, 
-    setDoc, 
-    onSnapshot 
-} from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-
-// ===================================
-// GLOBAL STATE & SETUP
-// ===================================
-// Global variables provided by the Canvas environment
-const appId = typeof __app_id !== 'undefined' ? __app_id : 'weavers-ecommerce-default';
-const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
-const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-
-let db, auth;
-let userId = null;
-let currentViewIndex = 0;
-let previousViewIndex = 0;
-let cartItems = [];
-let selectedProduct = null;
-let isAuthReady = false;
-
-// Mock Product Data (Used for demonstration and detail view population)
-const MOCK_PRODUCTS = [
-    { id: 'product-A', name: 'Maroon Silk Saree', price: 1250, image: 'https://placehold.co/400x600/7B3F00/ffffff?text=Silk+Saree', category: 'Saree', material: 'Pure Handloom Silk', size: '5.5m x 1.2m', description: 'A timeless classic, handwoven from pure mulberry silk with traditional Zari borders. Features a deep maroon hue ideal for festive occasions.' },
-    { id: 'product-B', name: 'Green Dhavani', price: 990, image: 'https://placehold.co/400x600/38761D/ffffff?text=Shiny+Dhavani', category: 'Saree', material: 'Art Silk Blend', size: '3.5m x 1.0m', description: 'A vibrant, lightweight Dhavani with a shiny finish, perfect for younger wearers. Easy to drape and comfortable for all-day events.' },
-    { id: 'product-C', name: 'Black Cotton', price: 550, image: 'https://placehold.co/400x600/000000/ffffff?text=Cotton+Saree', category: 'Saree', material: 'Organic Cotton', size: '6.0m x 1.2m', description: 'Simple yet elegant organic cotton saree. Breathable and comfortable, suitable for daily wear or casual gatherings.' },
-    { id: 'product-D', name: 'Ivory White', price: 1400, image: 'https://placehold.co/400x600/FFFFFF/333333?text=Ivory+Saree', category: 'Saree', material: 'Tussar Silk', size: '5.8m x 1.2m', description: 'Exquisite Tussar silk in a delicate ivory shade, showcasing subtle texture and a sophisticated drape.' },
-    { id: 'mat-1', name: 'Bamboo Floor Mat', price: 120, image: 'https://placehold.co/400x600/B08E6E/ffffff?text=Bamboo+Mat', category: 'Mat', material: 'Natural Bamboo & Jute', size: '3ft x 5ft', description: 'Durable and eco-friendly bamboo mat, perfect for flooring or decorative wall hangings.' },
-    { id: 'mat-2', name: 'Cotton Yoga Mat', price: 150, image: 'https://placehold.co/400x600/5C6BC0/ffffff?text=Yoga+Mat', category: 'Mat', material: 'Thick Woven Cotton', size: '72in x 26in', description: 'Handwoven cotton yoga mat offering excellent grip and natural feel.' },
-    { id: 'mat-3', name: 'Jute Table Runner', price: 45, image: 'https://placehold.co/400x600/A1887F/ffffff?text=Table+Mat', category: 'Mat', material: 'Jute', size: '60in x 14in', description: 'Rustic jute table runner for a natural dining setup.' },
-    { id: 'mat-4', name: 'Geometric Pattern Mat', price: 210, image: 'https://placehold.co/400x600/008080/ffffff?text=Geo+Mat', category: 'Mat', material: 'Poly-Blend Fiber', size: '2ft x 3ft', description: 'Small geometric patterned mat for entryways.' },
-    { id: 'rug-1', name: 'Terracotta Area Rug', price: 450, image: 'https://placehold.co/400x600/CC5500/ffffff?text=Area+Rug', category: 'Rug', material: 'Wool & Cotton Blend', size: '6ft x 9ft', description: 'A large, hand-knotted area rug featuring deep terracotta and beige tones with a traditional motif.' },
-    { id: 'rug-2', name: 'Woolen Runner Rug', price: 320, image: 'https://placehold.co/400x600/800080/ffffff?text=Runner+Rug', category: 'Rug', material: 'Pure Wool', size: '2ft x 8ft', description: 'Long woolen runner rug, perfect for hallways and stairs.' },
-    { id: 'rug-3', name: 'Blue Hand-Tufted', price: 580, image: 'https://placehold.co/400x600/4682B4/ffffff?text=Tufted+Rug', category: 'Rug', material: 'Cotton', size: '5ft Round', description: 'Round blue cotton tufted rug with a soft, plush feel.' },
-    { id: 'bag-1', name: 'Jute Beach Tote', price: 80, image: 'https://placehold.co/400x600/F0E68C/333333?text=Beach+Bag', category: 'Bag', material: 'Woven Jute', size: 'Large', description: 'A spacious and sturdy jute tote, ideal for beach trips or grocery shopping. Features comfortable shoulder straps.' },
-    { id: 'bag-2', name: 'Kalamkari Sling Bag', price: 110, image: 'https://placehold.co/400x600/CD5C5C/ffffff?text=Sling+Bag', category: 'Bag', material: 'Cotton & Leather Trim', size: 'Medium', description: 'Stylish Kalamkari print sling bag with genuine leather accents.' },
-    { id: 'bag-3', name: 'Embroidered Backpack', price: 140, image: 'https://placehold.co/400x600/8FBC8F/ffffff?text=Backpack', category: 'Bag', material: 'Canvas & Embroidery', size: 'Standard', description: 'Hand-embroidered canvas backpack with adjustable straps.' },
-    { id: 'towel-1', name: 'Organic Cotton Towel', price: 40, image: 'https://placehold.co/400x600/ADD8E6/333333?text=Bath+Towel', category: 'Towel', material: 'Organic Cotton', size: 'Bath Size', description: 'Supremely soft and absorbent organic cotton towel. Sustainably made and gentle on skin.' },
-    { id: 'towel-2', name: 'Linen Kitchen Towel', price: 25, image: 'https://placehold.co/400x600/F5DEB3/333333?text=Kitchen+Towel', category: 'Towel', material: 'Linen', size: 'Kitchen Set', description: 'Set of two natural linen kitchen towels, highly absorbent and quick drying.' },
-    { id: 'towel-3', name: 'Beach Throw', price: 65, image: 'https://placehold.co/400x600/FFA07A/ffffff?text=Beach+Throw', category: 'Towel', material: 'Turkish Cotton', size: 'Large', description: 'Lightweight and large Turkish cotton throw, perfect for beach days or picnics.' },
-];
-
-
-// ===================================
-// FIRESTORE FUNCTIONS
-// ===================================
-
-/**
- * Gets the document reference for the user's private cart data.
- * @returns {object} Firestore Document Reference
- */
-function getCartDocRef() {
-    if (!db || !userId) return null;
-    // Private data path: /artifacts/{appId}/users/{userId}/user_data/cart
-    return doc(db, 'artifacts', appId, 'users', userId, 'user_data', 'cart');
-}
-
-/**
- * Saves the current cartItems state to Firestore.
- */
-async function saveCartToFirestore() {
-    try {
-        if (!isAuthReady || !userId || !db) return; // Wait until auth is ready
-
-        const cartData = {
-            items: cartItems.map(item => ({
-                id: item.id,
-                name: item.name,
-                price: item.price,
-                quantity: item.quantity,
-                image: item.image 
-            })),
-            updatedAt: new Date().toISOString()
-        };
-
-        const cartDocRef = getCartDocRef();
-        if (cartDocRef) {
-            await setDoc(cartDocRef, cartData);
-            console.log("Cart saved to Firestore.");
-        }
-    } catch (error) {
-        console.error("Error saving cart to Firestore:", error);
-        showToast("Error saving cart to cloud.", 'error');
-    }
-}
-
-/**
- * Sets up a real-time listener for the user's cart data.
- */
-function setupCartListener() {
-    if (!isAuthReady || !userId || !db) return;
-
-    const cartDocRef = getCartDocRef();
-    if (cartDocRef) {
-        onSnapshot(cartDocRef, (docSnap) => {
-            if (docSnap.exists() && docSnap.data().items) {
-                const data = docSnap.data();
-                // Update local state and UI
-                cartItems = data.items;
-                console.log("Cart updated from Firestore:", cartItems);
-            } else {
-                // Initialize cart if document doesn't exist
-                cartItems = [];
-            }
-            // Always update the UI after fetching or initializing
-            updateCartUI();
-        }, (error) => {
-            console.error("Error listening to cart changes:", error);
-            showToast("Failed to sync cart data.", 'error');
-        });
-    }
-}
-
-
-// ===================================
-// UTILITY FUNCTIONS
-// ===================================
-
-/**
- * Shows a custom, non-blocking toast notification.
- * @param {string} message The message to display.
- * @param {string} type The type of notification (e.g., 'success', 'error', 'info').
- */
-function showToast(message, type = 'success') {
-    const container = document.getElementById('toast-container');
-    const toast = document.createElement('div');
+<script>
+    // --- Logo Configuration ---
+    const logoUrl = "Weavaresorg.png"; 
     
-    let backgroundColor = 'bg-gray-700';
-    if (type === 'success') backgroundColor = 'bg-green-600';
-    if (type === 'error') backgroundColor = 'bg-red-600';
-    if (type === 'info') backgroundColor = 'bg-blue-500';
-
-    toast.className = `toast show ${backgroundColor}`;
-    toast.textContent = message;
-
-    container.appendChild(toast);
-
-    setTimeout(() => {
-        toast.classList.remove('show');
-        setTimeout(() => toast.remove(), 300); // Wait for transition to finish
-    }, 2500);
-}
-
-/**
- * Renders Lucide icons on demand after dynamically loading content.
- */
-function createIcons() {
-    if (typeof lucide !== 'undefined') {
-        lucide.createIcons();
-    }
-}
-
-/**
- * Formats a number as currency (USD for simplicity).
- * @param {number} amount The amount to format.
- * @returns {string} Formatted currency string.
- */
-function formatCurrency(amount) {
-    return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        minimumFractionDigits: 0
-    }).format(amount);
-}
-
-// ===================================
-// NAVIGATION & VIEW LOGIC (SPA)
-// ===================================
-
-/**
- * Switches the main application view.
- * @param {number} viewIndex 0=Home, 1=Results, 2=Detail, 3=Cart.
- * @param {object} productData Optional data for Detail view.
- */
-function toggleView(viewIndex, productData = null) {
-    const views = ['home-view', 'results-view', 'detail-view', 'cart-view'];
+    // --- State Initialization ---
+    let cartItems = []; // [{id: 'product-A', name: 'Silk Saree A', quantity: 1, price: 1250}]
+    let likedProducts = new Set(); // Stores product IDs of liked items
+    let currentProduct = null; // Stores details of the product currently viewed in detail-view
+    let previousView = 0; // To track where to go back to
     
-    // Store previous view index for back navigation logic
-    if (viewIndex !== currentViewIndex) {
-        previousViewIndex = currentViewIndex;
-    }
-    currentViewIndex = viewIndex;
+    // Hardcoded product data for dynamic rendering in results view
+    const allProducts = {
+        'Saree': [
+            { id: 'prod-saree-1', name: 'Silk saree', price: 1250, offers: '24+ Offers', rating: 5.0, image: 'https://placehold.co/80x120/7B3F00/ffffff?text=Silk' },
+            { id: 'prod-saree-2', name: 'Shiny Silk saree', price: 990, offers: '2+ Offers', rating: 4.0, image: 'https://placehold.co/80x120/38761D/ffffff?text=Shiny' },
+            { id: 'prod-saree-3', name: 'Dhavani saree', price: 800, offers: '2+ Offers', rating: 4.0, image: 'https://placehold.co/80x120/004d40/ffffff?text=Dhavani' },
+            { id: 'prod-saree-4', name: 'White saree', price: 700, offers: '2+ Offers', rating: 4.0, image: 'https://placehold.co/80x120/F0F0F0/333333?text=White' }
+        ],
+        'Mat': [
+            { id: 'prod-mat-1', name: 'Bamboo Floor Mat', price: 50, offers: '5+ Offers', rating: 4.5, image: 'https://placehold.co/80x120/B08E6E/ffffff?text=Floor+Mat' },
+            { id: 'prod-mat-2', name: 'Cotton Yoga Mat', price: 90, offers: '10+ Offers', rating: 4.9, image: 'https://placehold.co/80x120/5C6BC0/ffffff?text=Yoga+Mat' },
+            { id: 'prod-mat-3', name: 'Jute Table Runner', price: 30, offers: '3+ Offers', rating: 4.1, image: 'https://placehold.co/80x120/A1887F/ffffff?text=Table+Mat' },
+            { id: 'prod-mat-4', name: 'Geometric Pattern Mat', price: 75, offers: '8+ Offers', rating: 4.7, image: 'https://placehold.co/80x120/008080/ffffff?text=Geo+Mat' }
+        ],
+        'Rug': [
+            { id: 'prod-rug-1', name: 'Terracotta Area Rug', price: 350, offers: '5+ Offers', rating: 4.6, image: 'https://placehold.co/80x120/CC5500/ffffff?text=Area+Rug' },
+            { id: 'prod-rug-2', name: 'Woolen Runner Rug', price: 280, offers: '2+ Offers', rating: 4.3, image: 'https://placehold.co/80x120/800080/ffffff?text=Runner+Rug' },
+            { id: 'prod-rug-3', name: 'Blue Hand-Tufted Rug', price: 420, offers: '7+ Offers', rating: 4.8, image: 'https://placehold.co/80x120/4682B4/ffffff?text=Tufted+Rug' },
+            { id: 'prod-rug-4', name: 'Modern Black Rug', price: 300, offers: '4+ Offers', rating: 4.5, image: 'https://placehold.co/80x120/333333/ffffff?text=Modern+Rug' }
+        ],
+        'Bag': [
+            { id: 'prod-bag-1', name: 'Jute Beach Tote', price: 45, offers: '12+ Offers', rating: 4.2, image: 'https://placehold.co/80x120/F0E68C/333333?text=Beach+Bag' },
+            { id: 'prod-bag-2', name: 'Kalamkari Sling Bag', price: 55, offers: '6+ Offers', rating: 4.4, image: 'https://placehold.co/80x120/CD5C5C/ffffff?text=Sling+Bag' },
+            { id: 'prod-bag-3', name: 'Embroidered Backpack', price: 70, offers: '3+ Offers', rating: 4.6, image: 'https://placehold.co/80x120/8FBC8F/ffffff?text=Backpack' }
+        ],
+        'Towel': [
+            { id: 'prod-towel-1', name: 'Organic Cotton Towel', price: 35, offers: '20+ Offers', rating: 4.9, image: 'https://placehold.co/80x120/ADD8E6/333333?text=Bath+Towel' },
+            { id: 'prod-towel-2', name: 'Linen Kitchen Towel', price: 15, offers: '15+ Offers', rating: 4.0, image: 'https://placehold.co/80x120/F5DEB3/333333?text=Kitchen+Towel' },
+            { id: 'prod-towel-3', name: 'Beach Throw', price: 60, offers: '10+ Offers', rating: 4.7, image: 'https://placehold.co/80x120/FFA07A/ffffff?text=Beach+Throw' }
+        ]
+    };
 
-    // 1. Hide all views
-    views.forEach(id => {
-        const view = document.getElementById(id);
-        if (view) view.classList.add('hidden');
-    });
 
-    // 2. Show the target view
-    const targetView = document.getElementById(views[viewIndex]);
-    if (targetView) {
-        targetView.classList.remove('hidden');
-        window.scrollTo(0, 0); // Scroll to top on view change
-    }
-
-    // 3. Update Header button (Back or Menu)
-    const navButtonIcon = document.querySelector('#nav-toggle-button i');
-    if (viewIndex === 0) {
-        navButtonIcon.setAttribute('data-lucide', 'menu');
-    } else {
-        navButtonIcon.setAttribute('data-lucide', 'arrow-left');
-    }
-    createIcons(); 
-
-    // 4. Run view-specific logic
-    switch (viewIndex) {
-        case 0: // Home
-            selectedProduct = null; 
-            break;
-        case 1: // Results
-            // If the view is manually toggled to 1 without category data, show Saree results
-            if (!productData) {
-                viewCategory('Today\'s Trends (Sarees)', 'Saree');
-            }
-            break;
-        case 2: // Detail
-            if (productData && productData.id) {
-                // Find the full product object from the mock data
-                selectedProduct = MOCK_PRODUCTS.find(p => p.id === productData.id) || productData;
-            }
-            if (selectedProduct) {
-                renderProductDetail(selectedProduct);
-            } else {
-                showToast("Product details not found.", 'error');
-                toggleView(0);
-            }
-            break;
-        case 3: // Cart
-            renderCart();
-            break;
-    }
-}
-
-/**
- * Handles the main header navigation button (Menu or Back).
- */
-function handleHeaderNav() {
-    if (currentViewIndex === 0) {
-        // In Home View, treat as a Menu/Sidebar toggle (future feature)
-        showToast("Sidebar/Menu is not yet implemented!", 'info');
-    } else {
-        // In other views, treat as a Back button
-        let targetIndex = 0; // Default to Home
-        if (currentViewIndex === 2 && previousViewIndex === 1) {
-            targetIndex = 1; // Detail -> Results
-        } else {
-            targetIndex = 0; // Everything else -> Home
-        }
-        toggleView(targetIndex);
-    }
-}
-
-/**
- * Switches to the Results View (1) and populates it with category data.
- * @param {string} title The title to display in the header.
- * @param {string} category The mock category key to filter by.
- */
-function viewCategory(title, category) {
-    const filteredProducts = MOCK_PRODUCTS.filter(p => p.category === category);
-    document.getElementById('results-search-input').value = title;
-    document.getElementById('results-header-title').textContent = `${title} (${filteredProducts.length} items)`;
-    renderResults(category, filteredProducts);
-    toggleView(1);
-}
-
-// ===================================
-// PRODUCT & CART RENDERING
-// ===================================
-
-/**
- * Dynamically renders product cards into the Results List based on category.
- * @param {string} category The category to filter by ('Saree', 'Mat', 'Rug', etc.)
- * @param {array} products The filtered array of products.
- */
-function renderResults(category, products) {
+    // --- DOM Elements ---
+    const homeView = document.getElementById('home-view');
+    const resultsView = document.getElementById('results-view');
+    const detailView = document.getElementById('detail-view');
+    const cartView = document.getElementById('cart-view');
+    const detailActionBar = document.getElementById('detail-actions-bar');
+    const navButton = document.getElementById('nav-toggle-button');
+    const cartBadge = document.getElementById('cart-badge');
+    const detailLikeButton = document.getElementById('detail-like-button');
+    const addToCartButton = document.getElementById('add-to-cart-button');
+    const cartList = document.getElementById('cart-list');
+    const cartEmptyState = document.getElementById('cart-empty-state');
+    const cartSummary = document.getElementById('cart-summary');
+    const cartTotalCount = document.getElementById('cart-total-count');
+    const mainLogoImage = document.getElementById('main-logo-image'); // New element reference
+    
+    // New DOM elements for results view
+    const resultsSearchInput = document.getElementById('results-search-input');
+    const resultsHeaderTitle = document.getElementById('results-header-title');
     const resultsList = document.getElementById('results-list');
-    
-    resultsList.innerHTML = ''; // Clear previous content
 
-    // We only keep the hardcoded HTML products if the category is 'Saree' (to avoid re-rendering placeholders)
-    if (category === 'Saree') {
-        resultsList.innerHTML = `
-            <!-- Product Item 1: Silk Saree -->
-            <div class="results-item-container bg-white p-3 rounded-xl shadow-md cursor-pointer transform transition-transform duration-200 hover:scale-[1.01]" 
-                    onclick="toggleView(2, {id: 'product-A', name: 'Maroon Silk Saree', image: 'https://placehold.co/80x120/7B3F00/ffffff?text=Silk'})">
-                <img src="https://placehold.co/80x120/7B3F00/ffffff?text=Silk" alt="Silk Saree" class="w-20 h-32 object-cover rounded-lg flex-shrink-0 mr-3">
-                <div class="results-item-text-content ml-1"> 
-                    <h3 class="text-lg font-bold text-gray-900 leading-tight">Maroon Silk Saree</h3>
-                    <p class="text-sm text-gray-500">10 Meters | ${formatCurrency(1250)}</p>
-                    <p class="text-sm text-green-600 font-semibold mt-auto mb-1">24+ Offers</p>
-                    <div class="flex items-center">
-                        <i data-lucide="star" class="h-4 w-4 rating-star-filled fill-current mr-1"></i>
-                        <span class="text-sm text-gray-700 font-medium">(5.0)</span>
-                    </div>
-                </div>
-            </div>
-            <!-- Product Item 2: Shiny Silk Saree -->
-            <div class="results-item-container bg-white p-3 rounded-xl shadow-md cursor-pointer transform transition-transform duration-200 hover:scale-[1.01]" 
-                    onclick="toggleView(2, {id: 'product-B', name: 'Green Dhavani', image: 'https://placehold.co/80x120/38761D/ffffff?text=Shiny'})">
-                <img src="https://placehold.co/80x120/38761D/ffffff?text=Shiny" alt="Shiny Silk Saree" class="w-20 h-32 object-cover rounded-lg flex-shrink-0 mr-3">
-                <div class="results-item-text-content ml-1">
-                    <h3 class="text-lg font-bold text-gray-900 leading-tight">Green Dhavani</h3>
-                    <p class="text-sm text-gray-500">10 Meters | ${formatCurrency(990)}</p>
-                    <p class="text-sm text-green-600 font-semibold mt-auto mb-1">2+ Offers</p>
-                    <div class="flex items-center">
-                        <i data-lucide="star" class="h-4 w-4 rating-star-filled fill-current mr-1"></i>
-                        <span class="text-sm text-gray-700 font-medium">(4.8)</span>
-                    </div>
-                </div>
-            </div>
-            <!-- Product Item 3: Cotton Saree (Desktop Only) -->
-            <div class="results-item-container bg-white p-3 rounded-xl shadow-md cursor-pointer transform transition-transform duration-200 hover:scale-[1.01] hidden md:flex" 
-                    onclick="toggleView(2, {id: 'product-C', name: 'Handloom Cotton', image: 'https://placehold.co/80x120/000000/ffffff?text=Cotton'})">
-                <img src="https://placehold.co/80x120/000000/ffffff?text=Cotton" alt="Cotton Saree" class="w-20 h-32 object-cover rounded-lg flex-shrink-0 mr-3">
-                <div class="results-item-text-content ml-1">
-                    <h3 class="text-lg font-bold text-gray-900 leading-tight">Handloom Cotton</h3>
-                    <p class="text-sm text-gray-500">8 Meters | ${formatCurrency(550)}</p>
-                    <p class="text-sm text-green-600 font-semibold mt-auto mb-1">New Arrival</p>
-                    <div class="flex items-center">
-                        <i data-lucide="star" class="h-4 w-4 rating-star-filled fill-current mr-1"></i>
-                        <span class="text-sm text-gray-700 font-medium">(4.9)</span>
-                    </div>
-                </div>
-            </div>
-        `;
-        createIcons();
-        return; 
+
+    // State Tracking: 0: Home, 1: Results, 2: Detail, 3: Cart
+    let currentView = 0;
+
+    // --- Utility Functions ---
+
+    /**
+     * Shows a temporary toast notification for user feedback.
+     * @param {string} message - The message to display.
+     */
+    function showToast(message) {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = 'toast show';
+        toast.textContent = message;
+        
+        container.appendChild(toast);
+
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => {
+                container.removeChild(toast);
+            }, 300); // Wait for fade-out transition
+        }, 2000); // Display time
     }
-    
-    // For other categories, dynamically generate the list
-    products.forEach(product => {
-        // Use random rating for demo
-        const rating = (Math.random() * 0.5 + 4.5).toFixed(1); 
-        const productCardHtml = `
-            <div class="results-item-container bg-white p-3 rounded-xl shadow-md cursor-pointer transform transition-transform duration-200 hover:scale-[1.01]" 
-                 onclick="toggleView(2, {id: '${product.id}', name: '${product.name}', image: '${product.image}'})">
-                <img src="${product.image.replace('400x600', '80x120')}" alt="${product.name}" class="w-20 h-32 object-cover rounded-lg flex-shrink-0 mr-3">
+
+    /**
+     * Updates the cart count badge on the Home screen.
+     */
+    function updateCartBadge() {
+        const count = cartItems.length;
+        cartBadge.textContent = count;
+        if (count > 0) {
+            cartBadge.classList.remove('opacity-0', 'scale-0');
+            cartBadge.classList.add('opacity-100', 'scale-100');
+        } else {
+            cartBadge.classList.remove('opacity-100', 'scale-100');
+            cartBadge.classList.add('opacity-0', 'scale-0');
+        }
+    }
+
+    // --- Core Logic Functions ---
+
+    /**
+     * Renders the product list in the results view dynamically based on category key.
+     * @param {string} categoryKey - The key corresponding to the category in allProducts (e.g., 'Saree', 'Mat').
+     */
+    function renderResults(categoryKey) {
+        const products = allProducts[categoryKey] || [];
+        
+        resultsHeaderTitle.textContent = `Results (${products.length} items)`;
+        resultsList.innerHTML = ''; // Clear existing content
+        
+        products.forEach(product => {
+            const productElement = document.createElement('div');
+            // Applying the new class structure for better mobile alignment
+            productElement.className = 'results-item-container bg-white p-3 rounded-xl shadow-md cursor-pointer transform transition-transform duration-200 hover:scale-[1.01]';
+            
+            // Note: The toggleView function handles the detail view transition
+            productElement.onclick = () => toggleView(2, product); 
+            
+            productElement.innerHTML = `
+                <img src="${product.image}" alt="${product.name}" class="w-20 h-32 object-cover rounded-lg flex-shrink-0 mr-3">
                 <div class="results-item-text-content ml-1">
                     <h3 class="text-lg font-bold text-gray-900 leading-tight">${product.name}</h3>
-                    <p class="text-sm text-gray-500">Starts at ${formatCurrency(product.price)}</p>
-                    <p class="text-sm text-green-600 font-semibold mt-auto mb-1">${product.category} Collection</p>
+                    <p class="text-sm text-gray-500">10 Meters | $${product.price.toFixed(0)}</p>
+                    <p class="text-sm text-green-600 font-semibold mt-auto mb-1">${product.offers}</p>
                     <div class="flex items-center">
-                        <i data-lucide="star" class="h-4 w-4 rating-star-filled fill-current mr-1"></i>
-                        <span class="text-sm text-gray-700 font-medium">(${rating})</span>
+                        <!-- Star Rating -->
+                        ${Array(Math.floor(product.rating)).fill(0).map(() => `<i data-lucide="star" class="h-4 w-4 rating-star-filled fill-current mr-1"></i>`).join('')}
+                        <span class="text-sm text-gray-700 font-medium">(${product.rating.toFixed(1)})</span>
                     </div>
                 </div>
-            </div>
-        `;
-        resultsList.innerHTML += productCardHtml;
-    });
-
-    if (products.length === 0) {
-         resultsList.innerHTML = `<p class="col-span-3 text-center text-gray-500 py-10">No products found in this category.</p>`;
-    }
-    
-    createIcons();
-}
-
-/**
- * Dynamically populates the Product Detail View (2).
- * @param {object} product The full product object.
- */
-function renderProductDetail(product) {
-    // 1. Update static content
-    document.getElementById('detail-name').textContent = product.name;
-    document.getElementById('detail-price').textContent = formatCurrency(product.price);
-    document.getElementById('detail-image').src = product.image;
-    document.getElementById('detail-description').textContent = product.description;
-    document.getElementById('detail-material').textContent = product.material;
-    document.getElementById('detail-size').textContent = product.size;
-
-    // 2. Update CTA buttons with price and attach handler
-    const buttonText = `Add to Cart (${formatCurrency(product.price)})`;
-    const mobileBtn = document.getElementById('add-to-cart-mobile');
-    const desktopBtn = document.getElementById('add-to-cart-desktop');
-
-    mobileBtn.textContent = buttonText;
-    desktopBtn.textContent = buttonText;
-    
-    // Set up click handlers
-    mobileBtn.onclick = () => addToCart(product);
-    desktopBtn.onclick = () => addToCart(product);
-    
-    createIcons();
-}
-
-// ===================================
-// CART MANAGEMENT
-// ===================================
-
-/**
- * Adds a product to the cart state and persists it.
- * @param {object} product The product object to add.
- */
-function addToCart(product) {
-    const existingItem = cartItems.find(item => item.id === product.id);
-
-    if (existingItem) {
-        existingItem.quantity += 1;
-    } else {
-        cartItems.push({
-            id: product.id,
-            name: product.name,
-            price: product.price,
-            image: product.image,
-            quantity: 1
+            `;
+            resultsList.appendChild(productElement);
         });
+        
+        lucide.createIcons(); // Re-render Lucide icons
     }
-
-    // Persist and update UI
-    saveCartToFirestore();
-    updateCartUI(); 
     
-    showToast(`${product.name} added to cart!`);
-}
+    /**
+     * Handles the click on a Category Header from the Home View.
+     * Updates the search bar and renders the correct products in the results view.
+     * @param {string} title - The title of the search results (e.g., "Today's Trends (Sarees)").
+     * @param {string} categoryKey - The key to retrieve product data (e.g., 'Saree', 'Mat').
+     */
+    function viewCategory(title, categoryKey) {
+        // 1. Update the Search Bar
+        resultsSearchInput.value = title;
+        
+        // 2. Render the correct products
+        renderResults(categoryKey);
+        
+        // 3. Switch to Results View
+        toggleView(1);
+    }
+    
 
-/**
- * Updates the quantity of an item in the cart or removes it.
- * @param {string} productId The ID of the product.
- * @param {number} newQuantity The new quantity (0 to remove).
- */
-function updateCartQuantity(productId, newQuantity) {
-    const index = cartItems.findIndex(item => item.id === productId);
+    /**
+     * Adds the current product to the cart.
+     */
+    function addToCart() {
+        if (!currentProduct) return;
 
-    if (index !== -1) {
-        if (newQuantity > 0) {
-            cartItems[index].quantity = newQuantity;
+        // Check if the item is already in the cart (for simplicity, we just add a new entry)
+        const newItem = {
+            id: currentProduct.id,
+            name: currentProduct.name,
+            image: currentProduct.image,
+            price: currentProduct.price || 1250, // Use actual price if available
+            quantity: 1
+        };
+        
+        cartItems.push(newItem);
+        updateCartBadge();
+        showToast(`'${currentProduct.name}' added to cart!`);
+    }
+    
+    /**
+     * Toggles the like status for a given product ID.
+     * @param {string} productId 
+     */
+    function toggleLike(productId) {
+        if (!productId) return;
+        let isLiked = likedProducts.has(productId);
+        
+        if (isLiked) {
+            likedProducts.delete(productId);
+            showToast(`'${currentProduct.name}' removed from Wishlist.`);
         } else {
-            // Remove item if quantity is 0
-            cartItems.splice(index, 1);
+            likedProducts.add(productId);
+            showToast(`'${currentProduct.name}' added to Wishlist!`);
         }
-        // Persist and update UI
-        saveCartToFirestore();
-        updateCartUI();
-    }
-}
-
-/**
- * Updates the cart badge count and total summary.
- */
-function updateCartUI() {
-    // 1. Update Cart Badge
-    const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
-    const badge = document.getElementById('cart-badge');
-    badge.textContent = totalItems;
-    
-    if (totalItems > 0) {
-        badge.classList.add('opacity-100', 'scale-100');
-    } else {
-        badge.classList.remove('opacity-100', 'scale-100');
+        
+        // Update the button icon immediately
+        updateDetailButtons(currentProduct);
     }
 
-    // 2. Render Cart View if currently active
-    if (currentViewIndex === 3) {
-        renderCart();
-    }
-}
+    /**
+     * Renders the Product Detail View content based on the selected product data.
+     * @param {object} productData - {id, name, image, price, ...}
+     */
+    function renderDetailView(productData) {
+        currentProduct = productData;
+        
+        // Update product details on the page
+        document.getElementById('detail-product-name').textContent = productData.name;
+        // Use a high-res placeholder for detail view (replace size tokens)
+        document.getElementById('detail-product-image').src = productData.image.replace('96x140', '600x900').replace('80x120', '600x900').replace('120x120', '600x900'); 
+        
+        // Update price
+        document.querySelector('#detail-view .text-3xl').textContent = `$${(productData.price || 1250).toLocaleString('en-US')}`;
 
-/**
- * Renders the full Cart View (3) content dynamically.
- */
-function renderCart() {
-    const cartList = document.getElementById('cart-list');
-    const cartSummary = document.getElementById('cart-summary');
-    const emptyState = document.getElementById('cart-empty-state');
-    
-    cartList.innerHTML = '';
-    
-    if (cartItems.length === 0) {
-        emptyState.classList.remove('hidden');
-        cartSummary.classList.add('hidden');
-        return;
+        // Update Like button state and Add to Cart button listener
+        updateDetailButtons(productData);
     }
     
-    emptyState.classList.add('hidden');
-    cartSummary.classList.remove('hidden');
-    
-    let subtotal = 0;
+    /**
+     * Updates the Like button icon based on the current product's liked status.
+     * @param {object} productData - {id, name, image}
+     */
+    function updateDetailButtons(productData) {
+        const isLiked = likedProducts.has(productData.id);
+        
+        // Update Like Button Icon
+        let iconHtml = '';
+        if (isLiked) {
+            iconHtml = `<i data-lucide="heart" class="h-6 w-6 fill-red-500"></i>`;
+        } else {
+            iconHtml = `<i data-lucide="heart" class="h-6 w-6"></i>`;
+        }
+        detailLikeButton.innerHTML = iconHtml;
+        lucide.createIcons(); // Re-render icon
 
-    cartItems.forEach(item => {
-        const itemTotal = item.price * item.quantity;
-        subtotal += itemTotal;
+        // Re-attach Add to Cart listener for the MOBILE floating bar
+        addToCartButton.onclick = addToCart;
+    }
 
-        const cartItemHtml = `
-            <div class="flex items-center p-3 border-b border-gray-100 bg-white rounded-xl shadow-sm">
-                <!-- Image -->
-                <img src="${item.image.replace('400x600', '60x90')}" alt="${item.name}" class="w-16 h-24 object-cover rounded-lg flex-shrink-0 mr-4">
-                
-                <div class="flex-grow">
-                    <!-- Name & Price -->
-                    <h3 class="text-md font-semibold text-gray-800">${item.name}</h3>
-                    <p class="text-sm text-gray-500">${formatCurrency(item.price)} per item</p>
-                    <p class="text-lg font-bold mt-1" style="color: var(--primary-color);">${formatCurrency(itemTotal)}</p>
-                </div>
-                
-                <!-- Quantity Controls -->
-                <div class="flex flex-col items-end space-y-2">
-                    <div class="flex items-center border rounded-full overflow-hidden">
-                        <button class="p-2 h-8 w-8 flex items-center justify-center text-gray-700 hover:bg-gray-100 transition-colors" 
-                                onclick="updateCartQuantity('${item.id}', ${item.quantity - 1})">
-                            <i data-lucide="minus" class="h-4 w-4"></i>
-                        </button>
-                        <span class="px-3 text-sm font-medium w-8 text-center">${item.quantity}</span>
-                        <button class="p-2 h-8 w-8 flex items-center justify-center text-gray-700 hover:bg-gray-100 transition-colors" 
-                                onclick="updateCartQuantity('${item.id}', ${item.quantity + 1})">
-                            <i data-lucide="plus" class="h-4 w-4"></i>
+    /**
+     * Renders the Cart View content.
+     */
+    function renderCartView() {
+        cartTotalCount.textContent = cartItems.length;
+        cartList.innerHTML = ''; // Clear previous items
+
+        if (cartItems.length === 0) {
+            cartEmptyState.classList.remove('hidden'); // Should be visible if empty
+            cartSummary.classList.add('hidden');
+            return;
+        }
+        
+        cartEmptyState.classList.add('hidden');
+        cartSummary.classList.remove('hidden');
+        
+        let subtotal = 0;
+
+        cartItems.forEach((item, index) => {
+            const itemPrice = item.price * item.quantity;
+            subtotal += itemPrice;
+
+            const itemElement = document.createElement('div');
+            itemElement.className = 'flex items-start bg-white p-3 rounded-xl shadow-md';
+            itemElement.innerHTML = `
+                <img src="${item.image.replace('96x140', '80x120').replace('120x120', '80x120')}" alt="${item.name}" class="w-20 h-32 object-cover rounded-lg flex-shrink-0">
+                <div class="ml-4 flex flex-col justify-between h-full w-full">
+                    <h3 class="text-lg font-bold text-gray-900">${item.name}</h3>
+                    <p class="text-sm text-gray-500">Qty: ${item.quantity}</p>
+                    <div class="flex justify-between items-center mt-2">
+                        <p class="text-xl font-extrabold text-gray-900">$${itemPrice.toFixed(2)}</p>
+                        <button class="text-red-500 p-1 rounded-full hover:bg-red-50 transition-colors" onclick="removeItemFromCart(${index})">
+                            <i data-lucide="trash-2" class="h-5 w-5"></i>
                         </button>
                     </div>
-                    <!-- Remove Button -->
-                    <button class="text-xs text-red-500 hover:text-red-700 transition-colors" onclick="updateCartQuantity('${item.id}', 0)">
-                        Remove
-                    </button>
                 </div>
-            </div>
-        `;
-        cartList.innerHTML += cartItemHtml;
-    });
+            `;
+            cartList.appendChild(itemElement);
+        });
 
-    // 3. Update Summary
-    document.getElementById('cart-subtotal').textContent = formatCurrency(subtotal);
-    // Assuming simple tax/shipping logic, Total = Subtotal for this demo
-    document.getElementById('cart-total').textContent = formatCurrency(subtotal);
-    
-    createIcons();
-}
+        // Update subtotal in summary
+        document.querySelector('#cart-summary span:nth-child(2)').textContent = `$${subtotal.toFixed(2)}`;
 
-// ===================================
-// INITIALIZATION
-// ===================================
-
-/**
- * Initializes Firebase, authenticates user, and starts the app.
- */
-async function initializeAppAndAuth() {
-    if (!firebaseConfig) {
-        console.error("Firebase configuration is missing.");
-        showToast("App failed to initialize: Missing config.", 'error');
-        return;
+        lucide.createIcons();
     }
     
-    // Enable debug logging for Firestore
-    setLogLevel('Debug');
-
-    const app = initializeApp(firebaseConfig);
-    db = getFirestore(app);
-    auth = getAuth(app);
-
-    try {
-        if (initialAuthToken) {
-            await signInWithCustomToken(auth, initialAuthToken);
-        } else {
-            // Sign in anonymously if no custom token is provided
-            await signInAnonymously(auth);
-        }
-    } catch (error) {
-        console.error("Firebase Auth Error:", error);
-        showToast("Authentication failed. Using anonymous mode.", 'error');
-        await signInAnonymously(auth); // Fallback to anonymous
+    /**
+     * Removes an item from the cart by its index. (Used in Cart View)
+     * @param {number} index - Index of the item in the cartItems array.
+     */
+    function removeItemFromCart(index) {
+        const removedItem = cartItems.splice(index, 1)[0];
+        showToast(`Removed '${removedItem.name}' from cart.`);
+        updateCartBadge();
+        renderCartView(); // Re-render the cart list
     }
 
-    // Auth state listener - central point for setting userId
-    onAuthStateChanged(auth, (user) => {
-        if (user) {
-            userId = user.uid;
-        } else {
-            // Fallback to a random ID if anonymous sign-in fails (though unlikely)
-            userId = crypto.randomUUID(); 
+    /**
+     * Toggles visibility of views and manages the header icon.
+     * @param {number} viewIndex - The view to switch to (0, 1, 2, or 3).
+     * @param {object} [productData] - Optional product data for detail view.
+     */
+    function toggleView(viewIndex, productData = null) {
+        // Save current view before switching, unless it's a detail/cart view, in which case we track the origin
+        if (currentView !== 2 && currentView !== 3) {
+            previousView = currentView;
+        }
+
+        // Hide all main content views
+        const views = [homeView, resultsView, detailView, cartView];
+        views.forEach(v => v.classList.add('hidden'));
+        
+        // Hide the fixed mobile action bar by default
+        detailActionBar.classList.add('hidden');
+
+        let newIcon = 'menu';
+        
+        if (viewIndex === 0) {
+            homeView.classList.remove('hidden');
+            newIcon = 'menu';
+        } else if (viewIndex === 1) {
+            resultsView.classList.remove('hidden');
+            newIcon = 'arrow-left';
+            // Default to Saree results if no category was specified (e.g., clicking search bar directly)
+            if (resultsList.innerHTML === '') {
+                viewCategory('Trending Sarees', 'Saree');
+            }
+        } else if (viewIndex === 2) {
+            detailView.classList.remove('hidden');
+            // The fixed action bar is ONLY for the Detail View (2) on mobile
+            detailActionBar.classList.remove('hidden'); 
+            newIcon = 'arrow-left';
+            if (productData) {
+                renderDetailView(productData);
+            }
+        } else if (viewIndex === 3) {
+            cartView.classList.remove('hidden');
+            newIcon = 'arrow-left';
+            renderCartView(); // Render cart contents when switching to cart view
         }
         
-        isAuthReady = true;
-        console.log("Auth ready. User ID:", userId);
+        // Update current view state
+        currentView = viewIndex;
+
+        // Update the navigation button icon
+        navButton.innerHTML = `<i data-lucide="${newIcon}" class="h-6 w-6"></i>`;
+        lucide.createIcons(); // Re-render icon
+
+        // Scroll the main app container to top on view switch to fix scrolling issues
+        document.getElementById('app-container').scrollTo({ top: 0, behavior: 'instant' });
+    }
+
+    /**
+     * Handles clicks on the main header button (Menu/Back).
+     */
+    function handleHeaderNav() {
+        if (currentView === 2 || currentView === 3) { 
+            // If on Detail View (2) or Cart View (3), go back to the previous main view
+            toggleView(previousView === 1 ? 1 : 0);
+        } else if (currentView === 1) { 
+            // If on Results View (1), go back to Home View (0)
+            toggleView(0);
+        }
+        // If on Home View (0), the button acts as a menu toggle (no action in this prototype).
+    }
+
+    // --- Initialization ---
+    window.onload = function() {
+        // Set the logo image source from the configuration variable
+        mainLogoImage.src = logoUrl; 
+
+        lucide.createIcons();
+        updateCartBadge(); // Ensure badge starts correctly
+        navButton.onclick = handleHeaderNav; // Assign the handler to the button
         
-        // Setup Firestore listener ONLY after the user ID is established
-        setupCartListener();
-
-        // Ensure the initial view is rendered
-        toggleView(0);
-    });
-}
-
-// Ensure icons are created on initial load before Auth finishes
-document.addEventListener('DOMContentLoaded', () => {
-    // Set the initial logo image placeholder
-    document.getElementById('main-logo-image').src = 'https://placehold.co/200x80/7B3F00/ffffff?text=Our+Weavers';
-    document.getElementById('main-logo-image').onerror = (e) => {
-        console.error("Failed to load logo image:", e.target.src);
-        e.target.style.display = 'none'; // Hide broken image
+        // Force the app to start on the Home view (0)
+        toggleView(0); 
     };
-    
-    createIcons();
-    initializeAppAndAuth();
-});
-
-// Expose functions globally for inline HTML event handlers
-window.toggleView = toggleView;
-window.handleHeaderNav = handleHeaderNav;
-window.viewCategory = viewCategory;
-window.updateCartQuantity = updateCartQuantity;
-window.showToast = showToast;
 
 </script>
 </body>
