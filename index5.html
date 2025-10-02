@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Weavers :) E-commerce</title>
+    <!-- Load Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Lucide Icons for aesthetic vectors -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Configure Tailwind CSS -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        
+        :root {
+            --primary-color: #7B3F00; /* Dark Brown/Saree tone */
+            --secondary-color: #B8860B; /* Gold accent */
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f8f8;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        /* Styling the main container to look like a phone screen */
+        .app-container {
+            width: 100%;
+            max-width: 400px;
+            background-color: white;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow-y: auto;
+            border-radius: 1.5rem; /* Rounded screen corners */
+            margin: 1rem 0;
+            padding-bottom: 5rem; /* Space for the fixed bottom bar */
+        }
+
+        /* Custom scrollbar for horizontal lists */
+        .horizontal-scroll::-webkit-scrollbar {
+            display: none;
+        }
+        .horizontal-scroll {
+            -ms-overflow-style: none; /* IE and Edge */
+            scrollbar-width: none; /* Firefox */
+        }
+
+        /* Custom rating star color */
+        .rating-star-filled {
+            color: var(--primary-color);
+        }
+
+        .category-icon-container {
+            transition: all 0.15s ease-in-out;
+        }
+        .category-icon-container:hover {
+            transform: scale(1.05);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Ensure detail view image container has a fixed aspect ratio for clean look */
+        .detail-image-container {
+            width: 100%;
+            padding-top: 150%; /* 2:3 Aspect Ratio */
+            position: relative;
+        }
+        .detail-image-container img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        /* Toast Notification Styling */
+        #toast-container {
+            position: fixed;
+            bottom: 6rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 50;
+            max-width: 90%;
+            pointer-events: none;
+        }
+        .toast {
+            background-color: #333;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+        .toast.show {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+<div id="app-container" class="app-container">
+
+    <!-- 
+        ========================================
+        1. Universal Header (Stays across views)
+        ========================================
+    -->
+    <header class="sticky top-0 bg-white p-4 border-b border-gray-100 z-20">
+        <div class="flex items-center justify-between">
+            <!-- Menu/Back Button -->
+            <button id="nav-toggle-button" class="text-gray-700 p-2 rounded-full hover:bg-gray-100 transition-colors" onclick="handleHeaderNav()">
+                <i data-lucide="menu" class="h-6 w-6"></i>
+            </button>
+            
+            <!-- Logo/App Name -->
+            <div class="flex flex-col items-center">
+                <h1 class="text-xl font-bold text-gray-900 flex items-center">
+                    Our Weavers <span class="text-2xl ml-1">:)</span>
+                </h1>
+                <p class="text-xs text-gray-500 font-medium">Connect. Grow. Celebrate.</p>
+            </div>
+            
+            <!-- Profile Icon -->
+            <button class="text-gray-700 p-2 rounded-full hover:bg-gray-100 transition-colors">
+                <i data-lucide="user" class="h-6 w-6"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- 
+        ========================================
+        2. View Switcher Container 
+        ========================================
+    -->
+    <main class="p-4 pt-0">
+        
+        <!-- ========================================
+             HOME VIEW (viewIndex: 0)
+             ======================================== -->
+        <section id="home-view" class="view-content">
+            
+            <!-- Search Bar -->
+            <div class="py-4">
+                <div class="flex items-center bg-gray-100 rounded-xl p-3 shadow-inner">
+                    <i data-lucide="search" class="h-5 w-5 text-gray-500 mr-2"></i>
+                    <input type="text" placeholder="Search Here" class="w-full bg-transparent text-gray-800 placeholder-gray-500 focus:outline-none" onclick="toggleView(1)">
+                </div>
+            </div>
+
+            <!-- Category Icons -->
+            <nav class="flex justify-between py-4">
+                <!-- Data for the 5 categories (Icon, Label) -->
+                <div class="category-icon-container text-center flex flex-col items-center cursor-pointer p-2 rounded-xl">
+                    <div class="bg-pink-100 p-3 rounded-xl text-pink-600">
+                        <i data-lucide="gift" class="h-6 w-6"></i>
+                    </div>
+                    <span class="text-xs mt-1 text-gray-700 font-medium">Gifts</span>
+                </div>
+                <div class="category-icon-container text-center flex flex-col items-center cursor-pointer p-2 rounded-xl">
+                    <div class="bg-green-100 p-3 rounded-xl text-green-600">
+                        <i data-lucide="percent" class="h-6 w-6"></i>
+                    </div>
+                    <span class="text-xs mt-1 text-gray-700 font-medium">Offers</span>
+                </div>
+                <!-- CART ICON with dynamic badge -->
+                <div class="category-icon-container text-center flex flex-col items-center cursor-pointer p-2 rounded-xl" onclick="toggleView(3)">
+                    <div class="bg-blue-100 p-3 rounded-xl text-blue-600 relative">
+                        <i data-lucide="shopping-cart" class="h-6 w-6"></i>
+                        <span id="cart-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full opacity-0 scale-0 transition-all duration-300 transform">0</span>
+                    </div>
+                    <span class="text-xs mt-1 text-gray-700 font-medium">Cart</span>
+                </div>
+                <div class="category-icon-container text-center flex flex-col items-center cursor-pointer p-2 rounded-xl">
+                    <div class="bg-yellow-100 p-3 rounded-xl text-yellow-600">
+                        <i data-lucide="store" class="h-6 w-6"></i>
+                    </div>
+                    <span class="text-xs mt-1 text-gray-700 font-medium">Seller</span>
+                </div>
+                <div class="category-icon-container text-center flex flex-col items-center cursor-pointer p-2 rounded-xl">
+                    <div class="bg-red-100 p-3 rounded-xl text-red-600">
+                        <i data-lucide="heart" class="h-6 w-6"></i>
+                    </div>
+                    <span class="text-xs mt-1 text-gray-700 font-medium">Likes</span>
+                </div>
+            </nav>
+
+            <!-- Trends Section (Horizontal Scroll) -->
+            <div class="py-4">
+                <h2 class="text-lg font-semibold text-gray-800 mb-3">Trends</h2>
+                <div class="flex space-x-4 overflow-x-auto horizontal-scroll">
+                    <!-- Saree Card 1 -->
+                    <div class="w-24 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02]" onclick="toggleView(2, {id: 'product-A', name: 'Silk Saree A', image: 'https://placehold.co/96x140/7B3F00/ffffff?text=Saree+A'})">
+                        <img src="https://placehold.co/96x140/7B3F00/ffffff?text=Saree+A" alt="Trending Saree" class="w-full h-36 object-cover">
+                    </div>
+                    <!-- Saree Card 2 -->
+                    <div class="w-24 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02]" onclick="toggleView(2, {id: 'product-B', name: 'Green Dhavani', image: 'https://placehold.co/96x140/38761D/ffffff?text=Saree+B'})">
+                        <img src="https://placehold.co/96x140/38761D/ffffff?text=Saree+B" alt="Trending Saree" class="w-full h-36 object-cover">
+                    </div>
+                    <!-- Saree Card 3 -->
+                    <div class="w-24 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02]" onclick="toggleView(2, {id: 'product-C', name: 'Black Cotton', image: 'https://placehold.co/96x140/000000/ffffff?text=Saree+C'})">
+                        <img src="https://placehold.co/96x140/000000/ffffff?text=Saree+C" alt="Trending Saree" class="w-full h-36 object-cover">
+                    </div>
+                    <!-- Saree Card 4 -->
+                    <div class="w-24 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02]" onclick="toggleView(2, {id: 'product-D', name: 'Ivory White', image: 'https://placehold.co/96x140/FFFFFF/333333?text=Saree+D'})">
+                        <img src="https://placehold.co/96x140/FFFFFF/333333?text=Saree+D" alt="Trending Saree" class="w-full h-36 object-cover border border-gray-100">
+                    </div>
+                    <!-- Add more for scrolling -->
+                    <div class="w-24 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02]" onclick="toggleView(2, {id: 'product-E', name: 'Rose Red Blend', image: 'https://placehold.co/96x140/CD5C5C/ffffff?text=Saree+E'})">
+                        <img src="https://placehold.co/96x140/CD5C5C/ffffff?text=Saree+E" alt="Trending Saree" class="w-full h-36 object-cover">
+                    </div>
+                    <div class="w-24 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden shadow-lg transform transition-transform duration-200 hover:scale-[1.02]" onclick="toggleView(2, {id: 'product-F', name: 'Marigold Gold', image: 'https://placehold.co/96x140/DAA520/ffffff?text=Saree+F'})">
+                        <img src="https://placehold.co/96x140/DAA520/ffffff?text=Saree+F" alt="Trending Saree" class="w-full h-36 object-cover">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Follows Section (Grid Layout) -->
+            <div class="py-4">
+                <h2 class="text-lg font-semibold text-gray-800 mb-3">Follows</h2>
+                <div class="grid grid-cols-3 gap-3">
+                    <!-- Follow Item 1 -->
+                    <div class="flex flex-col items-center cursor-pointer" onclick="toggleView(2, {id: 'product-G', name: 'Maroon Weave', image: 'https://placehold.co/120x120/7B3F00/ffffff?text=Follow+1'})">
+                        <img src="https://placehold.co/120x120/7B3F00/ffffff?text=Follow+1" alt="Follow Saree 1" class="w-full h-28 object-cover rounded-lg shadow-md">
+                        <button class="text-sm text-gray-600 mt-2 font-semibold hover:text-gray-900 transition-colors">About this</button>
+                    </div>
+                    <!-- Follow Item 2 -->
+                    <div class="flex flex-col items-center cursor-pointer" onclick="toggleView(2, {id: 'product-H', name: 'Forest Green', image: 'https://placehold.co/120x120/38761D/ffffff?text=Follow+2'})">
+                        <img src="https://placehold.co/120x120/38761D/ffffff?text=Follow+2" alt="Follow Saree 2" class="w-full h-28 object-cover rounded-lg shadow-md">
+                        <button class="text-sm text-gray-600 mt-2 font-semibold hover:text-gray-900 transition-colors">About this</button>
+                    </div>
+                    <!-- Follow Item 3 -->
+                    <div class="flex flex-col items-center cursor-pointer" onclick="toggleView(2, {id: 'product-I', name: 'Jet Black Cotton', image: 'https://placehold.co/120x120/000000/ffffff?text=Follow+3'})">
+                        <img src="https://placehold.co/120x120/000000/ffffff?text=Follow+3" alt="Follow Saree 3" class="w-full h-28 object-cover rounded-lg shadow-md">
+                        <button class="text-sm text-gray-600 mt-2 font-semibold hover:text-gray-900 transition-colors">About this</button>
+                    </div>
+                    <!-- Follow Item 4 -->
+                    <div class="flex flex-col items-center cursor-pointer" onclick="toggleView(2, {id: 'product-J', name: 'Coffee Brown', image: 'https://placehold.co/120x120/5D4037/ffffff?text=Follow+4'})">
+                        <img src="https://placehold.co/120x120/5D4037/ffffff?text=Follow+4" alt="Follow Saree 4" class="w-full h-28 object-cover rounded-lg shadow-md">
+                        <button class="text-sm text-gray-600 mt-2 font-semibold hover:text-gray-900 transition-colors">About this</button>
+                    </div>
+                    <!-- Follow Item 5 -->
+                    <div class="flex flex-col items-center cursor-pointer" onclick="toggleView(2, {id: 'product-K', name: 'Sunny Gold', image: 'https://placehold.co/120x120/FBC02D/ffffff?text=Follow+5'})">
+                        <img src="https://placehold.co/120x120/FBC02D/ffffff?text=Follow+5" alt="Follow Saree 5" class="w-full h-28 object-cover rounded-lg shadow-md">
+                        <button class="text-sm text-gray-600 mt-2 font-semibold hover:text-gray-900 transition-colors">About this</button>
+                    </div>
+                    <!-- Follow Item 6 -->
+                    <div class="flex flex-col items-center cursor-pointer" onclick="toggleView(2, {id: 'product-L', name: 'Linen Saree', image: 'https://placehold.co/120x120/FFFFFF/333333?text=Follow+6'})">
+                        <img src="https://placehold.co/120x120/FFFFFF/333333?text=Follow+6" alt="Follow Saree 6" class="w-full h-28 object-cover rounded-lg shadow-md border border-gray-100">
+                        <button class="text-sm text-gray-600 mt-2 font-semibold hover:text-gray-900 transition-colors">About this</button>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ========================================
+             SEARCH RESULTS VIEW (viewIndex: 1)
+             ======================================== -->
+        <section id="results-view" class="view-content hidden">
+            
+            <!-- Search Bar (with "Trending Sarees" placeholder) -->
+            <div class="py-4">
+                <div class="flex items-center justify-between bg-gray-100 rounded-xl p-3 shadow-inner">
+                    <div class="flex items-center w-full">
+                        <i data-lucide="search" class="h-5 w-5 text-gray-500 mr-2"></i>
+                        <input type="text" value="Trending Sarees" class="w-full bg-transparent text-gray-800 font-medium focus:outline-none">
+                    </div>
+                    <button class="text-sm text-blue-600 font-semibold ml-2 p-1 rounded-md hover:bg-gray-200 transition-colors">
+                        <i data-lucide="sliders" class="h-5 w-5"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Results Header & Filter -->
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold text-gray-800">Results</h2>
+                <button class="text-sm text-blue-600 font-medium flex items-center p-2 rounded-lg hover:bg-blue-50 transition-colors">
+                    Filter <i data-lucide="filter" class="h-4 w-4 ml-1"></i>
+                </button>
+            </div>
+            
+            <!-- Product List -->
+            <div class="space-y-4">
+                
+                <!-- Product Item 1: Silk Saree -->
+                <div class="flex items-start bg-white p-3 rounded-xl shadow-md cursor-pointer transform transition-transform duration-200 hover:scale-[1.01]" onclick="toggleView(2, {id: 'product-A', name: 'Silk Saree A', image: 'https://placehold.co/80x120/7B3F00/ffffff?text=Silk'})">
+                    <img src="https://placehold.co/80x120/7B3F00/ffffff?text=Silk" alt="Silk Saree" class="w-20 h-32 object-cover rounded-lg flex-shrink-0">
+                    <div class="ml-4 flex flex-col justify-between h-full">
+                        <h3 class="text-lg font-bold text-gray-900">Silk saree</h3>
+                        <p class="text-sm text-gray-500">10 Meters</p>
+                        <p class="text-sm text-green-600 font-semibold">20+ Offers</p>
+                        <div class="flex items-center mt-1">
+                            <!-- Star Rating (5/5) -->
+                            <i data-lucide="star" class="h-4 w-4 rating-star-filled fill-current mr-1"></i>
+                            <i data-lucide="star" class="h-4 w-4 rating-star-filled fill-current mr-1"></i>
+                            <i data-lucide="star" class="h-4 w-4 rating-star-filled fill-current mr-1"></i>
+                            <i data-lucide="star" class="h-4 w-4 rating-star-filled fill-current mr-1"></i>
+                            <i data-lucide="star" class="h-4 w-4 rating-star-filled fill-current mr-2"></i>
+                            <span class="text-sm text-gray-700 font-medium">(5.0)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product Item 2: Shiny Silk Saree -->
+                <div class="flex items-start bg-white p-3 rounded-xl shadow-md cursor-pointer transform transition-transform duration-200 hover:scale-[1.01]" onclick="toggleView(2, {id: 'product-B', name: 'Shiny Silk Saree', image: 'https://placehold.co/80x120/38761D/ffffff?text=Shiny'})">
+                    <img src="https://placehold.co/80x120/38761D/ffffff?text=Shiny" alt="Shiny Silk Saree" class="w-20 h-32 object-cover rounded-lg flex-shrink-0">
+                    <div class="ml-4 flex flex-col justify-between h-full">
+                        <h3 class="text-lg font-bold text-gray-900">Shiny Silk saree</h3>
+                        <p class="text-sm text-gray-500">10 Meters</p>
+                        <p class="text-sm text-green-600 font-semibold">3+ Offers</p>
+                        <div class="flex items-center mt-1">
+                            <!-- Star Rating (4/5) -->
+                            <i data-lucide="star" class="h-4 w-4 rating-star-filled fill-current mr-1"></i>
+                            <i data-lucide="star" class="h-4 w-4 rating-star-filled fill-current mr-1"></i>
+                            <i data-lucide="star" class="h-4 w-4 rating-star-filled fill-current mr-1"></i>
+                            <i data-lucide="star" class="h-4 w-4 rating-star-filled fill-current mr-1"></i>
+                            <i data-lucide="star" class="h-4 w-4 text-gray-300 mr-2"></i>
+                            <span class="text-sm text-gray-700 font-medium">(4.0)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- ========================================
+             PRODUCT DETAIL VIEW (viewIndex: 2)
+             ======================================== -->
+        <section id="detail-view" class="view-content hidden">
+            
+            <!-- Product Image Section -->
+            <div class="detail-image-container mb-6 overflow-hidden rounded-xl shadow-lg">
+                <img id="detail-product-image" src="https://placehold.co/400x600/7B3F00/ffffff?text=Silk+Saree+Detail" alt="Product Detail Image" class="object-cover">
+            </div>
+
+            <!-- Product Info -->
+            <div class="p-2">
+                <div class="flex items-center justify-between mb-2">
+                    <h2 id="detail-product-name" class="text-2xl font-bold text-gray-900">Handloom Silk Saree</h2>
+                    <!-- Like Button -->
+                    <button id="detail-like-button" class="text-red-500 p-2 rounded-full bg-red-50 hover:bg-red-100 transition-colors" onclick="toggleLike(currentProduct.id)">
+                        <i data-lucide="heart" class="h-6 w-6"></i>
+                    </button>
+                </div>
+                
+                <p class="text-3xl font-extrabold text-gray-900 mb-3">$1,250</p>
+                <p class="text-base text-gray-700 mb-4">
+                    A beautiful, authentic silk saree, hand-woven by master artisans. Perfect for special occasions. Length: 10 Meters.
+                </p>
+
+                <!-- Details/Ratings -->
+                <div class="flex items-center mb-6">
+                    <div class="flex items-center mr-6">
+                        <i data-lucide="star" class="h-5 w-5 rating-star-filled fill-current mr-1"></i>
+                        <span class="text-lg font-semibold text-gray-700">4.8</span>
+                        <span class="text-sm text-gray-500 ml-1">(124 reviews)</span>
+                    </div>
+                    <div class="flex items-center">
+                        <i data-lucide="ruler" class="h-5 w-5 text-gray-500 mr-1"></i>
+                        <span class="text-lg font-semibold text-gray-700">10 Meters</span>
+                    </div>
+                </div>
+
+                <!-- Call to action/Options Placeholder -->
+                <div class="border-t border-gray-100 pt-4 mt-4">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-3">Color Options</h3>
+                    <div class="flex space-x-3">
+                        <div class="h-8 w-8 rounded-full border-2 border-red-500 bg-red-700 cursor-pointer"></div>
+                        <div class="h-8 w-8 rounded-full border border-gray-300 bg-green-700 cursor-pointer"></div>
+                        <div class="h-8 w-8 rounded-full border border-gray-300 bg-blue-700 cursor-pointer"></div>
+                    </div>
+                </div>
+                
+            </div>
+        </section>
+
+        <!-- ========================================
+             CART VIEW (viewIndex: 3)
+             ======================================== -->
+        <section id="cart-view" class="view-content hidden">
+            <h2 class="text-3xl font-bold text-gray-900 mt-2 mb-6">Your Cart (<span id="cart-total-count">0</span> items)</h2>
+            <div id="cart-list" class="space-y-4">
+                <!-- Cart items will be rendered here -->
+            </div>
+            
+            <div id="cart-empty-state" class="text-center p-8 mt-12 bg-gray-50 rounded-xl hidden">
+                <i data-lucide="shopping-bag" class="h-12 w-12 text-gray-400 mx-auto mb-3"></i>
+                <p class="text-lg font-medium text-gray-600">Your cart is empty.</p>
+                <button class="text-sm text-blue-600 mt-4 font-semibold" onclick="toggleView(0)">Continue Shopping</button>
+            </div>
+            
+            <div id="cart-summary" class="mt-8 pt-4 border-t border-gray-200 hidden">
+                <div class="flex justify-between text-lg font-medium text-gray-700 mb-2">
+                    <span>Subtotal:</span>
+                    <span>$1,250.00</span>
+                </div>
+                <div class="flex justify-between text-lg font-medium text-green-600 mb-4">
+                    <span>Shipping:</span>
+                    <span>FREE</span>
+                </div>
+                <button class="w-full bg-green-600 text-white font-bold py-3 rounded-xl shadow-lg shadow-green-300/50 transition-all duration-200 hover:bg-green-700">
+                    Proceed to Checkout
+                </button>
+            </div>
+        </section>
+
+
+    </main>
+    
+    <!-- 
+        ========================================
+        4. Floating Bottom Bar (For Detail View)
+        ========================================
+    -->
+    <div id="detail-actions-bar" class="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-400px p-4 bg-white border-t border-gray-100 shadow-2xl z-30 hidden" style="max-width: 400px; border-radius: 1.5rem 1.5rem 0 0;">
+        <div class="flex space-x-3">
+            <button class="flex items-center justify-center p-3 rounded-xl border border-gray-300 text-gray-700 transition-colors hover:bg-gray-50 w-1/4">
+                <i data-lucide="message-square" class="h-6 w-6"></i>
+            </button>
+            <!-- Add to Cart Button -->
+            <button id="add-to-cart-button" class="w-3/4 bg-[#B8860B] text-white font-bold py-3 rounded-xl shadow-lg shadow-yellow-300/50 transition-all duration-200 hover:bg-[#a0770a]">
+                Add to Cart
+            </button>
+        </div>
+    </div>
+    
+    <!-- Toast Message Container -->
+    <div id="toast-container"></div>
+
+</div>
+
+<!-- 
+    ========================================
+    5. JavaScript for State and View Switching 
+    ========================================
+-->
+<script>
+    // --- State Initialization ---
+    let cartItems = []; // [{id: 'product-A', name: 'Silk Saree A', quantity: 1, price: 1250}]
+    let likedProducts = new Set(); // Stores product IDs of liked items
+    let currentProduct = null; // Stores details of the product currently viewed in detail-view
+    let previousView = 0; // To track where to go back to
+
+    // --- DOM Elements ---
+    const homeView = document.getElementById('home-view');
+    const resultsView = document.getElementById('results-view');
+    const detailView = document.getElementById('detail-view');
+    const cartView = document.getElementById('cart-view');
+    const detailActionBar = document.getElementById('detail-actions-bar');
+    const navButton = document.getElementById('nav-toggle-button');
+    const cartBadge = document.getElementById('cart-badge');
+    const detailLikeButton = document.getElementById('detail-like-button');
+    const addToCartButton = document.getElementById('add-to-cart-button');
+    const cartList = document.getElementById('cart-list');
+    const cartEmptyState = document.getElementById('cart-empty-state');
+    const cartSummary = document.getElementById('cart-summary');
+    const cartTotalCount = document.getElementById('cart-total-count');
+
+
+    // State Tracking: 0: Home, 1: Results, 2: Detail, 3: Cart
+    let currentView = 0;
+
+    // --- Utility Functions ---
+
+    /**
+     * Shows a temporary toast notification for user feedback.
+     * @param {string} message - The message to display.
+     */
+    function showToast(message) {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = 'toast show';
+        toast.textContent = message;
+        
+        container.appendChild(toast);
+
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => {
+                container.removeChild(toast);
+            }, 300); // Wait for fade-out transition
+        }, 2000); // Display time
+    }
+
+    /**
+     * Updates the cart count badge on the Home screen.
+     */
+    function updateCartBadge() {
+        const count = cartItems.length;
+        cartBadge.textContent = count;
+        if (count > 0) {
+            cartBadge.classList.remove('opacity-0', 'scale-0');
+            cartBadge.classList.add('opacity-100', 'scale-100');
+        } else {
+            cartBadge.classList.remove('opacity-100', 'scale-100');
+            cartBadge.classList.add('opacity-0', 'scale-0');
+        }
+    }
+
+    // --- Core Logic Functions ---
+
+    /**
+     * Adds the current product to the cart.
+     */
+    function addToCart() {
+        if (!currentProduct) return;
+
+        // Check if the item is already in the cart (for simplicity, we just add a new entry)
+        const newItem = {
+            id: currentProduct.id,
+            name: currentProduct.name,
+            image: currentProduct.image,
+            price: 1250, // Hardcoded price for demo
+            quantity: 1
+        };
+        
+        cartItems.push(newItem);
+        updateCartBadge();
+        showToast(`'${currentProduct.name}' added to cart!`);
+    }
+    
+    /**
+     * Toggles the like status for a given product ID.
+     * @param {string} productId 
+     */
+    function toggleLike(productId) {
+        let isLiked = likedProducts.has(productId);
+        
+        if (isLiked) {
+            likedProducts.delete(productId);
+            showToast(`'${currentProduct.name}' removed from Wishlist.`);
+        } else {
+            likedProducts.add(productId);
+            showToast(`'${currentProduct.name}' added to Wishlist!`);
+        }
+        
+        // Update the button icon immediately
+        updateDetailButtons(currentProduct);
+    }
+
+    /**
+     * Renders the Product Detail View content based on the selected product data.
+     * @param {object} productData - {id, name, image}
+     */
+    function renderDetailView(productData) {
+        currentProduct = productData;
+        
+        // Update product details on the page
+        document.getElementById('detail-product-name').textContent = productData.name;
+        document.getElementById('detail-product-image').src = productData.image.replace('96x140', '400x600').replace('80x120', '400x600'); 
+        
+        // Update Like button state and Add to Cart button listener
+        updateDetailButtons(productData);
+    }
+    
+    /**
+     * Updates the Like button icon based on the current product's liked status.
+     * @param {object} productData - {id, name, image}
+     */
+    function updateDetailButtons(productData) {
+        const isLiked = likedProducts.has(productData.id);
+        
+        // Update Like Button Icon
+        let iconHtml = '';
+        if (isLiked) {
+            iconHtml = `<i data-lucide="heart" class="h-6 w-6 fill-red-500"></i>`;
+        } else {
+            iconHtml = `<i data-lucide="heart" class="h-6 w-6"></i>`;
+        }
+        detailLikeButton.innerHTML = iconHtml;
+        lucide.createIcons(); // Re-render icon
+
+        // Re-attach Add to Cart listener
+        addToCartButton.onclick = addToCart;
+    }
+
+    /**
+     * Renders the Cart View content.
+     */
+    function renderCartView() {
+        cartTotalCount.textContent = cartItems.length;
+        cartList.innerHTML = ''; // Clear previous items
+
+        if (cartItems.length === 0) {
+            cartEmptyState.classList.remove('hidden');
+            cartSummary.classList.add('hidden');
+            return;
+        }
+        
+        cartEmptyState.classList.add('hidden');
+        cartSummary.classList.remove('hidden');
+        
+        cartItems.forEach((item, index) => {
+            const itemElement = document.createElement('div');
+            itemElement.className = 'flex items-start bg-white p-3 rounded-xl shadow-md';
+            itemElement.innerHTML = `
+                <img src="${item.image.replace('96x140', '80x120')}" alt="${item.name}" class="w-20 h-32 object-cover rounded-lg flex-shrink-0">
+                <div class="ml-4 flex flex-col justify-between h-full w-full">
+                    <h3 class="text-lg font-bold text-gray-900">${item.name}</h3>
+                    <p class="text-sm text-gray-500">Qty: ${item.quantity}</p>
+                    <div class="flex justify-between items-center mt-2">
+                        <p class="text-xl font-extrabold text-gray-900">$${item.price.toFixed(2)}</p>
+                        <button class="text-red-500 p-1 rounded-full hover:bg-red-50 transition-colors" onclick="removeItemFromCart(${index})">
+                            <i data-lucide="trash-2" class="h-5 w-5"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            cartList.appendChild(itemElement);
+        });
+        lucide.createIcons();
+    }
+    
+    /**
+     * Removes an item from the cart by its index. (Used in Cart View)
+     * @param {number} index - Index of the item in the cartItems array.
+     */
+    function removeItemFromCart(index) {
+        const removedItem = cartItems.splice(index, 1)[0];
+        showToast(`Removed '${removedItem.name}' from cart.`);
+        updateCartBadge();
+        renderCartView(); // Re-render the cart list
+    }
+
+    /**
+     * Toggles visibility of views and manages the header icon.
+     * @param {number} viewIndex - The view to switch to (0, 1, 2, or 3).
+     * @param {object} [productData] - Optional product data for detail view.
+     */
+    function toggleView(viewIndex, productData = null) {
+        // Save current view before switching, unless it's a detail/cart view, in which case we track the origin
+        if (currentView !== 2 && currentView !== 3) {
+            previousView = currentView;
+        }
+
+        // Hide all main content views
+        homeView.classList.add('hidden');
+        resultsView.classList.add('hidden');
+        detailView.classList.add('hidden');
+        cartView.classList.add('hidden');
+        detailActionBar.classList.add('hidden');
+
+        let newIcon = 'menu';
+        
+        if (viewIndex === 0) {
+            homeView.classList.remove('hidden');
+            newIcon = 'menu';
+        } else if (viewIndex === 1) {
+            resultsView.classList.remove('hidden');
+            newIcon = 'arrow-left';
+        } else if (viewIndex === 2) {
+            detailView.classList.remove('hidden');
+            detailActionBar.classList.remove('hidden');
+            newIcon = 'arrow-left';
+            if (productData) {
+                renderDetailView(productData);
+            }
+        } else if (viewIndex === 3) {
+            cartView.classList.remove('hidden');
+            newIcon = 'arrow-left';
+            renderCartView(); // Render cart contents when switching to cart view
+        }
+        
+        // Update current view state
+        currentView = viewIndex;
+
+        // Update the navigation button icon
+        navButton.innerHTML = `<i data-lucide="${newIcon}" class="h-6 w-6"></i>`;
+        lucide.createIcons(); // Re-render icon
+
+        // Scroll the main content area to top on view switch
+        document.getElementById('app-container').scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    /**
+     * Handles clicks on the main header button (Menu/Back).
+     */
+    function handleHeaderNav() {
+        if (currentView === 2 || currentView === 3) { 
+            // If on Detail View (2) or Cart View (3), go back to the previous main view
+            toggleView(previousView === 1 ? 1 : 0);
+        } else if (currentView === 1) { 
+            // If on Results View (1), go back to Home View (0)
+            toggleView(0);
+        }
+        // If on Home View (0), the button acts as a menu toggle (no action in this prototype).
+    }
+
+    // --- Initialization ---
+    window.onload = function() {
+        lucide.createIcons();
+        updateCartBadge(); // Ensure badge starts correctly
+        navButton.onclick = handleHeaderNav; // Assign the handler to the button
+        
+        // Force the app to start on the Home view (0)
+        toggleView(0); 
+    };
+
+</script>
+
+</body>
+</html>
